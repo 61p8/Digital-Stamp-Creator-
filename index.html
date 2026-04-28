@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>เครื่องมือสร้างตราประทับ · Digital Stamp Creator</title>
+<title>Digital Stamp Creator · เครื่องมือสร้างตราประทับ · 電子印鑑</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Thai:wght@400;500;600;700&family=Sarabun:wght@300;400;500;600&family=Noto+Serif+JP:wght@400;500;700&family=Prompt:wght@400;500;600&family=Kanit:wght@400;500;600&display=swap" rel="stylesheet">
@@ -254,8 +254,55 @@
 
   .preview-actions {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: 1fr 1fr;
     gap: 8px;
+  }
+
+  .preview-actions .btn-print {
+    grid-column: 1 / -1;
+  }
+
+  /* Language switcher */
+  .lang-switcher {
+    display: inline-flex;
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    overflow: hidden;
+    background: var(--card);
+    align-self: center;
+  }
+
+  .lang-btn {
+    border: none;
+    background: transparent;
+    color: var(--ink-2);
+    padding: 6px 11px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 0.04em;
+    border-right: 1px solid var(--line);
+    transition: all 0.12s;
+    line-height: 1.1;
+  }
+
+  .lang-btn:last-child { border-right: none; }
+
+  .lang-btn:hover {
+    background: var(--accent-bg);
+    color: var(--ink);
+  }
+
+  .lang-btn.active {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 14px;
   }
 
   .btn {
@@ -834,48 +881,57 @@
       <div class="brand">
         <div class="brand-mark">印</div>
         <div>
-          <h1>เครื่องมือสร้างตราประทับ</h1>
+          <h1 data-i18n="appName">เครื่องมือสร้างตราประทับ</h1>
           <div class="subtitle">Digital Stamp Creator · 電子印鑑</div>
         </div>
       </div>
-      <div class="meta">
-        <div>v1.7 · Browser Edition</div>
-        <div class="meta-sub">Created by SITTISAK PE DNTH</div>
+      <div class="header-right">
+        <div class="lang-switcher" role="tablist" aria-label="Language">
+          <button type="button" class="lang-btn" data-lang="th" onclick="setLang('th')">ไทย</button>
+          <button type="button" class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
+          <button type="button" class="lang-btn" data-lang="ja" onclick="setLang('ja')">日本語</button>
+        </div>
+        <div class="meta">
+          <div data-i18n="edition">v1.7 · Browser Edition</div>
+          <div class="meta-sub">Created by SITTISAK PE DNTH</div>
+        </div>
       </div>
     </header>
 
     <main>
       <!-- Preview Column -->
       <section class="preview-section">
-        <div class="section-label">ตัวอย่าง · Preview</div>
+        <div class="section-label" data-i18n="sectionPreview">ตัวอย่าง · Preview</div>
         <div class="canvas-frame">
           <canvas id="stamp" width="800" height="800"></canvas>
         </div>
-        <div class="section-hint">💡 ลากเส้นแบ่ง = ปรับขนาดส่วน · ลากข้อความ = ปรับตำแหน่ง</div>
+        <div class="section-hint" data-i18n="dragHint">💡 ลากเส้นแบ่ง = ปรับขนาดส่วน · ลากข้อความ = ปรับตำแหน่ง</div>
         <div class="section-info">
-          <span class="section-info-item">บน <b id="secTop">39%</b></span>
-          <span class="section-info-item">กลาง <b id="secMid">22%</b></span>
-          <span class="section-info-item">ล่าง <b id="secBot">39%</b></span>
-          <button class="section-info-reset" onclick="resetSections()" title="รีเซ็ตเป็น 39 / 22 / 39">↺</button>
+          <span class="section-info-item"><span data-i18n="secTop">บน</span> <b id="secTop">39%</b></span>
+          <span class="section-info-item"><span data-i18n="secMid">กลาง</span> <b id="secMid">22%</b></span>
+          <span class="section-info-item"><span data-i18n="secBot">ล่าง</span> <b id="secBot">39%</b></span>
+          <button class="section-info-reset" onclick="resetSections()" data-i18n-title="resetSecTitle" title="รีเซ็ตเป็น 39 / 22 / 39">↺</button>
         </div>
         <div class="preview-actions">
-          <button class="btn btn-primary" onclick="downloadPNG()">บันทึก PNG</button>
-          <button class="btn" onclick="copyToClipboard()">คัดลอกรูป</button>
-          <button class="btn btn-ghost" onclick="printStamp()">พิมพ์</button>
+          <button class="btn btn-primary" onclick="downloadPNG()" data-i18n="btnSavePng">บันทึก PNG</button>
+          <button class="btn" onclick="copyPNG()" data-i18n="btnCopyPng">คัดลอก PNG</button>
+          <button class="btn" onclick="downloadSVG()" data-i18n="btnSaveSvg">บันทึก SVG</button>
+          <button class="btn" onclick="copySVG()" data-i18n="btnCopySvg">คัดลอก SVG</button>
+          <button class="btn btn-ghost btn-print" onclick="printStamp()" data-i18n="btnPrint">พิมพ์</button>
         </div>
       </section>
 
       <!-- Controls Column -->
       <section class="controls-section">
-        <div class="section-label">ตั้งค่า · Settings</div>
+        <div class="section-label" data-i18n="sectionSettings">ตั้งค่า · Settings</div>
 
         <div class="field-group">
-          <label>ข้อความด้านบน <span class="hint">Header</span></label>
+          <label><span data-i18n="fldHeader">ข้อความด้านบน</span> <span class="hint" data-i18n="fldHeaderHint">Header</span></label>
           <input type="text" id="headerText" value="อนุมัติแล้ว" maxlength="24" oninput="render()">
         </div>
 
         <div class="field-group">
-          <label>วันที่ <span class="hint">ปี / เดือน / วัน</span></label>
+          <label><span data-i18n="fldDate">วันที่</span> <span class="hint" data-i18n="fldDateHint">ปี / เดือน / วัน</span></label>
           <div class="date-row">
             <input type="number" id="year" value="2026" min="1" max="9999" oninput="render()">
             <select id="separator" onchange="render()">
@@ -892,45 +948,45 @@
         </div>
 
         <div class="field-group">
-          <label>ข้อความด้านล่าง <span class="hint">Footer</span></label>
+          <label><span data-i18n="fldFooter">ข้อความด้านล่าง</span> <span class="hint" data-i18n="fldFooterHint">Footer</span></label>
           <input type="text" id="footerText" value="แผนกวิศวกรรม" maxlength="24" oninput="render()">
         </div>
 
         <div class="field-group">
-          <label>รูปร่าง <span class="hint">8 แบบ</span></label>
+          <label><span data-i18n="fldShape">รูปร่าง</span> <span class="hint" data-i18n="fldShapeHint">8 แบบ</span></label>
           <div class="shape-grid">
-            <button type="button" class="shape-btn active" data-shape="circle" onclick="setShape('circle')" title="วงกลมสองเส้น">
+            <button type="button" class="shape-btn active" data-shape="circle" onclick="setShape('circle')" data-i18n-title="shapeCircle" title="วงกลมสองเส้น">
               <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="0.8"/></svg>
             </button>
-            <button type="button" class="shape-btn" data-shape="circle-single" onclick="setShape('circle-single')" title="วงกลมเส้นเดียว">
+            <button type="button" class="shape-btn" data-shape="circle-single" onclick="setShape('circle-single')" data-i18n-title="shapeCircleSingle" title="วงกลมเส้นเดียว">
               <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
             </button>
-            <button type="button" class="shape-btn" data-shape="square" onclick="setShape('square')" title="สี่เหลี่ยมสองเส้น">
+            <button type="button" class="shape-btn" data-shape="square" onclick="setShape('square')" data-i18n-title="shapeSquare" title="สี่เหลี่ยมสองเส้น">
               <svg viewBox="0 0 24 24"><rect x="1.5" y="1.5" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="5" y="5" width="14" height="14" fill="none" stroke="currentColor" stroke-width="0.8"/></svg>
             </button>
-            <button type="button" class="shape-btn" data-shape="square-single" onclick="setShape('square-single')" title="สี่เหลี่ยมเส้นเดียว">
+            <button type="button" class="shape-btn" data-shape="square-single" onclick="setShape('square-single')" data-i18n-title="shapeSquareSingle" title="สี่เหลี่ยมเส้นเดียว">
               <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
             </button>
-            <button type="button" class="shape-btn" data-shape="rounded" onclick="setShape('rounded')" title="สี่เหลี่ยมมุมมนสองเส้น">
+            <button type="button" class="shape-btn" data-shape="rounded" onclick="setShape('rounded')" data-i18n-title="shapeRounded" title="สี่เหลี่ยมมุมมนสองเส้น">
               <svg viewBox="0 0 24 24"><rect x="1.5" y="1.5" width="21" height="21" rx="5" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="5" y="5" width="14" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="0.8"/></svg>
             </button>
-            <button type="button" class="shape-btn" data-shape="rounded-single" onclick="setShape('rounded-single')" title="สี่เหลี่ยมมุมมนเส้นเดียว">
+            <button type="button" class="shape-btn" data-shape="rounded-single" onclick="setShape('rounded-single')" data-i18n-title="shapeRoundedSingle" title="สี่เหลี่ยมมุมมนเส้นเดียว">
               <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
             </button>
-            <button type="button" class="shape-btn" data-shape="oval" onclick="setShape('oval')" title="วงรี">
+            <button type="button" class="shape-btn" data-shape="oval" onclick="setShape('oval')" data-i18n-title="shapeOval" title="วงรี">
               <svg viewBox="0 0 24 24"><ellipse cx="12" cy="12" rx="11" ry="7" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
             </button>
-            <button type="button" class="shape-btn" data-shape="none" onclick="setShape('none')" title="ไม่มีเส้นขอบ">
+            <button type="button" class="shape-btn" data-shape="none" onclick="setShape('none')" data-i18n-title="shapeNone" title="ไม่มีเส้นขอบ">
               <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="1" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="2 2"/></svg>
             </button>
           </div>
         </div>
 
         <div class="field-group">
-          <label>แบบอักษร <span class="hint">3 ตำแหน่งแยกได้</span></label>
+          <label><span data-i18n="fldFont">แบบอักษร</span> <span class="hint" data-i18n="fldFontHint">3 ตำแหน่งแยกได้</span></label>
           <div class="font-rows">
             <div class="font-row">
-              <span class="font-row-label">บน</span>
+              <span class="font-row-label" data-i18n="rowTop">บน</span>
               <div class="font-controls">
                 <div class="font-controls-row">
                   <input list="fontList" id="fontTop" value="Noto Serif Thai" oninput="render()" spellcheck="false" class="font-name">
@@ -941,25 +997,25 @@
                 </div>
                 <div class="font-controls-row font-row-bottom">
                   <div class="toolbtn-group">
-                    <button type="button" class="toolbtn active" data-pos="top" data-style="bold" title="ตัวหนา"><b>B</b></button>
-                    <button type="button" class="toolbtn" data-pos="top" data-style="italic" title="ตัวเอียง"><i>I</i></button>
-                    <button type="button" class="toolbtn" data-pos="top" data-style="underline" title="ขีดเส้นใต้"><u>U</u></button>
+                    <button type="button" class="toolbtn active" data-pos="top" data-style="bold" data-i18n-title="titleBold" title="ตัวหนา"><b>B</b></button>
+                    <button type="button" class="toolbtn" data-pos="top" data-style="italic" data-i18n-title="titleItalic" title="ตัวเอียง"><i>I</i></button>
+                    <button type="button" class="toolbtn" data-pos="top" data-style="underline" data-i18n-title="titleUnderline" title="ขีดเส้นใต้"><u>U</u></button>
                   </div>
                   <div class="toolbtn-right-cluster">
                     <div class="toolbtn-group">
-                      <button type="button" class="toolbtn" data-pos="top" data-offset="-2" title="ขยับขึ้น 2%">↑</button>
-                      <button type="button" class="toolbtn" data-pos="top" data-offset="2" title="ขยับลง 2%">↓</button>
+                      <button type="button" class="toolbtn" data-pos="top" data-offset="-2" data-i18n-title="titleNudgeUp" title="ขยับขึ้น 2%">↑</button>
+                      <button type="button" class="toolbtn" data-pos="top" data-offset="2" data-i18n-title="titleNudgeDown" title="ขยับลง 2%">↓</button>
                     </div>
                     <div class="toolbtn-group">
-                      <button type="button" class="toolbtn toolbtn-az" data-pos="top" data-size="5" title="ขยาย +5%">A<span class="az-plus">+</span></button>
-                      <button type="button" class="toolbtn toolbtn-az" data-pos="top" data-size="-5" title="ย่อ −5%">A<span class="az-minus">−</span></button>
+                      <button type="button" class="toolbtn toolbtn-az" data-pos="top" data-size="5" data-i18n-title="titleSizeUp" title="ขยาย +5%">A<span class="az-plus">+</span></button>
+                      <button type="button" class="toolbtn toolbtn-az" data-pos="top" data-size="-5" data-i18n-title="titleSizeDown" title="ย่อ −5%">A<span class="az-minus">−</span></button>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
             <div class="font-row">
-              <span class="font-row-label">กลาง</span>
+              <span class="font-row-label" data-i18n="rowMid">กลาง</span>
               <div class="font-controls">
                 <div class="font-controls-row">
                   <input list="fontList" id="fontMid" value="Sarabun" oninput="render()" spellcheck="false" class="font-name">
@@ -970,25 +1026,25 @@
                 </div>
                 <div class="font-controls-row font-row-bottom">
                   <div class="toolbtn-group">
-                    <button type="button" class="toolbtn" data-pos="mid" data-style="bold" title="ตัวหนา"><b>B</b></button>
-                    <button type="button" class="toolbtn" data-pos="mid" data-style="italic" title="ตัวเอียง"><i>I</i></button>
-                    <button type="button" class="toolbtn" data-pos="mid" data-style="underline" title="ขีดเส้นใต้"><u>U</u></button>
+                    <button type="button" class="toolbtn" data-pos="mid" data-style="bold" data-i18n-title="titleBold" title="ตัวหนา"><b>B</b></button>
+                    <button type="button" class="toolbtn" data-pos="mid" data-style="italic" data-i18n-title="titleItalic" title="ตัวเอียง"><i>I</i></button>
+                    <button type="button" class="toolbtn" data-pos="mid" data-style="underline" data-i18n-title="titleUnderline" title="ขีดเส้นใต้"><u>U</u></button>
                   </div>
                   <div class="toolbtn-right-cluster">
                     <div class="toolbtn-group">
-                      <button type="button" class="toolbtn" data-pos="mid" data-offset="-2" title="ขยับขึ้น 2%">↑</button>
-                      <button type="button" class="toolbtn" data-pos="mid" data-offset="2" title="ขยับลง 2%">↓</button>
+                      <button type="button" class="toolbtn" data-pos="mid" data-offset="-2" data-i18n-title="titleNudgeUp" title="ขยับขึ้น 2%">↑</button>
+                      <button type="button" class="toolbtn" data-pos="mid" data-offset="2" data-i18n-title="titleNudgeDown" title="ขยับลง 2%">↓</button>
                     </div>
                     <div class="toolbtn-group">
-                      <button type="button" class="toolbtn toolbtn-az" data-pos="mid" data-size="5" title="ขยาย +5%">A<span class="az-plus">+</span></button>
-                      <button type="button" class="toolbtn toolbtn-az" data-pos="mid" data-size="-5" title="ย่อ −5%">A<span class="az-minus">−</span></button>
+                      <button type="button" class="toolbtn toolbtn-az" data-pos="mid" data-size="5" data-i18n-title="titleSizeUp" title="ขยาย +5%">A<span class="az-plus">+</span></button>
+                      <button type="button" class="toolbtn toolbtn-az" data-pos="mid" data-size="-5" data-i18n-title="titleSizeDown" title="ย่อ −5%">A<span class="az-minus">−</span></button>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
             <div class="font-row">
-              <span class="font-row-label">ล่าง</span>
+              <span class="font-row-label" data-i18n="rowBot">ล่าง</span>
               <div class="font-controls">
                 <div class="font-controls-row">
                   <input list="fontList" id="fontBot" value="Noto Serif Thai" oninput="render()" spellcheck="false" class="font-name">
@@ -999,18 +1055,18 @@
                 </div>
                 <div class="font-controls-row font-row-bottom">
                   <div class="toolbtn-group">
-                    <button type="button" class="toolbtn active" data-pos="bot" data-style="bold" title="ตัวหนา"><b>B</b></button>
-                    <button type="button" class="toolbtn" data-pos="bot" data-style="italic" title="ตัวเอียง"><i>I</i></button>
-                    <button type="button" class="toolbtn" data-pos="bot" data-style="underline" title="ขีดเส้นใต้"><u>U</u></button>
+                    <button type="button" class="toolbtn active" data-pos="bot" data-style="bold" data-i18n-title="titleBold" title="ตัวหนา"><b>B</b></button>
+                    <button type="button" class="toolbtn" data-pos="bot" data-style="italic" data-i18n-title="titleItalic" title="ตัวเอียง"><i>I</i></button>
+                    <button type="button" class="toolbtn" data-pos="bot" data-style="underline" data-i18n-title="titleUnderline" title="ขีดเส้นใต้"><u>U</u></button>
                   </div>
                   <div class="toolbtn-right-cluster">
                     <div class="toolbtn-group">
-                      <button type="button" class="toolbtn" data-pos="bot" data-offset="-2" title="ขยับขึ้น 2%">↑</button>
-                      <button type="button" class="toolbtn" data-pos="bot" data-offset="2" title="ขยับลง 2%">↓</button>
+                      <button type="button" class="toolbtn" data-pos="bot" data-offset="-2" data-i18n-title="titleNudgeUp" title="ขยับขึ้น 2%">↑</button>
+                      <button type="button" class="toolbtn" data-pos="bot" data-offset="2" data-i18n-title="titleNudgeDown" title="ขยับลง 2%">↓</button>
                     </div>
                     <div class="toolbtn-group">
-                      <button type="button" class="toolbtn toolbtn-az" data-pos="bot" data-size="5" title="ขยาย +5%">A<span class="az-plus">+</span></button>
-                      <button type="button" class="toolbtn toolbtn-az" data-pos="bot" data-size="-5" title="ย่อ −5%">A<span class="az-minus">−</span></button>
+                      <button type="button" class="toolbtn toolbtn-az" data-pos="bot" data-size="5" data-i18n-title="titleSizeUp" title="ขยาย +5%">A<span class="az-plus">+</span></button>
+                      <button type="button" class="toolbtn toolbtn-az" data-pos="bot" data-size="-5" data-i18n-title="titleSizeDown" title="ย่อ −5%">A<span class="az-minus">−</span></button>
                     </div>
                   </div>
                 </div>
@@ -1018,7 +1074,7 @@
             </div>
           </div>
           <div class="font-loader">
-            <button type="button" onclick="loadSystemFonts()">🖥️ โหลดฟอนต์จากเครื่องนี้ (Chrome/Edge)</button>
+            <button type="button" onclick="loadSystemFonts()" data-i18n="fontLoaderBtn">🖥️ โหลดฟอนต์จากเครื่องนี้ (Chrome/Edge)</button>
             <div id="fontStatus" class="font-status">พิมพ์ชื่อฟอนต์ได้ หรือเลือกจาก dropdown</div>
           </div>
           <datalist id="fontList">
@@ -1039,20 +1095,20 @@
         </div>
 
         <div class="field-group">
-          <label>สี <span class="hint">12 สีพื้นฐาน + กำหนดเอง</span></label>
+          <label><span data-i18n="fldColor">สี</span> <span class="hint" data-i18n="fldColorHint">12 สีพื้นฐาน + กำหนดเอง</span></label>
           <div class="color-palette" id="colorPalette">
-            <button class="swatch active" style="background:#b4383a" data-color="#b4383a" onclick="setColor('#b4383a')" title="ชาด · Vermilion 朱"></button>
-            <button class="swatch" style="background:#8b1a1a" data-color="#8b1a1a" onclick="setColor('#8b1a1a')" title="แดงเข้ม · Crimson"></button>
-            <button class="swatch" style="background:#d45a2e" data-color="#d45a2e" onclick="setColor('#d45a2e')" title="ส้มแดง · Orange-Red"></button>
-            <button class="swatch" style="background:#8b5a2b" data-color="#8b5a2b" onclick="setColor('#8b5a2b')" title="น้ำตาล · Sepia"></button>
-            <button class="swatch" style="background:#5c3a21" data-color="#5c3a21" onclick="setColor('#5c3a21')" title="น้ำตาลเข้ม · Dark Brown"></button>
-            <button class="swatch" style="background:#1a1612" data-color="#1a1612" onclick="setColor('#1a1612')" title="ดำหมึก · Ink Black"></button>
-            <button class="swatch" style="background:#4a4a4a" data-color="#4a4a4a" onclick="setColor('#4a4a4a')" title="เทาเข้ม · Charcoal"></button>
-            <button class="swatch" style="background:#1e4a8a" data-color="#1e4a8a" onclick="setColor('#1e4a8a')" title="น้ำเงินกรม · Navy"></button>
-            <button class="swatch" style="background:#0a6e8e" data-color="#0a6e8e" onclick="setColor('#0a6e8e')" title="น้ำเงินอมเขียว · Teal"></button>
-            <button class="swatch" style="background:#2d5f3f" data-color="#2d5f3f" onclick="setColor('#2d5f3f')" title="เขียวเข้ม · Forest"></button>
-            <button class="swatch" style="background:#556b2f" data-color="#556b2f" onclick="setColor('#556b2f')" title="เขียวมะกอก · Olive"></button>
-            <button class="swatch" style="background:#5b2c6e" data-color="#5b2c6e" onclick="setColor('#5b2c6e')" title="ม่วง · Purple"></button>
+            <button class="swatch active" style="background:#b4383a" data-color="#b4383a" onclick="setColor('#b4383a')" data-i18n-title="colorVermilion" title="ชาด · Vermilion 朱"></button>
+            <button class="swatch" style="background:#8b1a1a" data-color="#8b1a1a" onclick="setColor('#8b1a1a')" data-i18n-title="colorCrimson" title="แดงเข้ม · Crimson"></button>
+            <button class="swatch" style="background:#d45a2e" data-color="#d45a2e" onclick="setColor('#d45a2e')" data-i18n-title="colorOrange" title="ส้มแดง · Orange-Red"></button>
+            <button class="swatch" style="background:#8b5a2b" data-color="#8b5a2b" onclick="setColor('#8b5a2b')" data-i18n-title="colorSepia" title="น้ำตาล · Sepia"></button>
+            <button class="swatch" style="background:#5c3a21" data-color="#5c3a21" onclick="setColor('#5c3a21')" data-i18n-title="colorDarkBrown" title="น้ำตาลเข้ม · Dark Brown"></button>
+            <button class="swatch" style="background:#1a1612" data-color="#1a1612" onclick="setColor('#1a1612')" data-i18n-title="colorInk" title="ดำหมึก · Ink Black"></button>
+            <button class="swatch" style="background:#4a4a4a" data-color="#4a4a4a" onclick="setColor('#4a4a4a')" data-i18n-title="colorCharcoal" title="เทาเข้ม · Charcoal"></button>
+            <button class="swatch" style="background:#1e4a8a" data-color="#1e4a8a" onclick="setColor('#1e4a8a')" data-i18n-title="colorNavy" title="น้ำเงินกรม · Navy"></button>
+            <button class="swatch" style="background:#0a6e8e" data-color="#0a6e8e" onclick="setColor('#0a6e8e')" data-i18n-title="colorTeal" title="น้ำเงินอมเขียว · Teal"></button>
+            <button class="swatch" style="background:#2d5f3f" data-color="#2d5f3f" onclick="setColor('#2d5f3f')" data-i18n-title="colorForest" title="เขียวเข้ม · Forest"></button>
+            <button class="swatch" style="background:#556b2f" data-color="#556b2f" onclick="setColor('#556b2f')" data-i18n-title="colorOlive" title="เขียวมะกอก · Olive"></button>
+            <button class="swatch" style="background:#5b2c6e" data-color="#5b2c6e" onclick="setColor('#5b2c6e')" data-i18n-title="colorPurple" title="ม่วง · Purple"></button>
           </div>
           <div class="color-custom">
             <input type="color" id="color" value="#b4383a" oninput="syncColorFromPicker(this.value)">
@@ -1061,7 +1117,7 @@
         </div>
 
         <div class="field-group">
-          <label>ขนาด <span class="hint">Scale <span id="scaleValue" class="scale-value">100%</span></span></label>
+          <label><span data-i18n="fldScale">ขนาด</span> <span class="hint"><span data-i18n="fldScaleHint">Scale</span> <span id="scaleValue" class="scale-value">100%</span></span></label>
           <div class="scale-row">
             <button class="scale-btn" onclick="changeScale(-5)">−</button>
             <input type="range" id="scale" min="40" max="150" value="100" oninput="render()">
@@ -1071,15 +1127,15 @@
         </div>
 
         <div class="settings-row">
-          <button class="btn btn-ghost" onclick="saveSettings()">↓ บันทึกค่า</button>
-          <button class="btn btn-ghost" onclick="loadSettings()">↑ โหลดค่า</button>
-          <button class="btn btn-ghost btn-reset" onclick="clearStoredSettings()">⟲ ล้าง</button>
-          <div class="auto-save-note"><span class="dot"></span>บันทึกอัตโนมัติในเครื่องนี้ — เปิดครั้งหน้าจะจำค่าได้</div>
+          <button class="btn btn-ghost" onclick="saveSettings()" data-i18n="btnSaveSettings">↓ บันทึกค่า</button>
+          <button class="btn btn-ghost" onclick="loadSettings()" data-i18n="btnLoadSettings">↑ โหลดค่า</button>
+          <button class="btn btn-ghost btn-reset" onclick="clearStoredSettings()" data-i18n="btnClearSettings">⟲ ล้าง</button>
+          <div class="auto-save-note"><span class="dot"></span><span data-i18n="autoSaveNote">บันทึกอัตโนมัติในเครื่องนี้ — เปิดครั้งหน้าจะจำค่าได้</span></div>
         </div>
       </section>
     </main>
 
-    <footer>
+    <footer data-i18n="footerNote">
       เปิดด้วยเบราว์เซอร์ได้ทุกเครื่อง · ไม่ต้องติดตั้ง
     </footer>
   </div>
@@ -1089,6 +1145,291 @@
   <div id="printArea"><img id="printImg" alt=""></div>
 
   <script>
+    // ===== i18n =====
+    const I18N = {
+      th: {
+        htmlLang: 'th',
+        title: 'เครื่องมือสร้างตราประทับ · Digital Stamp Creator',
+        appName: 'เครื่องมือสร้างตราประทับ',
+        edition: 'v1.7 · Browser Edition',
+        sectionPreview: 'ตัวอย่าง · Preview',
+        sectionSettings: 'ตั้งค่า · Settings',
+        dragHint: '💡 ลากเส้นแบ่ง = ปรับขนาดส่วน · ลากข้อความ = ปรับตำแหน่ง',
+        secTop: 'บน', secMid: 'กลาง', secBot: 'ล่าง',
+        resetSecTitle: 'รีเซ็ตเป็น 39 / 22 / 39',
+        btnSavePng: 'บันทึก PNG',
+        btnCopyPng: 'คัดลอก PNG',
+        btnSaveSvg: 'บันทึก SVG',
+        btnCopySvg: 'คัดลอก SVG',
+        btnPrint: 'พิมพ์',
+        fldHeader: 'ข้อความด้านบน', fldHeaderHint: 'Header',
+        fldDate: 'วันที่', fldDateHint: 'ปี / เดือน / วัน',
+        fldFooter: 'ข้อความด้านล่าง', fldFooterHint: 'Footer',
+        fldShape: 'รูปร่าง', fldShapeHint: '8 แบบ',
+        fldFont: 'แบบอักษร', fldFontHint: '3 ตำแหน่งแยกได้',
+        fldColor: 'สี', fldColorHint: '12 สีพื้นฐาน + กำหนดเอง',
+        fldScale: 'ขนาด', fldScaleHint: 'Scale',
+        rowTop: 'บน', rowMid: 'กลาง', rowBot: 'ล่าง',
+        fontLoaderBtn: '🖥️ โหลดฟอนต์จากเครื่องนี้ (Chrome/Edge)',
+        fontStatusDefault: 'พิมพ์ชื่อฟอนต์ได้ หรือเลือกจาก dropdown',
+        fontStatusUnsupported: '⚠ เบราว์เซอร์นี้ไม่รองรับ — ใช้ Chrome / Edge แทน',
+        fontStatusLoading: 'กำลังโหลด...',
+        fontStatusLoaded: (n) => `✓ โหลด ${n} ฟอนต์จากเครื่องเรียบร้อย — พิมพ์ชื่อในช่องเพื่อค้นหา`,
+        fontStatusDenied: '⚠ ไม่ได้รับอนุญาต — ลองกดอีกครั้งแล้วกด Allow',
+        fontStatusError: (msg) => `⚠ เกิดข้อผิดพลาด: ${msg}`,
+        btnSaveSettings: '↓ บันทึกค่า',
+        btnLoadSettings: '↑ โหลดค่า',
+        btnClearSettings: '⟲ ล้าง',
+        autoSaveNote: 'บันทึกอัตโนมัติในเครื่องนี้ — เปิดครั้งหน้าจะจำค่าได้',
+        footerNote: 'เปิดด้วยเบราว์เซอร์ได้ทุกเครื่อง · ไม่ต้องติดตั้ง',
+        toastResetSec: 'รีเซ็ตสัดส่วนเป็น 39 / 22 / 39',
+        toastSavedPng: 'บันทึกเป็นไฟล์ PNG แล้ว',
+        toastCopiedPng: 'คัดลอกรูปแล้ว — วางใน Word / Excel ได้เลย',
+        toastCopyFail: 'เบราว์เซอร์นี้คัดลอกรูปไม่ได้ ใช้ปุ่มบันทึก PNG แทน',
+        toastSavedSvg: 'บันทึกเป็นไฟล์ SVG แล้ว',
+        toastCopiedSvg: 'คัดลอก SVG markup แล้ว — วางในโปรแกรมแก้ไขเวกเตอร์ได้',
+        toastCopySvgFail: 'คัดลอก SVG ไม่ได้ ใช้ปุ่มบันทึก SVG แทน',
+        toastSavedSettings: 'บันทึกไฟล์ตั้งค่าแล้ว',
+        toastLoadedSettings: 'โหลดการตั้งค่าสำเร็จ',
+        toastBadFile: 'ไฟล์ไม่ถูกต้อง',
+        toastNeedChrome: 'ใช้ Chrome หรือ Edge เพื่อโหลดฟอนต์จากเครื่อง',
+        toastFoundFonts: (n) => `พบ ${n} ฟอนต์ในเครื่อง`,
+        confirmClear: 'ล้างการตั้งค่าที่บันทึกไว้ในเครื่องนี้ และกลับเป็นค่าเริ่มต้น?',
+        titleBold: 'ตัวหนา', titleItalic: 'ตัวเอียง', titleUnderline: 'ขีดเส้นใต้',
+        titleNudgeUp: 'ขยับขึ้น 2%', titleNudgeDown: 'ขยับลง 2%',
+        titleSizeUp: 'ขยาย +5%', titleSizeDown: 'ย่อ −5%',
+        shapeCircle: 'วงกลมสองเส้น',
+        shapeCircleSingle: 'วงกลมเส้นเดียว',
+        shapeSquare: 'สี่เหลี่ยมสองเส้น',
+        shapeSquareSingle: 'สี่เหลี่ยมเส้นเดียว',
+        shapeRounded: 'สี่เหลี่ยมมุมมนสองเส้น',
+        shapeRoundedSingle: 'สี่เหลี่ยมมุมมนเส้นเดียว',
+        shapeOval: 'วงรี',
+        shapeNone: 'ไม่มีเส้นขอบ',
+        colorVermilion: 'ชาด · Vermilion 朱',
+        colorCrimson: 'แดงเข้ม · Crimson',
+        colorOrange: 'ส้มแดง · Orange-Red',
+        colorSepia: 'น้ำตาล · Sepia',
+        colorDarkBrown: 'น้ำตาลเข้ม · Dark Brown',
+        colorInk: 'ดำหมึก · Ink Black',
+        colorCharcoal: 'เทาเข้ม · Charcoal',
+        colorNavy: 'น้ำเงินกรม · Navy',
+        colorTeal: 'น้ำเงินอมเขียว · Teal',
+        colorForest: 'เขียวเข้ม · Forest',
+        colorOlive: 'เขียวมะกอก · Olive',
+        colorPurple: 'ม่วง · Purple'
+      },
+      en: {
+        htmlLang: 'en',
+        title: 'Digital Stamp Creator',
+        appName: 'Digital Stamp Creator',
+        edition: 'v1.7 · Browser Edition',
+        sectionPreview: 'Preview',
+        sectionSettings: 'Settings',
+        dragHint: '💡 Drag dividers = adjust section size · Drag text = reposition',
+        secTop: 'Top', secMid: 'Mid', secBot: 'Bot',
+        resetSecTitle: 'Reset to 39 / 22 / 39',
+        btnSavePng: 'Save PNG',
+        btnCopyPng: 'Copy PNG',
+        btnSaveSvg: 'Save SVG',
+        btnCopySvg: 'Copy SVG',
+        btnPrint: 'Print',
+        fldHeader: 'Top text', fldHeaderHint: 'Header',
+        fldDate: 'Date', fldDateHint: 'Year / Month / Day',
+        fldFooter: 'Bottom text', fldFooterHint: 'Footer',
+        fldShape: 'Shape', fldShapeHint: '8 variants',
+        fldFont: 'Typeface', fldFontHint: '3 positions, independent',
+        fldColor: 'Color', fldColorHint: '12 presets + custom',
+        fldScale: 'Size', fldScaleHint: 'Scale',
+        rowTop: 'Top', rowMid: 'Mid', rowBot: 'Bot',
+        fontLoaderBtn: '🖥️ Load fonts from this device (Chrome/Edge)',
+        fontStatusDefault: 'Type a font name or pick from the dropdown',
+        fontStatusUnsupported: '⚠ Browser not supported — use Chrome / Edge',
+        fontStatusLoading: 'Loading...',
+        fontStatusLoaded: (n) => `✓ Loaded ${n} system fonts — type in the box to search`,
+        fontStatusDenied: '⚠ Permission denied — click again and choose Allow',
+        fontStatusError: (msg) => `⚠ Error: ${msg}`,
+        btnSaveSettings: '↓ Save preset',
+        btnLoadSettings: '↑ Load preset',
+        btnClearSettings: '⟲ Clear',
+        autoSaveNote: 'Auto-saved on this device — opens with previous settings',
+        footerNote: 'Works in any browser · no installation needed',
+        toastResetSec: 'Sections reset to 39 / 22 / 39',
+        toastSavedPng: 'Saved as PNG file',
+        toastCopiedPng: 'Image copied — paste into Word / Excel',
+        toastCopyFail: 'This browser cannot copy images — use Save PNG instead',
+        toastSavedSvg: 'Saved as SVG file',
+        toastCopiedSvg: 'SVG markup copied — paste into a vector editor',
+        toastCopySvgFail: 'Could not copy SVG — use Save SVG instead',
+        toastSavedSettings: 'Preset file saved',
+        toastLoadedSettings: 'Preset loaded successfully',
+        toastBadFile: 'Invalid file',
+        toastNeedChrome: 'Use Chrome or Edge to load fonts from this device',
+        toastFoundFonts: (n) => `Found ${n} fonts on this device`,
+        confirmClear: 'Clear all settings saved on this device and reset to defaults?',
+        titleBold: 'Bold', titleItalic: 'Italic', titleUnderline: 'Underline',
+        titleNudgeUp: 'Move up 2%', titleNudgeDown: 'Move down 2%',
+        titleSizeUp: 'Larger +5%', titleSizeDown: 'Smaller −5%',
+        shapeCircle: 'Double-line circle',
+        shapeCircleSingle: 'Single-line circle',
+        shapeSquare: 'Double-line square',
+        shapeSquareSingle: 'Single-line square',
+        shapeRounded: 'Double-line rounded square',
+        shapeRoundedSingle: 'Single-line rounded square',
+        shapeOval: 'Oval',
+        shapeNone: 'No border',
+        colorVermilion: 'Vermilion 朱',
+        colorCrimson: 'Crimson',
+        colorOrange: 'Orange-Red',
+        colorSepia: 'Sepia',
+        colorDarkBrown: 'Dark Brown',
+        colorInk: 'Ink Black',
+        colorCharcoal: 'Charcoal',
+        colorNavy: 'Navy',
+        colorTeal: 'Teal',
+        colorForest: 'Forest',
+        colorOlive: 'Olive',
+        colorPurple: 'Purple'
+      },
+      ja: {
+        htmlLang: 'ja',
+        title: '電子印鑑メーカー · Digital Stamp Creator',
+        appName: '電子印鑑メーカー',
+        edition: 'v1.7 · Browser Edition',
+        sectionPreview: 'プレビュー',
+        sectionSettings: '設定',
+        dragHint: '💡 区切り線をドラッグ=区分サイズ調整 · 文字をドラッグ=位置調整',
+        secTop: '上', secMid: '中', secBot: '下',
+        resetSecTitle: '39 / 22 / 39 にリセット',
+        btnSavePng: 'PNG保存',
+        btnCopyPng: 'PNGコピー',
+        btnSaveSvg: 'SVG保存',
+        btnCopySvg: 'SVGコピー',
+        btnPrint: '印刷',
+        fldHeader: '上段テキスト', fldHeaderHint: 'Header',
+        fldDate: '日付', fldDateHint: '年 / 月 / 日',
+        fldFooter: '下段テキスト', fldFooterHint: 'Footer',
+        fldShape: '形状', fldShapeHint: '8種類',
+        fldFont: 'フォント', fldFontHint: '3段独立設定',
+        fldColor: '色', fldColorHint: '基本12色 + カスタム',
+        fldScale: 'サイズ', fldScaleHint: 'Scale',
+        rowTop: '上', rowMid: '中', rowBot: '下',
+        fontLoaderBtn: '🖥️ このPCのフォントを読み込む (Chrome/Edge)',
+        fontStatusDefault: 'フォント名を入力または一覧から選択',
+        fontStatusUnsupported: '⚠ このブラウザは非対応 — Chrome / Edgeをご使用ください',
+        fontStatusLoading: '読み込み中...',
+        fontStatusLoaded: (n) => `✓ システムフォント ${n} 件を読み込み完了 — ボックスに入力で検索`,
+        fontStatusDenied: '⚠ 許可されませんでした — もう一度押して「許可」を選択',
+        fontStatusError: (msg) => `⚠ エラー: ${msg}`,
+        btnSaveSettings: '↓ 設定保存',
+        btnLoadSettings: '↑ 設定読込',
+        btnClearSettings: '⟲ クリア',
+        autoSaveNote: 'このPCに自動保存中 — 次回も設定が残ります',
+        footerNote: 'どのブラウザでも動作 · インストール不要',
+        toastResetSec: '区分を 39 / 22 / 39 にリセット',
+        toastSavedPng: 'PNGファイルを保存しました',
+        toastCopiedPng: '画像をコピーしました — Word / Excelに貼り付け可',
+        toastCopyFail: 'このブラウザは画像コピー非対応 — PNG保存をご使用ください',
+        toastSavedSvg: 'SVGファイルを保存しました',
+        toastCopiedSvg: 'SVGマークアップをコピーしました — ベクター編集ソフトに貼付可',
+        toastCopySvgFail: 'SVGコピー失敗 — SVG保存をご使用ください',
+        toastSavedSettings: '設定ファイルを保存しました',
+        toastLoadedSettings: '設定を読み込みました',
+        toastBadFile: 'ファイル形式が正しくありません',
+        toastNeedChrome: 'PCのフォント読込にはChrome / Edgeをご使用ください',
+        toastFoundFonts: (n) => `${n} 件のフォントが見つかりました`,
+        confirmClear: 'このPCに保存された設定をすべて消去して初期値に戻しますか?',
+        titleBold: '太字', titleItalic: '斜体', titleUnderline: '下線',
+        titleNudgeUp: '上に 2% 移動', titleNudgeDown: '下に 2% 移動',
+        titleSizeUp: '拡大 +5%', titleSizeDown: '縮小 −5%',
+        shapeCircle: '二重円',
+        shapeCircleSingle: '一重円',
+        shapeSquare: '二重四角',
+        shapeSquareSingle: '一重四角',
+        shapeRounded: '二重角丸四角',
+        shapeRoundedSingle: '一重角丸四角',
+        shapeOval: '楕円',
+        shapeNone: '枠なし',
+        colorVermilion: '朱 · Vermilion',
+        colorCrimson: '深紅 · Crimson',
+        colorOrange: '朱橙 · Orange-Red',
+        colorSepia: '茶 · Sepia',
+        colorDarkBrown: '焦茶 · Dark Brown',
+        colorInk: '墨黒 · Ink Black',
+        colorCharcoal: '濃灰 · Charcoal',
+        colorNavy: '紺 · Navy',
+        colorTeal: '青緑 · Teal',
+        colorForest: '深緑 · Forest',
+        colorOlive: '橄欖 · Olive',
+        colorPurple: '紫 · Purple'
+      }
+    };
+
+    const LANG_STORAGE_KEY = 'stampCreator.lang';
+
+    function detectInitialLang() {
+      try {
+        const saved = localStorage.getItem(LANG_STORAGE_KEY);
+        if (saved && I18N[saved]) return saved;
+      } catch (e) { /* ignore */ }
+      // Fallback to browser language hint
+      const nav = (navigator.language || 'th').toLowerCase();
+      if (nav.startsWith('ja')) return 'ja';
+      if (nav.startsWith('th')) return 'th';
+      if (nav.startsWith('en')) return 'en';
+      return 'th';
+    }
+
+    let currentLang = detectInitialLang();
+
+    function t(key, ...args) {
+      const dict = I18N[currentLang] || I18N.th;
+      const v = dict[key];
+      if (typeof v === 'function') return v(...args);
+      if (v != null) return v;
+      // Fallback through Thai then English
+      const fb = (I18N.th[key] != null ? I18N.th[key] : I18N.en[key]);
+      if (typeof fb === 'function') return fb(...args);
+      return fb != null ? fb : key;
+    }
+
+    function applyI18n() {
+      const dict = I18N[currentLang] || I18N.th;
+
+      // Update <html lang> and <title>
+      document.documentElement.lang = dict.htmlLang || currentLang;
+      if (dict.title) document.title = dict.title;
+
+      // Text content
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        const v = dict[key];
+        if (typeof v === 'string') el.textContent = v;
+      });
+
+      // Title attribute
+      document.querySelectorAll('[data-i18n-title]').forEach(el => {
+        const key = el.getAttribute('data-i18n-title');
+        const v = dict[key];
+        if (typeof v === 'string') el.setAttribute('title', v);
+      });
+
+      // Active state on language switcher
+      document.querySelectorAll('.lang-btn').forEach(b => {
+        b.classList.toggle('active', b.dataset.lang === currentLang);
+      });
+
+      // Re-render any stateful UI strings
+      if (typeof renderFontStatus === 'function') renderFontStatus();
+    }
+
+    function setLang(lang) {
+      if (!I18N[lang]) return;
+      currentLang = lang;
+      try { localStorage.setItem(LANG_STORAGE_KEY, lang); } catch (e) { /* ignore */ }
+      applyI18n();
+    }
+
     // ===== State =====
     let currentShape = 'circle';
     let currentColor = '#b4383a';
@@ -1228,15 +1569,34 @@
       return `${italic}${weight} ${sizePx}px ${familyStr}`;
     }
 
+    // Font status — kept as state so it re-translates if user switches language
+    let fontStatusState = { kind: 'default', payload: null };
+    function renderFontStatus() {
+      const el = document.getElementById('fontStatus');
+      if (!el) return;
+      const s = fontStatusState;
+      let text;
+      switch (s.kind) {
+        case 'loading':     text = t('fontStatusLoading'); break;
+        case 'loaded':      text = t('fontStatusLoaded', s.payload); break;
+        case 'unsupported': text = t('fontStatusUnsupported'); break;
+        case 'denied':      text = t('fontStatusDenied'); break;
+        case 'error':       text = t('fontStatusError', s.payload); break;
+        default:            text = t('fontStatusDefault');
+      }
+      el.textContent = text;
+    }
+
     async function loadSystemFonts() {
-      const statusEl = document.getElementById('fontStatus');
       if (!('queryLocalFonts' in window)) {
-        statusEl.textContent = '⚠ เบราว์เซอร์นี้ไม่รองรับ — ใช้ Chrome / Edge แทน';
-        showToast('ใช้ Chrome หรือ Edge เพื่อโหลดฟอนต์จากเครื่อง');
+        fontStatusState = { kind: 'unsupported' };
+        renderFontStatus();
+        showToast(t('toastNeedChrome'));
         return;
       }
       try {
-        statusEl.textContent = 'กำลังโหลด...';
+        fontStatusState = { kind: 'loading' };
+        renderFontStatus();
         const fonts = await window.queryLocalFonts();
         const families = [...new Set(fonts.map(f => f.family))].sort((a, b) => a.localeCompare(b, 'th'));
         const datalist = document.getElementById('fontList');
@@ -1247,14 +1607,16 @@
           opt.dataset.system = '1';
           datalist.appendChild(opt);
         });
-        statusEl.textContent = `✓ โหลด ${families.length} ฟอนต์จากเครื่องเรียบร้อย — พิมพ์ชื่อในช่องเพื่อค้นหา`;
-        showToast(`พบ ${families.length} ฟอนต์ในเครื่อง`);
+        fontStatusState = { kind: 'loaded', payload: families.length };
+        renderFontStatus();
+        showToast(t('toastFoundFonts', families.length));
       } catch (err) {
         if (err.name === 'NotAllowedError' || err.name === 'SecurityError') {
-          statusEl.textContent = '⚠ ไม่ได้รับอนุญาต — ลองกดอีกครั้งแล้วกด Allow';
+          fontStatusState = { kind: 'denied' };
         } else {
-          statusEl.textContent = '⚠ เกิดข้อผิดพลาด: ' + err.message;
+          fontStatusState = { kind: 'error', payload: err.message };
         }
+        renderFontStatus();
       }
     }
 
@@ -1562,7 +1924,7 @@
       sections.mid = DEFAULT_SECTIONS.mid;
       sections.bot = DEFAULT_SECTIONS.bot;
       render();
-      showToast('รีเซ็ตสัดส่วนเป็น 39 / 22 / 39');
+      showToast(t('toastResetSec'));
     }
 
     // ===== Divider & text drag on canvas =====
@@ -1662,30 +2024,254 @@
     })();
 
     // ===== Actions =====
+
+    // Sanitize header text into a safe filename stem; allows ASCII word chars + Thai + CJK
+    function safeFilenameStem() {
+      const raw = document.getElementById('headerText').value || '';
+      // Allow letters, digits, underscore in ASCII; Thai range; basic CJK ranges (Hiragana, Katakana, CJK Unified)
+      const cleaned = raw.replace(/[^\w\u0E00-\u0E7F\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF]/g, '_');
+      return cleaned || 'stamp';
+    }
+
     function downloadPNG() {
       render(true); // clean render without UI guides
       const canvas = document.getElementById('stamp');
       const link = document.createElement('a');
-      const header = document.getElementById('headerText').value.replace(/[^\wก-๙]/g, '_') || 'stamp';
-      link.download = `${header}_${Date.now()}.png`;
+      link.download = `${safeFilenameStem()}_${Date.now()}.png`;
       link.href = canvas.toDataURL('image/png');
       link.click();
       render(); // restore display
-      showToast('บันทึกเป็นไฟล์ PNG แล้ว');
+      showToast(t('toastSavedPng'));
     }
 
-    async function copyToClipboard() {
+    async function copyPNG() {
       render(true); // clean render
       const canvas = document.getElementById('stamp');
       canvas.toBlob(async (blob) => {
         try {
           await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
-          showToast('คัดลอกรูปแล้ว — วางใน Word / Excel ได้เลย');
+          showToast(t('toastCopiedPng'));
         } catch (e) {
-          showToast('เบราว์เซอร์นี้คัดลอกรูปไม่ได้ ใช้ปุ่มบันทึก PNG แทน');
+          showToast(t('toastCopyFail'));
         }
         render(); // restore display
       }, 'image/png');
+    }
+
+    // ===== SVG export =====
+    // Mirrors render() geometry but emits SVG markup (vector). Uses canvas ctx
+    // to compute the same fitted text widths/sizes that render() does so the
+    // output matches the on-screen preview exactly.
+    function buildSVG() {
+      const W = 800, H = 800;
+      const header = document.getElementById('headerText').value || '';
+      const footer = document.getElementById('footerText').value || '';
+      const year = document.getElementById('year').value || '';
+      const month = document.getElementById('month').value || '';
+      const day = document.getElementById('day').value || '';
+      const sep = document.getElementById('separator').value;
+      const scale = parseInt(document.getElementById('scale').value);
+
+      const fontTop = getFontFamily(document.getElementById('fontTop').value);
+      const fontMid = getFontFamily(document.getElementById('fontMid').value);
+      const fontBot = getFontFamily(document.getElementById('fontBot').value);
+
+      const sizeMulTop = (parseFloat(document.getElementById('sizeTop').value) || 100) / 100;
+      const sizeMulMid = (parseFloat(document.getElementById('sizeMid').value) || 100) / 100;
+      const sizeMulBot = (parseFloat(document.getElementById('sizeBot').value) || 100) / 100;
+
+      const baseSize = W * 0.78;
+      const size = baseSize * (scale / 100);
+      const cx = W / 2;
+      const cy = H / 2;
+      const borderW = Math.max(4, size * 0.025);
+
+      const contentH = currentShape === 'oval' ? 2 * size * OVAL_RY : size;
+      const contentTop = cy - contentH / 2;
+      const lineY1 = contentTop + sections.top * contentH;
+      const lineY2 = contentTop + (sections.top + sections.mid) * contentH;
+
+      const m = month === '' ? '' : String(parseInt(month) || month).padStart(2, '0');
+      const d = day === '' ? '' : String(parseInt(day) || day).padStart(2, '0');
+      const dateStr = `${year}${sep}${m}${sep}${d}`;
+
+      const isSquareLike = currentShape.startsWith('square') || currentShape.startsWith('rounded');
+      const maxTextW = isSquareLike ? size * 0.78 :
+                       currentShape === 'oval' ? size * 0.85 :
+                       currentShape === 'none' ? size * 0.9 : size * 0.7;
+
+      const baseHeaderFS = size * (isSquareLike ? 0.13 : 0.12);
+      const baseDateFS = size * (isSquareLike ? 0.115 : 0.105);
+      const baseFooterFS = size * (isSquareLike ? 0.13 : 0.12);
+
+      const headerFSraw = Math.min(baseHeaderFS, sections.top * contentH * 0.7) * sizeMulTop;
+      const dateFS = Math.min(baseDateFS, sections.mid * contentH * 0.7) * sizeMulMid;
+      const footerFSraw = Math.min(baseFooterFS, sections.bot * contentH * 0.7) * sizeMulBot;
+
+      const offsetPx = (p) => (yOffset[p] / 100) * size;
+      const headerY = contentTop + (sections.top / 2) * contentH + offsetPx('top');
+      const dateY = contentTop + (sections.top + sections.mid / 2) * contentH + offsetPx('mid');
+      const footerY = contentTop + (sections.top + sections.mid + sections.bot / 2) * contentH + offsetPx('bot');
+
+      // Use canvas ctx to fit text exactly like render() does
+      const canvas = document.getElementById('stamp');
+      const ctx = canvas.getContext('2d');
+
+      function fitFontSize(text, family, fs, maxW, pos) {
+        if (!text) return { fs, width: 0 };
+        ctx.font = fontSpec(pos, fs, family);
+        let cur = fs;
+        while (ctx.measureText(text).width > maxW && cur > 8) {
+          cur *= 0.95;
+          ctx.font = fontSpec(pos, cur, family);
+        }
+        return { fs: cur, width: ctx.measureText(text).width };
+      }
+
+      const headerFit = fitFontSize(header, fontTop, headerFSraw, maxTextW, 'top');
+      ctx.font = fontSpec('mid', dateFS, fontMid);
+      const dateW = ctx.measureText(dateStr).width;
+      const footerFit = fitFontSize(footer, fontBot, footerFSraw, maxTextW, 'bot');
+
+      const stroke = currentColor;
+      const half = size / 2;
+      const cornerR = Math.min(half * 0.28, borderW * 6);
+
+      // XML escape
+      const esc = (s) => String(s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&apos;');
+
+      const parts = [];
+      parts.push(`<?xml version="1.0" encoding="UTF-8" standalone="no"?>`);
+      parts.push(`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">`);
+
+      // Shape borders
+      if (currentShape === 'circle' || currentShape === 'circle-single') {
+        parts.push(`<circle cx="${cx}" cy="${cy}" r="${half}" fill="none" stroke="${stroke}" stroke-width="${borderW}"/>`);
+        if (currentShape === 'circle') {
+          parts.push(`<circle cx="${cx}" cy="${cy}" r="${half - borderW * 1.5}" fill="none" stroke="${stroke}" stroke-width="${Math.max(1, borderW * 0.25)}"/>`);
+        }
+      } else if (currentShape === 'square' || currentShape === 'square-single') {
+        parts.push(`<rect x="${cx - half}" y="${cy - half}" width="${size}" height="${size}" fill="none" stroke="${stroke}" stroke-width="${borderW}"/>`);
+        if (currentShape === 'square') {
+          const pad = borderW * 1.3;
+          parts.push(`<rect x="${cx - half + pad}" y="${cy - half + pad}" width="${size - pad * 2}" height="${size - pad * 2}" fill="none" stroke="${stroke}" stroke-width="${Math.max(1, borderW * 0.25)}"/>`);
+        }
+      } else if (currentShape === 'rounded' || currentShape === 'rounded-single') {
+        parts.push(`<rect x="${cx - half}" y="${cy - half}" width="${size}" height="${size}" rx="${cornerR}" ry="${cornerR}" fill="none" stroke="${stroke}" stroke-width="${borderW}"/>`);
+        if (currentShape === 'rounded') {
+          const pad = borderW * 1.3;
+          const r2 = Math.max(1, cornerR - pad);
+          parts.push(`<rect x="${cx - half + pad}" y="${cy - half + pad}" width="${size - pad * 2}" height="${size - pad * 2}" rx="${r2}" ry="${r2}" fill="none" stroke="${stroke}" stroke-width="${Math.max(1, borderW * 0.25)}"/>`);
+        }
+      } else if (currentShape === 'oval') {
+        const rx = size * OVAL_RX;
+        const ry = size * OVAL_RY;
+        parts.push(`<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="none" stroke="${stroke}" stroke-width="${borderW}"/>`);
+        parts.push(`<ellipse cx="${cx}" cy="${cy}" rx="${rx - borderW * 1.5}" ry="${ry - borderW * 1.5}" fill="none" stroke="${stroke}" stroke-width="${Math.max(1, borderW * 0.25)}"/>`);
+      }
+      // 'none' shape draws no border in exports — matches render(true)
+
+      // Section dividers (skipped for 'none' in exports — matches render(true))
+      if (currentShape === 'circle' || currentShape === 'circle-single') {
+        const dy1a = lineY1 - cy;
+        const dy2a = lineY2 - cy;
+        const dx1 = Math.sqrt(Math.max(0, half * half - dy1a * dy1a)) - borderW * 0.8;
+        const dx2 = Math.sqrt(Math.max(0, half * half - dy2a * dy2a)) - borderW * 0.8;
+        const lw = borderW * 0.45;
+        if (dx1 > 0) parts.push(`<line x1="${cx - dx1}" y1="${lineY1}" x2="${cx + dx1}" y2="${lineY1}" stroke="${stroke}" stroke-width="${lw}"/>`);
+        if (dx2 > 0) parts.push(`<line x1="${cx - dx2}" y1="${lineY2}" x2="${cx + dx2}" y2="${lineY2}" stroke="${stroke}" stroke-width="${lw}"/>`);
+      } else if (currentShape === 'oval') {
+        const rx = size * OVAL_RX;
+        const ry = size * OVAL_RY;
+        const dy1a = lineY1 - cy;
+        const dy2a = lineY2 - cy;
+        const t1 = 1 - (dy1a * dy1a) / (ry * ry);
+        const t2 = 1 - (dy2a * dy2a) / (ry * ry);
+        const dx1 = t1 > 0 ? rx * Math.sqrt(t1) - borderW * 0.8 : 0;
+        const dx2 = t2 > 0 ? rx * Math.sqrt(t2) - borderW * 0.8 : 0;
+        const lw = borderW * 0.45;
+        if (dx1 > 0) parts.push(`<line x1="${cx - dx1}" y1="${lineY1}" x2="${cx + dx1}" y2="${lineY1}" stroke="${stroke}" stroke-width="${lw}"/>`);
+        if (dx2 > 0) parts.push(`<line x1="${cx - dx2}" y1="${lineY2}" x2="${cx + dx2}" y2="${lineY2}" stroke="${stroke}" stroke-width="${lw}"/>`);
+      } else if (currentShape !== 'none') {
+        // square / rounded variants
+        const pad = borderW * 1.5;
+        const dx = half - pad;
+        if (dx > 0) {
+          const lw = borderW * 0.45;
+          parts.push(`<line x1="${cx - dx}" y1="${lineY1}" x2="${cx + dx}" y2="${lineY1}" stroke="${stroke}" stroke-width="${lw}"/>`);
+          parts.push(`<line x1="${cx - dx}" y1="${lineY2}" x2="${cx + dx}" y2="${lineY2}" stroke="${stroke}" stroke-width="${lw}"/>`);
+        }
+      }
+
+      // Text rendering
+      function textEl(text, x, y, fs, family, pos) {
+        if (!text) return '';
+        const s = fontStyle[pos];
+        const weight = s.bold ? 700 : 400;
+        const style = s.italic ? 'italic' : 'normal';
+        return `<text x="${x}" y="${y}" fill="${stroke}" text-anchor="middle" dominant-baseline="central" font-family="${esc(family)}" font-size="${fs}" font-weight="${weight}" font-style="${style}">${esc(text)}</text>`;
+      }
+
+      function underlineEl(text, w, x, y, fs) {
+        if (!text || w <= 0) return '';
+        const ly = y + fs * 0.35;
+        const lw = Math.max(1, fs * 0.06);
+        return `<line x1="${x - w / 2}" y1="${ly}" x2="${x + w / 2}" y2="${ly}" stroke="${stroke}" stroke-width="${lw}"/>`;
+      }
+
+      parts.push(textEl(header, cx, headerY, headerFit.fs, fontTop, 'top'));
+      if (fontStyle.top.underline) parts.push(underlineEl(header, headerFit.width, cx, headerY, headerFit.fs));
+
+      parts.push(textEl(dateStr, cx, dateY, dateFS, fontMid, 'mid'));
+      if (fontStyle.mid.underline) parts.push(underlineEl(dateStr, dateW, cx, dateY, dateFS));
+
+      parts.push(textEl(footer, cx, footerY, footerFit.fs, fontBot, 'bot'));
+      if (fontStyle.bot.underline) parts.push(underlineEl(footer, footerFit.width, cx, footerY, footerFit.fs));
+
+      parts.push(`</svg>`);
+      return parts.join('\n');
+    }
+
+    function downloadSVG() {
+      const svg = buildSVG();
+      const blob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
+      const link = document.createElement('a');
+      link.download = `${safeFilenameStem()}_${Date.now()}.svg`;
+      link.href = URL.createObjectURL(blob);
+      link.click();
+      URL.revokeObjectURL(link.href);
+      showToast(t('toastSavedSvg'));
+    }
+
+    async function copySVG() {
+      const svg = buildSVG();
+      try {
+        // Prefer rich clipboard with both image/svg+xml and text/plain so it
+        // pastes into vector apps as a graphic and into editors as markup.
+        if (navigator.clipboard && window.ClipboardItem) {
+          const items = {
+            'image/svg+xml': new Blob([svg], { type: 'image/svg+xml' }),
+            'text/plain': new Blob([svg], { type: 'text/plain' })
+          };
+          await navigator.clipboard.write([new ClipboardItem(items)]);
+        } else {
+          await navigator.clipboard.writeText(svg);
+        }
+        showToast(t('toastCopiedSvg'));
+      } catch (e) {
+        // Fallback: try plain text only
+        try {
+          await navigator.clipboard.writeText(svg);
+          showToast(t('toastCopiedSvg'));
+        } catch (e2) {
+          showToast(t('toastCopySvgFail'));
+        }
+      }
     }
 
     function printStamp() {
@@ -1704,7 +2290,7 @@
       link.href = URL.createObjectURL(blob);
       link.click();
       URL.revokeObjectURL(link.href);
-      showToast('บันทึกไฟล์ตั้งค่าแล้ว');
+      showToast(t('toastSavedSettings'));
     }
 
     function loadSettings() {
@@ -1732,9 +2318,9 @@
           }
           applySettings(s);
           render();
-          showToast('โหลดการตั้งค่าสำเร็จ');
+          showToast(t('toastLoadedSettings'));
         } catch (err) {
-          showToast('ไฟล์ไม่ถูกต้อง');
+          showToast(t('toastBadFile'));
         }
       };
       reader.readAsText(file);
@@ -1849,7 +2435,7 @@
     }
 
     function clearStoredSettings() {
-      if (!confirm('ล้างการตั้งค่าที่บันทึกไว้ในเครื่องนี้ และกลับเป็นค่าเริ่มต้น?')) return;
+      if (!confirm(t('confirmClear'))) return;
       try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
       location.reload();
     }
@@ -1860,6 +2446,9 @@
       _renderImpl(forExport);
       if (!forExport) autoSave();
     };
+
+    // Apply translations before first render/restore so all UI text is correct
+    applyI18n();
 
     // Restore previous session from localStorage (per-browser, per-device)
     restoreFromLocalStorage();
