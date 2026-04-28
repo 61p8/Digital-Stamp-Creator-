@@ -1,0 +1,1873 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>เครื่องมือสร้างตราประทับ · Digital Stamp Creator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Thai:wght@400;500;600;700&family=Sarabun:wght@300;400;500;600&family=Noto+Serif+JP:wght@400;500;700&family=Prompt:wght@400;500;600&family=Kanit:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f0e4;
+    --paper: #fbf7ec;
+    --card: #fefcf5;
+    --ink: #1a1612;
+    --ink-2: #4a423a;
+    --ink-3: #8a8075;
+    --line: #d9d1bf;
+    --line-2: #ebe4d2;
+    --stamp: #b4383a;
+    --stamp-dark: #8b2a2c;
+    --accent-bg: rgba(180, 56, 58, 0.06);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Sarabun', sans-serif;
+    font-weight: 400;
+    line-height: 1.5;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    letter-spacing: 0.01em;
+  }
+
+  /* subtle paper grain */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      radial-gradient(circle at 20% 20%, rgba(139, 115, 85, 0.04) 0%, transparent 40%),
+      radial-gradient(circle at 80% 70%, rgba(180, 56, 58, 0.03) 0%, transparent 40%);
+    z-index: 0;
+  }
+
+  .app {
+    position: relative;
+    z-index: 1;
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 40px 28px 80px;
+  }
+
+  header {
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 24px;
+    margin-bottom: 32px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .brand-mark {
+    width: 48px;
+    height: 48px;
+    border: 2px solid var(--stamp);
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-family: 'Noto Serif JP', serif;
+    font-weight: 700;
+    font-size: 22px;
+    color: var(--stamp);
+    transform: rotate(-6deg);
+    flex-shrink: 0;
+  }
+
+  h1 {
+    font-family: 'Noto Serif Thai', serif;
+    font-weight: 700;
+    font-size: 28px;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+    color: var(--ink);
+  }
+
+  .subtitle {
+    font-size: 13px;
+    color: var(--ink-3);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-top: 4px;
+    font-weight: 500;
+  }
+
+  .meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 3px;
+    font-size: 12px;
+    color: var(--ink-3);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-family: 'Sarabun', sans-serif;
+    font-weight: 500;
+  }
+
+  .meta-sub {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-transform: none;
+    color: var(--stamp);
+  }
+
+  main {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    gap: 32px;
+    align-items: start;
+  }
+
+  @media (max-width: 880px) {
+    main { grid-template-columns: 1fr; }
+  }
+
+  /* Preview column */
+  .preview-section {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 32px;
+    position: sticky;
+    top: 20px;
+  }
+
+  .section-label {
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    font-weight: 600;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--line-2);
+  }
+
+  .canvas-frame {
+    aspect-ratio: 1;
+    background:
+      repeating-linear-gradient(0deg, transparent 0 39px, rgba(139, 115, 85, 0.04) 39px 40px),
+      repeating-linear-gradient(90deg, transparent 0 39px, rgba(139, 115, 85, 0.04) 39px 40px),
+      var(--paper);
+    border: 1px solid var(--line-2);
+    display: grid;
+    place-items: center;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+
+  canvas {
+    max-width: 100%;
+    max-height: 100%;
+    width: 100%;
+    height: auto;
+    display: block;
+    touch-action: none;
+  }
+
+  .section-hint {
+    font-size: 11px;
+    color: var(--ink-3);
+    text-align: center;
+    margin: 10px 0 6px;
+    font-style: italic;
+    letter-spacing: 0.02em;
+  }
+
+  .section-info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    padding: 8px 12px;
+    margin-bottom: 14px;
+    background: var(--paper);
+    border: 1px solid var(--line-2);
+    border-radius: 2px;
+    font-size: 11px;
+    color: var(--ink-3);
+    letter-spacing: 0.03em;
+  }
+
+  .section-info-item {
+    display: flex;
+    gap: 5px;
+    align-items: baseline;
+    text-transform: uppercase;
+    font-size: 10px;
+    font-weight: 600;
+  }
+
+  .section-info-item b {
+    color: var(--stamp);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    font-size: 12px;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+
+  .section-info-reset {
+    border: 1px solid var(--line);
+    background: var(--card);
+    color: var(--ink-2);
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    cursor: pointer;
+    border-radius: 2px;
+    font-size: 13px;
+    line-height: 1;
+    display: grid;
+    place-items: center;
+    margin-left: 4px;
+    transition: all 0.15s;
+  }
+
+  .section-info-reset:hover {
+    background: var(--accent-bg);
+    border-color: var(--ink-2);
+  }
+
+  .preview-actions {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  .btn {
+    border: 1px solid var(--line);
+    background: var(--card);
+    color: var(--ink);
+    padding: 10px 14px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    border-radius: 2px;
+    letter-spacing: 0.02em;
+  }
+
+  .btn:hover {
+    border-color: var(--ink-2);
+    background: var(--accent-bg);
+  }
+
+  .btn-primary {
+    background: var(--stamp);
+    color: white;
+    border-color: var(--stamp);
+  }
+
+  .btn-primary:hover {
+    background: var(--stamp-dark);
+    border-color: var(--stamp-dark);
+  }
+
+  .btn-ghost {
+    background: transparent;
+    border-color: var(--line);
+    color: var(--ink-2);
+  }
+
+  /* Controls column */
+  .controls-section {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 32px;
+  }
+
+  .field-group {
+    margin-bottom: 22px;
+  }
+
+  .field-group:last-child {
+    margin-bottom: 0;
+  }
+
+  label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+    margin-bottom: 8px;
+  }
+
+  label .hint {
+    font-weight: 400;
+    text-transform: none;
+    color: var(--ink-3);
+    letter-spacing: 0;
+    margin-left: 6px;
+  }
+
+  input[type="text"],
+  input[type="number"],
+  select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    background: var(--paper);
+    color: var(--ink);
+    font-family: inherit;
+    font-size: 15px;
+    border-radius: 2px;
+    transition: border-color 0.15s;
+  }
+
+  input[type="text"]:focus,
+  input[type="number"]:focus,
+  select:focus {
+    outline: none;
+    border-color: var(--stamp);
+    background: var(--card);
+  }
+
+  input[type="number"] {
+    -moz-appearance: textfield;
+    text-align: center;
+  }
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  .date-row {
+    display: grid;
+    grid-template-columns: 1.4fr 0.5fr 1fr 0.5fr 1fr;
+    gap: 6px;
+    align-items: center;
+  }
+
+  .date-row select {
+    padding: 10px 4px;
+    text-align: center;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--stamp);
+  }
+
+  .shape-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 4px;
+    padding: 4px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 2px;
+  }
+
+  .shape-btn {
+    aspect-ratio: 1;
+    border: 1px solid var(--line);
+    background: var(--card);
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    padding: 8px;
+    color: var(--ink-2);
+    transition: all 0.12s;
+    border-radius: 2px;
+  }
+
+  .shape-btn svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  .shape-btn:hover {
+    border-color: var(--ink-2);
+    background: var(--accent-bg);
+  }
+
+  .shape-btn.active {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+  }
+
+  /* Font toolbar — Word-style */
+  .font-rows {
+    display: flex;
+    flex-direction: column;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    padding: 2px 6px;
+  }
+
+  .font-row {
+    display: grid;
+    grid-template-columns: 32px 1fr;
+    gap: 6px;
+    align-items: center;
+    padding: 6px 0;
+    border-bottom: 1px dashed var(--line-2);
+  }
+
+  .font-row:last-child { border-bottom: none; }
+
+  .font-row-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--ink-3);
+    text-transform: uppercase;
+    text-align: right;
+  }
+
+  .font-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+  }
+
+  .font-controls-row {
+    display: flex;
+    gap: 3px;
+    align-items: center;
+  }
+
+  .font-name {
+    flex: 1;
+    min-width: 0;
+    padding: 4px 8px;
+    border: 1px solid var(--line);
+    background: var(--card);
+    color: var(--ink);
+    font-family: inherit;
+    font-size: 12px;
+    border-radius: 2px;
+  }
+  .font-name:focus {
+    outline: none;
+    border-color: var(--stamp);
+  }
+
+  .font-size-wrap {
+    position: relative;
+    width: 48px;
+    flex-shrink: 0;
+  }
+
+  .font-size-wrap input[type="number"] {
+    width: 100%;
+    padding: 4px 14px 4px 6px;
+    border: 1px solid var(--line);
+    background: var(--card);
+    color: var(--ink);
+    font-family: inherit;
+    font-size: 12px;
+    border-radius: 2px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  .font-size-wrap input[type="number"]:focus {
+    outline: none;
+    border-color: var(--stamp);
+  }
+
+  .font-size-unit {
+    position: absolute;
+    right: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 9px;
+    color: var(--ink-3);
+    pointer-events: none;
+    font-weight: 500;
+  }
+
+  .font-row-bottom {
+    justify-content: space-between;
+  }
+
+  .toolbtn-group {
+    display: flex;
+    gap: 2px;
+  }
+
+  .toolbtn-right-cluster {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+  }
+
+  .toolbtn {
+    width: 24px;
+    height: 24px;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--line);
+    background: var(--card);
+    cursor: pointer;
+    border-radius: 2px;
+    font-size: 12px;
+    color: var(--ink-2);
+    transition: all 0.1s;
+    padding: 0;
+    font-family: inherit;
+    line-height: 1;
+  }
+  .toolbtn:hover {
+    background: var(--accent-bg);
+    border-color: var(--ink-2);
+  }
+  .toolbtn.active {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+  }
+  .toolbtn b, .toolbtn i, .toolbtn u {
+    font-size: 11px;
+    line-height: 1;
+  }
+  .toolbtn i { font-family: 'Georgia', serif; }
+  .toolbtn-az {
+    width: 28px;
+    font-size: 11px;
+    font-weight: 500;
+  }
+  .toolbtn-az .az-plus,
+  .toolbtn-az .az-minus {
+    font-size: 8px;
+    margin-left: 1px;
+    vertical-align: super;
+  }
+
+  .font-loader {
+    margin-top: 8px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+
+  .font-loader button {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px dashed var(--line);
+    background: transparent;
+    color: var(--ink-2);
+    font-family: inherit;
+    font-size: 12px;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.15s;
+    letter-spacing: 0.02em;
+  }
+
+  .font-loader button:hover {
+    border-style: solid;
+    border-color: var(--ink-2);
+    background: var(--accent-bg);
+  }
+
+  .font-status {
+    font-size: 11px;
+    color: var(--ink-3);
+    margin-top: 4px;
+    min-height: 14px;
+    letter-spacing: 0.02em;
+  }
+
+  /* Expanded color palette */
+  .color-palette {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 6px;
+    padding: 10px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 2px;
+  }
+
+  .swatch {
+    aspect-ratio: 1;
+    border: 2px solid var(--paper);
+    box-shadow: 0 0 0 1px var(--line);
+    cursor: pointer;
+    transition: transform 0.12s;
+    padding: 0;
+    border-radius: 2px;
+    position: relative;
+  }
+
+  .swatch:hover {
+    transform: scale(1.08);
+    z-index: 2;
+  }
+
+  .swatch.active {
+    box-shadow: 0 0 0 2px var(--ink);
+  }
+
+  .swatch.active::after {
+    content: '✓';
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    color: white;
+    font-size: 12px;
+    font-weight: 700;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+  }
+
+  .color-custom {
+    display: grid;
+    grid-template-columns: 52px 1fr;
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .color-custom input[type="text"] {
+    font-family: 'Courier New', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  input[type="color"] {
+    width: 52px;
+    height: 40px;
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    cursor: pointer;
+    padding: 2px;
+    background: var(--paper);
+  }
+
+  .scale-row {
+    display: grid;
+    grid-template-columns: 32px 1fr 32px 54px;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .scale-btn {
+    width: 32px;
+    height: 32px;
+    border: 1px solid var(--line);
+    background: var(--paper);
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--ink-2);
+    cursor: pointer;
+    border-radius: 2px;
+    display: grid;
+    place-items: center;
+  }
+
+  .scale-btn:hover {
+    border-color: var(--ink-2);
+  }
+
+  .scale-reset {
+    height: 32px;
+    border: 1px solid var(--line);
+    background: var(--paper);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    color: var(--ink-2);
+    cursor: pointer;
+    border-radius: 2px;
+  }
+
+  input[type="range"] {
+    -webkit-appearance: none;
+    height: 2px;
+    background: var(--line);
+    outline: none;
+    border-radius: 1px;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    background: var(--stamp);
+    border-radius: 50%;
+    cursor: pointer;
+  }
+  input[type="range"]::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    background: var(--stamp);
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+  }
+
+  .scale-value {
+    display: inline-block;
+    min-width: 48px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    color: var(--stamp);
+  }
+
+  .settings-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 6px;
+    margin-top: 8px;
+    padding-top: 20px;
+    border-top: 1px dashed var(--line-2);
+  }
+
+  .settings-row .btn {
+    font-size: 11px;
+    padding: 8px 6px;
+    letter-spacing: 0.02em;
+  }
+
+  .settings-row .btn-reset {
+    color: var(--stamp);
+    border-color: var(--line);
+  }
+
+  .settings-row .btn-reset:hover {
+    border-color: var(--stamp);
+    background: var(--accent-bg);
+  }
+
+  .auto-save-note {
+    grid-column: 1 / -1;
+    text-align: center;
+    font-size: 10px;
+    color: var(--ink-3);
+    margin-top: 6px;
+    letter-spacing: 0.02em;
+    font-style: italic;
+  }
+
+  .auto-save-note .dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    background: #4caf50;
+    border-radius: 50%;
+    margin-right: 5px;
+    vertical-align: 1px;
+    box-shadow: 0 0 4px rgba(76, 175, 80, 0.6);
+  }
+
+  .toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--ink);
+    color: var(--paper);
+    padding: 12px 22px;
+    border-radius: 2px;
+    font-size: 14px;
+    font-weight: 500;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s ease;
+    z-index: 100;
+    letter-spacing: 0.02em;
+  }
+
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  footer {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid var(--line-2);
+    font-size: 12px;
+    color: var(--ink-3);
+    text-align: center;
+    letter-spacing: 0.04em;
+  }
+
+  @media print {
+    body > *:not(#printArea) { display: none !important; }
+    #printArea { display: block !important; }
+  }
+
+  #printArea {
+    display: none;
+    padding: 40px;
+    text-align: center;
+  }
+  #printArea img { max-width: 300px; }
+</style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="brand">
+        <div class="brand-mark">印</div>
+        <div>
+          <h1>เครื่องมือสร้างตราประทับ</h1>
+          <div class="subtitle">Digital Stamp Creator · 電子印鑑</div>
+        </div>
+      </div>
+      <div class="meta">
+        <div>v1.7 · Browser Edition</div>
+        <div class="meta-sub">Created by SITTISAK PE DNTH</div>
+      </div>
+    </header>
+
+    <main>
+      <!-- Preview Column -->
+      <section class="preview-section">
+        <div class="section-label">ตัวอย่าง · Preview</div>
+        <div class="canvas-frame">
+          <canvas id="stamp" width="800" height="800"></canvas>
+        </div>
+        <div class="section-hint">💡 ลากเส้นแบ่ง = ปรับขนาดส่วน · ลากข้อความ = ปรับตำแหน่ง</div>
+        <div class="section-info">
+          <span class="section-info-item">บน <b id="secTop">39%</b></span>
+          <span class="section-info-item">กลาง <b id="secMid">22%</b></span>
+          <span class="section-info-item">ล่าง <b id="secBot">39%</b></span>
+          <button class="section-info-reset" onclick="resetSections()" title="รีเซ็ตเป็น 39 / 22 / 39">↺</button>
+        </div>
+        <div class="preview-actions">
+          <button class="btn btn-primary" onclick="downloadPNG()">บันทึก PNG</button>
+          <button class="btn" onclick="copyToClipboard()">คัดลอกรูป</button>
+          <button class="btn btn-ghost" onclick="printStamp()">พิมพ์</button>
+        </div>
+      </section>
+
+      <!-- Controls Column -->
+      <section class="controls-section">
+        <div class="section-label">ตั้งค่า · Settings</div>
+
+        <div class="field-group">
+          <label>ข้อความด้านบน <span class="hint">Header</span></label>
+          <input type="text" id="headerText" value="อนุมัติแล้ว" maxlength="24" oninput="render()">
+        </div>
+
+        <div class="field-group">
+          <label>วันที่ <span class="hint">ปี / เดือน / วัน</span></label>
+          <div class="date-row">
+            <input type="number" id="year" value="2026" min="1" max="9999" oninput="render()">
+            <select id="separator" onchange="render()">
+              <option value="/">/</option>
+              <option value=".">.</option>
+              <option value="-">-</option>
+            </select>
+            <input type="number" id="month" value="4" min="1" max="12" oninput="render()">
+            <select id="separator2" onchange="render()" aria-hidden="true" style="pointer-events:none">
+              <option value="/">/</option>
+            </select>
+            <input type="number" id="day" value="25" min="1" max="31" oninput="render()">
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label>ข้อความด้านล่าง <span class="hint">Footer</span></label>
+          <input type="text" id="footerText" value="แผนกวิศวกรรม" maxlength="24" oninput="render()">
+        </div>
+
+        <div class="field-group">
+          <label>รูปร่าง <span class="hint">8 แบบ</span></label>
+          <div class="shape-grid">
+            <button type="button" class="shape-btn active" data-shape="circle" onclick="setShape('circle')" title="วงกลมสองเส้น">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="0.8"/></svg>
+            </button>
+            <button type="button" class="shape-btn" data-shape="circle-single" onclick="setShape('circle-single')" title="วงกลมเส้นเดียว">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+            </button>
+            <button type="button" class="shape-btn" data-shape="square" onclick="setShape('square')" title="สี่เหลี่ยมสองเส้น">
+              <svg viewBox="0 0 24 24"><rect x="1.5" y="1.5" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="5" y="5" width="14" height="14" fill="none" stroke="currentColor" stroke-width="0.8"/></svg>
+            </button>
+            <button type="button" class="shape-btn" data-shape="square-single" onclick="setShape('square-single')" title="สี่เหลี่ยมเส้นเดียว">
+              <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+            </button>
+            <button type="button" class="shape-btn" data-shape="rounded" onclick="setShape('rounded')" title="สี่เหลี่ยมมุมมนสองเส้น">
+              <svg viewBox="0 0 24 24"><rect x="1.5" y="1.5" width="21" height="21" rx="5" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="5" y="5" width="14" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="0.8"/></svg>
+            </button>
+            <button type="button" class="shape-btn" data-shape="rounded-single" onclick="setShape('rounded-single')" title="สี่เหลี่ยมมุมมนเส้นเดียว">
+              <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+            </button>
+            <button type="button" class="shape-btn" data-shape="oval" onclick="setShape('oval')" title="วงรี">
+              <svg viewBox="0 0 24 24"><ellipse cx="12" cy="12" rx="11" ry="7" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+            </button>
+            <button type="button" class="shape-btn" data-shape="none" onclick="setShape('none')" title="ไม่มีเส้นขอบ">
+              <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="1" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="2 2"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label>แบบอักษร <span class="hint">3 ตำแหน่งแยกได้</span></label>
+          <div class="font-rows">
+            <div class="font-row">
+              <span class="font-row-label">บน</span>
+              <div class="font-controls">
+                <div class="font-controls-row">
+                  <input list="fontList" id="fontTop" value="Noto Serif Thai" oninput="render()" spellcheck="false" class="font-name">
+                  <div class="font-size-wrap">
+                    <input type="number" id="sizeTop" value="100" min="40" max="200" step="5" oninput="render()">
+                    <span class="font-size-unit">%</span>
+                  </div>
+                </div>
+                <div class="font-controls-row font-row-bottom">
+                  <div class="toolbtn-group">
+                    <button type="button" class="toolbtn active" data-pos="top" data-style="bold" title="ตัวหนา"><b>B</b></button>
+                    <button type="button" class="toolbtn" data-pos="top" data-style="italic" title="ตัวเอียง"><i>I</i></button>
+                    <button type="button" class="toolbtn" data-pos="top" data-style="underline" title="ขีดเส้นใต้"><u>U</u></button>
+                  </div>
+                  <div class="toolbtn-right-cluster">
+                    <div class="toolbtn-group">
+                      <button type="button" class="toolbtn" data-pos="top" data-offset="-2" title="ขยับขึ้น 2%">↑</button>
+                      <button type="button" class="toolbtn" data-pos="top" data-offset="2" title="ขยับลง 2%">↓</button>
+                    </div>
+                    <div class="toolbtn-group">
+                      <button type="button" class="toolbtn toolbtn-az" data-pos="top" data-size="5" title="ขยาย +5%">A<span class="az-plus">+</span></button>
+                      <button type="button" class="toolbtn toolbtn-az" data-pos="top" data-size="-5" title="ย่อ −5%">A<span class="az-minus">−</span></button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="font-row">
+              <span class="font-row-label">กลาง</span>
+              <div class="font-controls">
+                <div class="font-controls-row">
+                  <input list="fontList" id="fontMid" value="Sarabun" oninput="render()" spellcheck="false" class="font-name">
+                  <div class="font-size-wrap">
+                    <input type="number" id="sizeMid" value="100" min="40" max="200" step="5" oninput="render()">
+                    <span class="font-size-unit">%</span>
+                  </div>
+                </div>
+                <div class="font-controls-row font-row-bottom">
+                  <div class="toolbtn-group">
+                    <button type="button" class="toolbtn" data-pos="mid" data-style="bold" title="ตัวหนา"><b>B</b></button>
+                    <button type="button" class="toolbtn" data-pos="mid" data-style="italic" title="ตัวเอียง"><i>I</i></button>
+                    <button type="button" class="toolbtn" data-pos="mid" data-style="underline" title="ขีดเส้นใต้"><u>U</u></button>
+                  </div>
+                  <div class="toolbtn-right-cluster">
+                    <div class="toolbtn-group">
+                      <button type="button" class="toolbtn" data-pos="mid" data-offset="-2" title="ขยับขึ้น 2%">↑</button>
+                      <button type="button" class="toolbtn" data-pos="mid" data-offset="2" title="ขยับลง 2%">↓</button>
+                    </div>
+                    <div class="toolbtn-group">
+                      <button type="button" class="toolbtn toolbtn-az" data-pos="mid" data-size="5" title="ขยาย +5%">A<span class="az-plus">+</span></button>
+                      <button type="button" class="toolbtn toolbtn-az" data-pos="mid" data-size="-5" title="ย่อ −5%">A<span class="az-minus">−</span></button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="font-row">
+              <span class="font-row-label">ล่าง</span>
+              <div class="font-controls">
+                <div class="font-controls-row">
+                  <input list="fontList" id="fontBot" value="Noto Serif Thai" oninput="render()" spellcheck="false" class="font-name">
+                  <div class="font-size-wrap">
+                    <input type="number" id="sizeBot" value="100" min="40" max="200" step="5" oninput="render()">
+                    <span class="font-size-unit">%</span>
+                  </div>
+                </div>
+                <div class="font-controls-row font-row-bottom">
+                  <div class="toolbtn-group">
+                    <button type="button" class="toolbtn active" data-pos="bot" data-style="bold" title="ตัวหนา"><b>B</b></button>
+                    <button type="button" class="toolbtn" data-pos="bot" data-style="italic" title="ตัวเอียง"><i>I</i></button>
+                    <button type="button" class="toolbtn" data-pos="bot" data-style="underline" title="ขีดเส้นใต้"><u>U</u></button>
+                  </div>
+                  <div class="toolbtn-right-cluster">
+                    <div class="toolbtn-group">
+                      <button type="button" class="toolbtn" data-pos="bot" data-offset="-2" title="ขยับขึ้น 2%">↑</button>
+                      <button type="button" class="toolbtn" data-pos="bot" data-offset="2" title="ขยับลง 2%">↓</button>
+                    </div>
+                    <div class="toolbtn-group">
+                      <button type="button" class="toolbtn toolbtn-az" data-pos="bot" data-size="5" title="ขยาย +5%">A<span class="az-plus">+</span></button>
+                      <button type="button" class="toolbtn toolbtn-az" data-pos="bot" data-size="-5" title="ย่อ −5%">A<span class="az-minus">−</span></button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="font-loader">
+            <button type="button" onclick="loadSystemFonts()">🖥️ โหลดฟอนต์จากเครื่องนี้ (Chrome/Edge)</button>
+            <div id="fontStatus" class="font-status">พิมพ์ชื่อฟอนต์ได้ หรือเลือกจาก dropdown</div>
+          </div>
+          <datalist id="fontList">
+            <option value="Noto Serif Thai">
+            <option value="Sarabun">
+            <option value="Kanit">
+            <option value="Prompt">
+            <option value="Noto Sans Thai">
+            <option value="Noto Serif JP">
+            <option value="serif">
+            <option value="sans-serif">
+            <option value="Arial">
+            <option value="Tahoma">
+            <option value="Times New Roman">
+            <option value="Georgia">
+            <option value="Courier New">
+          </datalist>
+        </div>
+
+        <div class="field-group">
+          <label>สี <span class="hint">12 สีพื้นฐาน + กำหนดเอง</span></label>
+          <div class="color-palette" id="colorPalette">
+            <button class="swatch active" style="background:#b4383a" data-color="#b4383a" onclick="setColor('#b4383a')" title="ชาด · Vermilion 朱"></button>
+            <button class="swatch" style="background:#8b1a1a" data-color="#8b1a1a" onclick="setColor('#8b1a1a')" title="แดงเข้ม · Crimson"></button>
+            <button class="swatch" style="background:#d45a2e" data-color="#d45a2e" onclick="setColor('#d45a2e')" title="ส้มแดง · Orange-Red"></button>
+            <button class="swatch" style="background:#8b5a2b" data-color="#8b5a2b" onclick="setColor('#8b5a2b')" title="น้ำตาล · Sepia"></button>
+            <button class="swatch" style="background:#5c3a21" data-color="#5c3a21" onclick="setColor('#5c3a21')" title="น้ำตาลเข้ม · Dark Brown"></button>
+            <button class="swatch" style="background:#1a1612" data-color="#1a1612" onclick="setColor('#1a1612')" title="ดำหมึก · Ink Black"></button>
+            <button class="swatch" style="background:#4a4a4a" data-color="#4a4a4a" onclick="setColor('#4a4a4a')" title="เทาเข้ม · Charcoal"></button>
+            <button class="swatch" style="background:#1e4a8a" data-color="#1e4a8a" onclick="setColor('#1e4a8a')" title="น้ำเงินกรม · Navy"></button>
+            <button class="swatch" style="background:#0a6e8e" data-color="#0a6e8e" onclick="setColor('#0a6e8e')" title="น้ำเงินอมเขียว · Teal"></button>
+            <button class="swatch" style="background:#2d5f3f" data-color="#2d5f3f" onclick="setColor('#2d5f3f')" title="เขียวเข้ม · Forest"></button>
+            <button class="swatch" style="background:#556b2f" data-color="#556b2f" onclick="setColor('#556b2f')" title="เขียวมะกอก · Olive"></button>
+            <button class="swatch" style="background:#5b2c6e" data-color="#5b2c6e" onclick="setColor('#5b2c6e')" title="ม่วง · Purple"></button>
+          </div>
+          <div class="color-custom">
+            <input type="color" id="color" value="#b4383a" oninput="syncColorFromPicker(this.value)">
+            <input type="text" id="colorHex" value="#B4383A" placeholder="#RRGGBB" maxlength="7" oninput="syncColorFromHex(this.value)">
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label>ขนาด <span class="hint">Scale <span id="scaleValue" class="scale-value">100%</span></span></label>
+          <div class="scale-row">
+            <button class="scale-btn" onclick="changeScale(-5)">−</button>
+            <input type="range" id="scale" min="40" max="150" value="100" oninput="render()">
+            <button class="scale-btn" onclick="changeScale(5)">+</button>
+            <button class="scale-reset" onclick="resetScale()">100%</button>
+          </div>
+        </div>
+
+        <div class="settings-row">
+          <button class="btn btn-ghost" onclick="saveSettings()">↓ บันทึกค่า</button>
+          <button class="btn btn-ghost" onclick="loadSettings()">↑ โหลดค่า</button>
+          <button class="btn btn-ghost btn-reset" onclick="clearStoredSettings()">⟲ ล้าง</button>
+          <div class="auto-save-note"><span class="dot"></span>บันทึกอัตโนมัติในเครื่องนี้ — เปิดครั้งหน้าจะจำค่าได้</div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      เปิดด้วยเบราว์เซอร์ได้ทุกเครื่อง · ไม่ต้องติดตั้ง
+    </footer>
+  </div>
+
+  <input type="file" id="fileInput" accept=".json" style="display:none">
+  <div id="toast" class="toast"></div>
+  <div id="printArea"><img id="printImg" alt=""></div>
+
+  <script>
+    // ===== State =====
+    let currentShape = 'circle';
+    let currentColor = '#b4383a';
+    const fontStyle = {
+      top: { bold: true, italic: false, underline: false },
+      mid: { bold: false, italic: false, underline: false },
+      bot: { bold: true, italic: false, underline: false }
+    };
+
+    // Section proportions (sum to 1.0). Default: top ~39%, mid ~22%, bot ~39%
+    const sections = { top: 0.39, mid: 0.22, bot: 0.39 };
+    const DEFAULT_SECTIONS = { top: 0.39, mid: 0.22, bot: 0.39 };
+    const MIN_SECTION = 0.08;
+
+    // Per-row vertical offset in % of stamp size (±)
+    const yOffset = { top: 0, mid: 0, bot: 0 };
+
+    // Drag state for divider dragging on preview
+    let dragState = null; // null | 'upper' | 'lower'
+    let hitTestCache = null; // { top, contentH, lineY1, lineY2 }
+
+    // roundRect polyfill for older browsers
+    if (!CanvasRenderingContext2D.prototype.roundRect) {
+      CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
+        r = Math.max(0, Math.min(r, Math.min(w, h) / 2));
+        this.moveTo(x + r, y);
+        this.arcTo(x + w, y, x + w, y + h, r);
+        this.arcTo(x + w, y + h, x, y + h, r);
+        this.arcTo(x, y + h, x, y, r);
+        this.arcTo(x, y, x + w, y, r);
+        this.closePath();
+      };
+    }
+
+    // ===== Toast =====
+    function showToast(msg) {
+      const el = document.getElementById('toast');
+      el.textContent = msg;
+      el.classList.add('show');
+      clearTimeout(el._t);
+      el._t = setTimeout(() => el.classList.remove('show'), 2200);
+    }
+
+    // ===== Shape =====
+    function setShape(shape) {
+      currentShape = shape;
+      document.querySelectorAll('[data-shape]').forEach(b => {
+        b.classList.toggle('active', b.dataset.shape === shape);
+      });
+      render();
+    }
+
+    // ===== Color =====
+    function setColor(hex) {
+      currentColor = hex.toLowerCase();
+      document.getElementById('color').value = currentColor;
+      document.getElementById('colorHex').value = hex.toUpperCase();
+      document.querySelectorAll('.swatch').forEach(b => {
+        b.classList.toggle('active', b.dataset.color.toLowerCase() === currentColor);
+      });
+      render();
+    }
+
+    function syncColorFromPicker(hex) {
+      currentColor = hex.toLowerCase();
+      document.getElementById('colorHex').value = hex.toUpperCase();
+      document.querySelectorAll('.swatch').forEach(b => {
+        b.classList.toggle('active', b.dataset.color.toLowerCase() === currentColor);
+      });
+      render();
+    }
+
+    function syncColorFromHex(raw) {
+      let hex = raw.trim();
+      if (!hex.startsWith('#')) hex = '#' + hex;
+      if (/^#[0-9a-fA-F]{6}$/.test(hex)) {
+        currentColor = hex.toLowerCase();
+        document.getElementById('color').value = currentColor;
+        document.querySelectorAll('.swatch').forEach(b => {
+          b.classList.toggle('active', b.dataset.color.toLowerCase() === currentColor);
+        });
+        render();
+      }
+    }
+
+    // ===== Font style toolbar events =====
+    document.addEventListener('DOMContentLoaded', () => {
+      // Already handled below at init
+    });
+
+    // Bind B/I/U toggles and A+/A- size buttons
+    document.querySelectorAll('[data-style]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const pos = btn.dataset.pos;
+        const style = btn.dataset.style;
+        fontStyle[pos][style] = !fontStyle[pos][style];
+        btn.classList.toggle('active', fontStyle[pos][style]);
+        render();
+      });
+    });
+
+    document.querySelectorAll('[data-size]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const pos = btn.dataset.pos;
+        const delta = parseInt(btn.dataset.size);
+        const cap = pos.charAt(0).toUpperCase() + pos.slice(1);
+        const input = document.getElementById('size' + cap);
+        input.value = Math.max(40, Math.min(200, parseInt(input.value) + delta));
+        render();
+      });
+    });
+
+    // Vertical position nudge buttons (↑ / ↓) — shift text row within its section
+    document.querySelectorAll('[data-offset]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const pos = btn.dataset.pos;
+        const delta = parseInt(btn.dataset.offset);
+        yOffset[pos] = Math.max(-15, Math.min(15, yOffset[pos] + delta));
+        render();
+      });
+    });
+
+    // ===== Fonts =====
+    function getFontFamily(fontName) {
+      if (!fontName || !fontName.trim()) return 'sans-serif';
+      const clean = fontName.trim();
+      if (clean.includes(' ') && !clean.startsWith('"')) {
+        return `"${clean}", 'Noto Serif Thai', serif`;
+      }
+      return `${clean}, 'Noto Serif Thai', serif`;
+    }
+
+    function fontSpec(pos, sizePx, familyStr) {
+      const s = fontStyle[pos];
+      const weight = s.bold ? 700 : 400;
+      const italic = s.italic ? 'italic ' : '';
+      return `${italic}${weight} ${sizePx}px ${familyStr}`;
+    }
+
+    async function loadSystemFonts() {
+      const statusEl = document.getElementById('fontStatus');
+      if (!('queryLocalFonts' in window)) {
+        statusEl.textContent = '⚠ เบราว์เซอร์นี้ไม่รองรับ — ใช้ Chrome / Edge แทน';
+        showToast('ใช้ Chrome หรือ Edge เพื่อโหลดฟอนต์จากเครื่อง');
+        return;
+      }
+      try {
+        statusEl.textContent = 'กำลังโหลด...';
+        const fonts = await window.queryLocalFonts();
+        const families = [...new Set(fonts.map(f => f.family))].sort((a, b) => a.localeCompare(b, 'th'));
+        const datalist = document.getElementById('fontList');
+        datalist.querySelectorAll('option[data-system]').forEach(o => o.remove());
+        families.forEach(family => {
+          const opt = document.createElement('option');
+          opt.value = family;
+          opt.dataset.system = '1';
+          datalist.appendChild(opt);
+        });
+        statusEl.textContent = `✓ โหลด ${families.length} ฟอนต์จากเครื่องเรียบร้อย — พิมพ์ชื่อในช่องเพื่อค้นหา`;
+        showToast(`พบ ${families.length} ฟอนต์ในเครื่อง`);
+      } catch (err) {
+        if (err.name === 'NotAllowedError' || err.name === 'SecurityError') {
+          statusEl.textContent = '⚠ ไม่ได้รับอนุญาต — ลองกดอีกครั้งแล้วกด Allow';
+        } else {
+          statusEl.textContent = '⚠ เกิดข้อผิดพลาด: ' + err.message;
+        }
+      }
+    }
+
+    // ===== Scale =====
+    function changeScale(delta) {
+      const el = document.getElementById('scale');
+      el.value = Math.max(40, Math.min(150, parseInt(el.value) + delta));
+      render();
+    }
+
+    function resetScale() {
+      document.getElementById('scale').value = 100;
+      render();
+    }
+
+    document.getElementById('separator').addEventListener('change', (e) => {
+      const sep2 = document.getElementById('separator2');
+      sep2.innerHTML = '';
+      const opt = document.createElement('option');
+      opt.value = e.target.value;
+      opt.textContent = e.target.value;
+      sep2.appendChild(opt);
+    });
+
+    // ===== Shape drawing helpers =====
+    const OVAL_RX = 0.55, OVAL_RY = 0.42;
+
+    function drawShapeBorder(ctx, shape, cx, cy, size, borderW) {
+      if (shape === 'none') return;
+      const half = size / 2;
+      const cornerR = Math.min(half * 0.28, borderW * 6);
+
+      ctx.save();
+      ctx.lineWidth = borderW;
+
+      if (shape === 'circle' || shape === 'circle-single') {
+        ctx.beginPath();
+        ctx.arc(cx, cy, half, 0, Math.PI * 2);
+        ctx.stroke();
+        if (shape === 'circle') {
+          ctx.lineWidth = Math.max(1, borderW * 0.25);
+          ctx.beginPath();
+          ctx.arc(cx, cy, half - borderW * 1.5, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+      } else if (shape === 'square' || shape === 'square-single') {
+        ctx.strokeRect(cx - half, cy - half, size, size);
+        if (shape === 'square') {
+          ctx.lineWidth = Math.max(1, borderW * 0.25);
+          const pad = borderW * 1.3;
+          ctx.strokeRect(cx - half + pad, cy - half + pad, size - pad * 2, size - pad * 2);
+        }
+      } else if (shape === 'rounded' || shape === 'rounded-single') {
+        ctx.beginPath();
+        ctx.roundRect(cx - half, cy - half, size, size, cornerR);
+        ctx.stroke();
+        if (shape === 'rounded') {
+          ctx.lineWidth = Math.max(1, borderW * 0.25);
+          const pad = borderW * 1.3;
+          ctx.beginPath();
+          ctx.roundRect(cx - half + pad, cy - half + pad, size - pad * 2, size - pad * 2, Math.max(1, cornerR - pad));
+          ctx.stroke();
+        }
+      } else if (shape === 'oval') {
+        const rx = size * OVAL_RX;
+        const ry = size * OVAL_RY;
+        ctx.beginPath();
+        ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.lineWidth = Math.max(1, borderW * 0.25);
+        ctx.beginPath();
+        ctx.ellipse(cx, cy, rx - borderW * 1.5, ry - borderW * 1.5, 0, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    function drawShapeDividers(ctx, shape, cx, cy, size, borderW, lineY1, lineY2, forExport) {
+      if (shape === 'none') {
+        // Show faint dashed guides in live view only — not in exports
+        if (!forExport) {
+          ctx.save();
+          ctx.strokeStyle = '#999';
+          ctx.lineWidth = 1.5;
+          ctx.setLineDash([6, 5]);
+          ctx.globalAlpha = 0.35;
+          const halfW = size * 0.45;
+          ctx.beginPath();
+          ctx.moveTo(cx - halfW, lineY1);
+          ctx.lineTo(cx + halfW, lineY1);
+          ctx.moveTo(cx - halfW, lineY2);
+          ctx.lineTo(cx + halfW, lineY2);
+          ctx.stroke();
+          ctx.restore();
+        }
+        return;
+      }
+
+      const half = size / 2;
+      let dx;
+      if (shape === 'circle' || shape === 'circle-single') {
+        const dy1 = Math.max(Math.abs(lineY1 - cy), Math.abs(lineY2 - cy));
+        // Use max |dy| for symmetric look even if not symmetric
+        const dy1a = lineY1 - cy;
+        const dy2a = lineY2 - cy;
+        const dx1 = Math.sqrt(Math.max(0, half * half - dy1a * dy1a)) - borderW * 0.8;
+        const dx2 = Math.sqrt(Math.max(0, half * half - dy2a * dy2a)) - borderW * 0.8;
+        ctx.save();
+        ctx.lineWidth = borderW * 0.45;
+        if (dx1 > 0) {
+          ctx.beginPath();
+          ctx.moveTo(cx - dx1, lineY1);
+          ctx.lineTo(cx + dx1, lineY1);
+          ctx.stroke();
+        }
+        if (dx2 > 0) {
+          ctx.beginPath();
+          ctx.moveTo(cx - dx2, lineY2);
+          ctx.lineTo(cx + dx2, lineY2);
+          ctx.stroke();
+        }
+        ctx.restore();
+        return;
+      } else if (shape === 'oval') {
+        const rx = size * OVAL_RX;
+        const ry = size * OVAL_RY;
+        const dy1a = lineY1 - cy;
+        const dy2a = lineY2 - cy;
+        const t1 = 1 - (dy1a * dy1a) / (ry * ry);
+        const t2 = 1 - (dy2a * dy2a) / (ry * ry);
+        const dx1 = t1 > 0 ? rx * Math.sqrt(t1) - borderW * 0.8 : 0;
+        const dx2 = t2 > 0 ? rx * Math.sqrt(t2) - borderW * 0.8 : 0;
+        ctx.save();
+        ctx.lineWidth = borderW * 0.45;
+        if (dx1 > 0) {
+          ctx.beginPath();
+          ctx.moveTo(cx - dx1, lineY1);
+          ctx.lineTo(cx + dx1, lineY1);
+          ctx.stroke();
+        }
+        if (dx2 > 0) {
+          ctx.beginPath();
+          ctx.moveTo(cx - dx2, lineY2);
+          ctx.lineTo(cx + dx2, lineY2);
+          ctx.stroke();
+        }
+        ctx.restore();
+        return;
+      } else {
+        // square variants
+        const pad = borderW * 1.5;
+        dx = half - pad;
+      }
+
+      if (dx <= 0) return;
+      ctx.save();
+      ctx.lineWidth = borderW * 0.45;
+      ctx.beginPath();
+      ctx.moveTo(cx - dx, lineY1);
+      ctx.lineTo(cx + dx, lineY1);
+      ctx.moveTo(cx - dx, lineY2);
+      ctx.lineTo(cx + dx, lineY2);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function drawUnderline(ctx, text, cx, y, fontSize) {
+      if (!text) return;
+      const w = ctx.measureText(text).width;
+      ctx.save();
+      ctx.lineWidth = Math.max(1, fontSize * 0.06);
+      ctx.beginPath();
+      const ly = y + fontSize * 0.35;
+      ctx.moveTo(cx - w / 2, ly);
+      ctx.lineTo(cx + w / 2, ly);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function fitText(ctx, text, maxW) {
+      if (!text) return;
+      const match = ctx.font.match(/^(italic\s+)?(\d+)\s+(\d+(?:\.\d+)?)px\s+(.+)$/);
+      if (!match) return;
+      let [, italic, weight, sizeStr, family] = match;
+      italic = italic || '';
+      let size = parseFloat(sizeStr);
+      while (ctx.measureText(text).width > maxW && size > 8) {
+        size *= 0.95;
+        ctx.font = `${italic}${weight} ${size}px ${family}`;
+      }
+    }
+
+    // ===== Render =====
+    function render(forExport) {
+      const canvas = document.getElementById('stamp');
+      const ctx = canvas.getContext('2d');
+      const W = canvas.width;
+      const H = canvas.height;
+
+      ctx.clearRect(0, 0, W, H);
+
+      const header = document.getElementById('headerText').value || '';
+      const footer = document.getElementById('footerText').value || '';
+      const year = document.getElementById('year').value || '';
+      const month = document.getElementById('month').value || '';
+      const day = document.getElementById('day').value || '';
+      const sep = document.getElementById('separator').value;
+      const scale = parseInt(document.getElementById('scale').value);
+
+      const fontTop = getFontFamily(document.getElementById('fontTop').value);
+      const fontMid = getFontFamily(document.getElementById('fontMid').value);
+      const fontBot = getFontFamily(document.getElementById('fontBot').value);
+
+      const sizeMulTop = (parseFloat(document.getElementById('sizeTop').value) || 100) / 100;
+      const sizeMulMid = (parseFloat(document.getElementById('sizeMid').value) || 100) / 100;
+      const sizeMulBot = (parseFloat(document.getElementById('sizeBot').value) || 100) / 100;
+
+      document.getElementById('scaleValue').textContent = scale + '%';
+
+      const baseSize = W * 0.78;
+      const size = baseSize * (scale / 100);
+      const cx = W / 2;
+      const cy = H / 2;
+
+      ctx.strokeStyle = currentColor;
+      ctx.fillStyle = currentColor;
+
+      const borderW = Math.max(4, size * 0.025);
+
+      // Content height for section layout: oval uses its vertical diameter, others use size
+      const contentH = currentShape === 'oval' ? 2 * size * OVAL_RY : size;
+      const contentTop = cy - contentH / 2;
+
+      const lineY1 = contentTop + sections.top * contentH;
+      const lineY2 = contentTop + (sections.top + sections.mid) * contentH;
+
+      // Cache for hit testing
+      hitTestCache = { top: contentTop, contentH, lineY1, lineY2, sizePx: size };
+
+      // Date string
+      const m = month === '' ? '' : String(parseInt(month) || month).padStart(2, '0');
+      const d = day === '' ? '' : String(parseInt(day) || day).padStart(2, '0');
+      const dateStr = `${year}${sep}${m}${sep}${d}`;
+
+      // Shape border + dividers
+      drawShapeBorder(ctx, currentShape, cx, cy, size, borderW);
+      drawShapeDividers(ctx, currentShape, cx, cy, size, borderW, lineY1, lineY2, forExport);
+
+      // Text positions: center of each section + yOffset
+      const offsetPx = (p) => (yOffset[p] / 100) * size;
+      let headerY = contentTop + (sections.top / 2) * contentH + offsetPx('top');
+      let dateY = contentTop + (sections.top + sections.mid / 2) * contentH + offsetPx('mid');
+      let footerY = contentTop + (sections.top + sections.mid + sections.bot / 2) * contentH + offsetPx('bot');
+
+      const isSquareLike = currentShape.startsWith('square') || currentShape.startsWith('rounded');
+      const maxTextW = isSquareLike ? size * 0.78 :
+                       currentShape === 'oval' ? size * 0.85 :
+                       currentShape === 'none' ? size * 0.9 : size * 0.7;
+
+      // Font sizes — soft-capped by section height so text doesn't overflow when section shrinks
+      const baseHeaderFS = size * (isSquareLike ? 0.13 : 0.12);
+      const baseDateFS = size * (isSquareLike ? 0.115 : 0.105);
+      const baseFooterFS = size * (isSquareLike ? 0.13 : 0.12);
+
+      const headerFS = Math.min(baseHeaderFS, sections.top * contentH * 0.7) * sizeMulTop;
+      const dateFS = Math.min(baseDateFS, sections.mid * contentH * 0.7) * sizeMulMid;
+      const footerFS = Math.min(baseFooterFS, sections.bot * contentH * 0.7) * sizeMulBot;
+
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+
+      // Header
+      ctx.font = fontSpec('top', headerFS, fontTop);
+      fitText(ctx, header, maxTextW);
+      ctx.fillText(header, cx, headerY);
+      if (fontStyle.top.underline) drawUnderline(ctx, header, cx, headerY, headerFS);
+
+      // Date
+      ctx.font = fontSpec('mid', dateFS, fontMid);
+      ctx.fillText(dateStr, cx, dateY);
+      if (fontStyle.mid.underline) drawUnderline(ctx, dateStr, cx, dateY, dateFS);
+
+      // Footer
+      ctx.font = fontSpec('bot', footerFS, fontBot);
+      fitText(ctx, footer, maxTextW);
+      ctx.fillText(footer, cx, footerY);
+      if (fontStyle.bot.underline) drawUnderline(ctx, footer, cx, footerY, footerFS);
+
+      // Update section display
+      updateSectionDisplay();
+    }
+
+    function updateSectionDisplay() {
+      const pct = (v) => Math.round(v * 100) + '%';
+      const topEl = document.getElementById('secTop');
+      const midEl = document.getElementById('secMid');
+      const botEl = document.getElementById('secBot');
+      if (topEl) topEl.textContent = pct(sections.top);
+      if (midEl) midEl.textContent = pct(sections.mid);
+      if (botEl) botEl.textContent = pct(sections.bot);
+    }
+
+    function resetSections() {
+      sections.top = DEFAULT_SECTIONS.top;
+      sections.mid = DEFAULT_SECTIONS.mid;
+      sections.bot = DEFAULT_SECTIONS.bot;
+      render();
+      showToast('รีเซ็ตสัดส่วนเป็น 39 / 22 / 39');
+    }
+
+    // ===== Divider & text drag on canvas =====
+    (function setupDrag() {
+      const canvas = document.getElementById('stamp');
+      let dragStartY = 0;
+      let dragStartOffset = 0;
+
+      function getCanvasY(e) {
+        const rect = canvas.getBoundingClientRect();
+        return (e.clientY - rect.top) * (canvas.height / rect.height);
+      }
+
+      function hitTest(y) {
+        if (!hitTestCache) return null;
+        const { top, contentH, lineY1, lineY2 } = hitTestCache;
+        const threshold = canvas.height * 0.025; // ~20px — dividers first
+        if (Math.abs(y - lineY1) < threshold) return 'upper';
+        if (Math.abs(y - lineY2) < threshold) return 'lower';
+        // Text zones (broader). Allow a slight overflow margin so drag still works
+        // if text has been offset near section boundary
+        const margin = canvas.height * 0.05;
+        const bottom = top + contentH;
+        if (y >= top - margin && y < lineY1) return 'text-top';
+        if (y >= lineY1 && y < lineY2) return 'text-mid';
+        if (y >= lineY2 && y <= bottom + margin) return 'text-bot';
+        return null;
+      }
+
+      function cursorFor(hit) {
+        if (hit === 'upper' || hit === 'lower') return 'ns-resize';
+        if (hit && hit.startsWith('text-')) return 'grab';
+        return 'default';
+      }
+
+      canvas.addEventListener('pointerdown', (e) => {
+        const y = getCanvasY(e);
+        const hit = hitTest(y);
+        if (!hit) return;
+        dragState = hit;
+        dragStartY = y;
+        if (hit.startsWith('text-')) {
+          const pos = hit.split('-')[1];
+          dragStartOffset = yOffset[pos];
+          canvas.style.cursor = 'grabbing';
+        }
+        canvas.setPointerCapture(e.pointerId);
+        e.preventDefault();
+      });
+
+      canvas.addEventListener('pointermove', (e) => {
+        const y = getCanvasY(e);
+        if (dragState) {
+          const { top, contentH, sizePx } = hitTestCache;
+
+          if (dragState === 'upper') {
+            let posFrac = Math.max(0, Math.min(1, (y - top) / contentH));
+            const sumTopMid = 1 - sections.bot;
+            const newTop = Math.max(MIN_SECTION, Math.min(sumTopMid - MIN_SECTION, posFrac));
+            sections.top = newTop;
+            sections.mid = sumTopMid - newTop;
+            render();
+          } else if (dragState === 'lower') {
+            let posFrac = Math.max(0, Math.min(1, (y - top) / contentH));
+            const newTopPlusMid = Math.max(sections.top + MIN_SECTION, Math.min(1 - MIN_SECTION, posFrac));
+            sections.mid = newTopPlusMid - sections.top;
+            sections.bot = 1 - newTopPlusMid;
+            render();
+          } else if (dragState.startsWith('text-')) {
+            const pos = dragState.split('-')[1];
+            const deltaPx = y - dragStartY;
+            const deltaPct = (deltaPx / sizePx) * 100;
+            yOffset[pos] = Math.max(-15, Math.min(15, dragStartOffset + deltaPct));
+            render();
+          }
+        } else {
+          // Hover cursor feedback
+          canvas.style.cursor = cursorFor(hitTest(y));
+        }
+      });
+
+      function endDrag(e) {
+        if (dragState) {
+          try { canvas.releasePointerCapture(e.pointerId); } catch (_) {}
+          dragState = null;
+          // Reset cursor based on current hover
+          const y = getCanvasY(e);
+          canvas.style.cursor = cursorFor(hitTest(y));
+        }
+      }
+      canvas.addEventListener('pointerup', endDrag);
+      canvas.addEventListener('pointercancel', endDrag);
+      canvas.addEventListener('pointerleave', (e) => {
+        canvas.style.cursor = 'default';
+        endDrag(e);
+      });
+    })();
+
+    // ===== Actions =====
+    function downloadPNG() {
+      render(true); // clean render without UI guides
+      const canvas = document.getElementById('stamp');
+      const link = document.createElement('a');
+      const header = document.getElementById('headerText').value.replace(/[^\wก-๙]/g, '_') || 'stamp';
+      link.download = `${header}_${Date.now()}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      render(); // restore display
+      showToast('บันทึกเป็นไฟล์ PNG แล้ว');
+    }
+
+    async function copyToClipboard() {
+      render(true); // clean render
+      const canvas = document.getElementById('stamp');
+      canvas.toBlob(async (blob) => {
+        try {
+          await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+          showToast('คัดลอกรูปแล้ว — วางใน Word / Excel ได้เลย');
+        } catch (e) {
+          showToast('เบราว์เซอร์นี้คัดลอกรูปไม่ได้ ใช้ปุ่มบันทึก PNG แทน');
+        }
+        render(); // restore display
+      }, 'image/png');
+    }
+
+    function printStamp() {
+      render(true); // clean render
+      const canvas = document.getElementById('stamp');
+      document.getElementById('printImg').src = canvas.toDataURL('image/png');
+      render(); // restore display
+      window.print();
+    }
+
+    function saveSettings() {
+      const s = buildSettingsObject();
+      const blob = new Blob([JSON.stringify(s, null, 2)], { type: 'application/json' });
+      const link = document.createElement('a');
+      link.download = 'stamp-settings.json';
+      link.href = URL.createObjectURL(blob);
+      link.click();
+      URL.revokeObjectURL(link.href);
+      showToast('บันทึกไฟล์ตั้งค่าแล้ว');
+    }
+
+    function loadSettings() {
+      document.getElementById('fileInput').click();
+    }
+
+    document.getElementById('fileInput').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        try {
+          const s = JSON.parse(ev.target.result);
+          // Backward compat with v1 (single font)
+          if (s.font && !s.fontTop) {
+            const fontMap = {
+              serif: 'Noto Serif Thai',
+              sans: 'Sarabun',
+              modern: 'Kanit'
+            };
+            const f = fontMap[s.font] || 'Noto Serif Thai';
+            s.fontTop = f;
+            s.fontMid = f;
+            s.fontBot = f;
+          }
+          applySettings(s);
+          render();
+          showToast('โหลดการตั้งค่าสำเร็จ');
+        } catch (err) {
+          showToast('ไฟล์ไม่ถูกต้อง');
+        }
+      };
+      reader.readAsText(file);
+      e.target.value = '';
+    });
+
+    // ===== Settings serialization =====
+    function buildSettingsObject() {
+      return {
+        header: document.getElementById('headerText').value,
+        footer: document.getElementById('footerText').value,
+        year: document.getElementById('year').value,
+        month: document.getElementById('month').value,
+        day: document.getElementById('day').value,
+        separator: document.getElementById('separator').value,
+        shape: currentShape,
+        fontTop: document.getElementById('fontTop').value,
+        fontMid: document.getElementById('fontMid').value,
+        fontBot: document.getElementById('fontBot').value,
+        sizeTop: document.getElementById('sizeTop').value,
+        sizeMid: document.getElementById('sizeMid').value,
+        sizeBot: document.getElementById('sizeBot').value,
+        styleTop: { ...fontStyle.top },
+        styleMid: { ...fontStyle.mid },
+        styleBot: { ...fontStyle.bot },
+        sections: { ...sections },
+        yOffset: { ...yOffset },
+        color: currentColor,
+        scale: document.getElementById('scale').value,
+        version: 6
+      };
+    }
+
+    function applySettings(s) {
+      if (!s) return;
+      if (s.header !== undefined) document.getElementById('headerText').value = s.header;
+      if (s.footer !== undefined) document.getElementById('footerText').value = s.footer;
+      if (s.year !== undefined) document.getElementById('year').value = s.year;
+      if (s.month !== undefined) document.getElementById('month').value = s.month;
+      if (s.day !== undefined) document.getElementById('day').value = s.day;
+      if (s.separator) {
+        document.getElementById('separator').value = s.separator;
+        // sync the read-only second separator display
+        const sep2 = document.getElementById('separator2');
+        if (sep2) {
+          sep2.innerHTML = '';
+          const opt = document.createElement('option');
+          opt.value = s.separator;
+          opt.textContent = s.separator;
+          sep2.appendChild(opt);
+        }
+      }
+      if (s.scale) document.getElementById('scale').value = s.scale;
+      if (s.shape) setShape(s.shape);
+      if (s.fontTop) document.getElementById('fontTop').value = s.fontTop;
+      if (s.fontMid) document.getElementById('fontMid').value = s.fontMid;
+      if (s.fontBot) document.getElementById('fontBot').value = s.fontBot;
+      if (s.sizeTop) document.getElementById('sizeTop').value = s.sizeTop;
+      if (s.sizeMid) document.getElementById('sizeMid').value = s.sizeMid;
+      if (s.sizeBot) document.getElementById('sizeBot').value = s.sizeBot;
+      ['top', 'mid', 'bot'].forEach(pos => {
+        const key = 'style' + pos.charAt(0).toUpperCase() + pos.slice(1);
+        if (s[key]) {
+          fontStyle[pos] = { bold: !!s[key].bold, italic: !!s[key].italic, underline: !!s[key].underline };
+        }
+      });
+      document.querySelectorAll('[data-style]').forEach(btn => {
+        btn.classList.toggle('active', fontStyle[btn.dataset.pos][btn.dataset.style]);
+      });
+      if (s.sections && typeof s.sections.top === 'number') {
+        const sum = (s.sections.top || 0) + (s.sections.mid || 0) + (s.sections.bot || 0);
+        if (Math.abs(sum - 1) < 0.05) {
+          sections.top = s.sections.top;
+          sections.mid = s.sections.mid;
+          sections.bot = s.sections.bot;
+        }
+      }
+      if (s.yOffset) {
+        ['top', 'mid', 'bot'].forEach(p => {
+          if (typeof s.yOffset[p] === 'number') yOffset[p] = s.yOffset[p];
+        });
+      }
+      if (s.color) setColor(s.color);
+    }
+
+    // ===== Auto-save to localStorage (per-browser, per-device) =====
+    const STORAGE_KEY = 'stampCreator.settings.v1';
+    let autoSaveTimer = null;
+
+    function autoSave() {
+      // Debounce — avoid hammering localStorage on every keystroke
+      clearTimeout(autoSaveTimer);
+      autoSaveTimer = setTimeout(() => {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(buildSettingsObject()));
+        } catch (e) {
+          // localStorage may be unavailable in private mode or blocked — fail silently
+        }
+      }, 300);
+    }
+
+    function restoreFromLocalStorage() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return false;
+        const s = JSON.parse(raw);
+        applySettings(s);
+        return true;
+      } catch (e) {
+        return false;
+      }
+    }
+
+    function clearStoredSettings() {
+      if (!confirm('ล้างการตั้งค่าที่บันทึกไว้ในเครื่องนี้ และกลับเป็นค่าเริ่มต้น?')) return;
+      try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+      location.reload();
+    }
+
+    // Wrap render so every render also triggers autoSave
+    const _renderImpl = render;
+    render = function(forExport) {
+      _renderImpl(forExport);
+      if (!forExport) autoSave();
+    };
+
+    // Restore previous session from localStorage (per-browser, per-device)
+    restoreFromLocalStorage();
+
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(render);
+    }
+    render();
+  </script>
+</body>
+</html>
