@@ -422,6 +422,19 @@
     color: var(--stamp);
   }
 
+  .date-row select:disabled,
+  .date-row input:disabled {
+    background: #efe9e0;
+    color: #b3a896;
+    cursor: not-allowed;
+    opacity: 0.65;
+  }
+
+  .date-format-select {
+    margin-top: 8px;
+    font-size: 14px;
+  }
+
   .shape-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -945,6 +958,18 @@
             </select>
             <input type="number" id="day" value="25" min="1" max="31" oninput="render()">
           </div>
+          <select id="dateFormat" class="date-format-select" onchange="onDateFormatChange()">
+            <option value="ymd-num"   data-i18n="dfYmdNum">ปีเดือนวัน — 2026/04/25</option>
+            <option value="dmy-num"   data-i18n="dfDmyNum">วันเดือนปี — 25/04/2026</option>
+            <option value="mdy-num"   data-i18n="dfMdyNum">เดือนวันปี — 04/25/2026</option>
+            <option value="dmy-short" data-i18n="dfDmyShort">วัน เดือนย่อ ปี — 25 เม.ย. 2026</option>
+            <option value="dmy-long"  data-i18n="dfDmyLong">วัน เดือนเต็ม ปี — 25 เมษายน 2026</option>
+            <option value="ja-kanji"  data-i18n="dfJaKanji">ญี่ปุ่น — 2026年4月25日</option>
+            <option value="th-be-num" data-i18n="dfThBeNum">พ.ศ. ตัวเลข — 25/04/2569</option>
+            <option value="th-be-long"data-i18n="dfThBeLong">พ.ศ. เต็ม — 25 เมษายน 2569</option>
+            <option value="my-num"    data-i18n="dfMyNum">เดือน/ปี — 04/2026</option>
+            <option value="year-only" data-i18n="dfYearOnly">ปีอย่างเดียว — 2026</option>
+          </select>
         </div>
 
         <div class="field-group">
@@ -1164,6 +1189,16 @@
         btnPrint: 'พิมพ์',
         fldHeader: 'ข้อความด้านบน', fldHeaderHint: 'Header',
         fldDate: 'วันที่', fldDateHint: 'ปี / เดือน / วัน',
+        dfYmdNum:   'ปีเดือนวัน — 2026/04/25',
+        dfDmyNum:   'วันเดือนปี — 25/04/2026',
+        dfMdyNum:   'เดือนวันปี — 04/25/2026',
+        dfDmyShort: 'วัน เดือนย่อ ปี — 25 เม.ย. 2026',
+        dfDmyLong:  'วัน เดือนเต็ม ปี — 25 เมษายน 2026',
+        dfJaKanji:  'ญี่ปุ่น — 2026年4月25日',
+        dfThBeNum:  'พ.ศ. ตัวเลข — 25/04/2569',
+        dfThBeLong: 'พ.ศ. เต็ม — 25 เมษายน 2569',
+        dfMyNum:    'เดือน/ปี — 04/2026',
+        dfYearOnly: 'ปีอย่างเดียว — 2026',
         fldFooter: 'ข้อความด้านล่าง', fldFooterHint: 'Footer',
         fldShape: 'รูปร่าง', fldShapeHint: '8 แบบ',
         fldFont: 'แบบอักษร', fldFontHint: '3 ตำแหน่งแยกได้',
@@ -1236,6 +1271,16 @@
         btnPrint: 'Print',
         fldHeader: 'Top text', fldHeaderHint: 'Header',
         fldDate: 'Date', fldDateHint: 'Year / Month / Day',
+        dfYmdNum:   'Y/M/D — 2026/04/25',
+        dfDmyNum:   'D/M/Y — 25/04/2026',
+        dfMdyNum:   'M/D/Y — 04/25/2026',
+        dfDmyShort: 'D Mon Y — 25 Apr 2026',
+        dfDmyLong:  'D Month Y — 25 April 2026',
+        dfJaKanji:  'Japanese — 2026年4月25日',
+        dfThBeNum:  'Thai BE numeric — 25/04/2569',
+        dfThBeLong: 'Thai BE long — 25 เมษายน 2569',
+        dfMyNum:    'Month/Year — 04/2026',
+        dfYearOnly: 'Year only — 2026',
         fldFooter: 'Bottom text', fldFooterHint: 'Footer',
         fldShape: 'Shape', fldShapeHint: '8 variants',
         fldFont: 'Typeface', fldFontHint: '3 positions, independent',
@@ -1308,6 +1353,16 @@
         btnPrint: '印刷',
         fldHeader: '上段テキスト', fldHeaderHint: 'Header',
         fldDate: '日付', fldDateHint: '年 / 月 / 日',
+        dfYmdNum:   '年月日 — 2026/04/25',
+        dfDmyNum:   '日月年 — 25/04/2026',
+        dfMdyNum:   '月日年 — 04/25/2026',
+        dfDmyShort: '日 月略 年 — 25 4月 2026',
+        dfDmyLong:  '日 月名 年 — 25 4月 2026',
+        dfJaKanji:  '和風 — 2026年4月25日',
+        dfThBeNum:  'タイ仏歴 数字 — 25/04/2569',
+        dfThBeLong: 'タイ仏歴 長 — 25 เมษายน 2569',
+        dfMyNum:    '月/年 — 04/2026',
+        dfYearOnly: '年のみ — 2026',
         fldFooter: '下段テキスト', fldFooterHint: 'Footer',
         fldShape: '形状', fldShapeHint: '8種類',
         fldFont: 'フォント', fldFontHint: '3段独立設定',
@@ -1366,6 +1421,97 @@
     };
 
     const LANG_STORAGE_KEY = 'stampCreator.lang';
+
+    // ===== Month names for word-style date formats =====
+    const MONTH_NAMES = {
+      th: {
+        short: ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'],
+        long:  ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม']
+      },
+      en: {
+        short: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+        long:  ['January','February','March','April','May','June','July','August','September','October','November','December']
+      },
+      ja: {
+        // Japanese conventionally uses "N月" — short and long are the same
+        short: ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'],
+        long:  ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月']
+      }
+    };
+
+    // Formats that use the user-chosen separator
+    const DATE_FORMATS_WITH_SEP = ['ymd-num', 'dmy-num', 'mdy-num', 'th-be-num', 'my-num'];
+
+    // Build the formatted date string for the stamp.
+    function formatDate(year, month, day, sep, fmt) {
+      const yi = parseInt(year);
+      const mi = parseInt(month);
+      const di = parseInt(day);
+
+      // Zero-padded numeric pieces; preserve empty when input is empty
+      const m = (month === '' || month == null) ? '' : (Number.isFinite(mi) ? String(mi).padStart(2, '0') : String(month));
+      const d = (day   === '' || day   == null) ? '' : (Number.isFinite(di) ? String(di).padStart(2, '0') : String(day));
+      const y = (year  === '' || year  == null) ? '' : String(year);
+
+      // Month names follow current UI language
+      const mLang = (typeof currentLang !== 'undefined' && MONTH_NAMES[currentLang]) ? currentLang : 'th';
+      const monShort = (Number.isFinite(mi) && mi >= 1 && mi <= 12) ? MONTH_NAMES[mLang].short[mi - 1] : (m || '');
+      const monLong  = (Number.isFinite(mi) && mi >= 1 && mi <= 12) ? MONTH_NAMES[mLang].long [mi - 1] : (m || '');
+      // For th-be-long we always want Thai month names
+      const monThaiLong = (Number.isFinite(mi) && mi >= 1 && mi <= 12) ? MONTH_NAMES.th.long[mi - 1] : (m || '');
+
+      // Helper: join only non-empty parts
+      const joinNonEmpty = (parts, s) => parts.filter(p => p !== '' && p != null).join(s);
+
+      switch (fmt) {
+        case 'dmy-num':    return joinNonEmpty([d, m, y], sep);
+        case 'mdy-num':    return joinNonEmpty([m, d, y], sep);
+        case 'dmy-short':  return joinNonEmpty([d, monShort, y], ' ');
+        case 'dmy-long':   return joinNonEmpty([d, monLong,  y], ' ');
+        case 'ja-kanji': {
+          const parts = [];
+          if (y !== '') parts.push(`${y}年`);
+          if (Number.isFinite(mi)) parts.push(`${mi}月`);
+          if (Number.isFinite(di)) parts.push(`${di}日`);
+          return parts.join('');
+        }
+        case 'th-be-num': {
+          const beY = Number.isFinite(yi) ? String(yi + 543) : y;
+          return joinNonEmpty([d, m, beY], sep);
+        }
+        case 'th-be-long': {
+          const beY = Number.isFinite(yi) ? String(yi + 543) : y;
+          return joinNonEmpty([d, monThaiLong, beY], ' ');
+        }
+        case 'my-num':     return joinNonEmpty([m, y], sep);
+        case 'year-only':  return y;
+        case 'ymd-num':
+        default:           return joinNonEmpty([y, m, d], sep);
+      }
+    }
+
+    function onDateFormatChange() {
+      updateDateFieldStates();
+      render();
+    }
+
+    // Disable the separator (and unused inputs) when the chosen format
+    // doesn't need them, so the UI matches the actual output.
+    function updateDateFieldStates() {
+      const fmt = document.getElementById('dateFormat').value;
+      const usesSep = DATE_FORMATS_WITH_SEP.includes(fmt);
+      const sepEl  = document.getElementById('separator');
+      const sep2El = document.getElementById('separator2');
+      if (sepEl)  sepEl.disabled  = !usesSep;
+      if (sep2El) sep2El.disabled = !usesSep;
+
+      const monthEl = document.getElementById('month');
+      const dayEl   = document.getElementById('day');
+      const yearEl  = document.getElementById('year');
+      if (monthEl) monthEl.disabled = (fmt === 'year-only');
+      if (dayEl)   dayEl.disabled   = (fmt === 'year-only' || fmt === 'my-num');
+      if (yearEl)  yearEl.disabled  = false;
+    }
 
     function detectInitialLang() {
       try {
@@ -1428,6 +1574,9 @@
       currentLang = lang;
       try { localStorage.setItem(LANG_STORAGE_KEY, lang); } catch (e) { /* ignore */ }
       applyI18n();
+      // Word-style date formats use month names in the current language,
+      // so re-render so the stamp picks up the new names.
+      if (typeof render === 'function') render();
     }
 
     // ===== State =====
@@ -1856,10 +2005,9 @@
       // Cache for hit testing
       hitTestCache = { top: contentTop, contentH, lineY1, lineY2, sizePx: size };
 
-      // Date string
-      const m = month === '' ? '' : String(parseInt(month) || month).padStart(2, '0');
-      const d = day === '' ? '' : String(parseInt(day) || day).padStart(2, '0');
-      const dateStr = `${year}${sep}${m}${sep}${d}`;
+      // Date string — built from selected format
+      const fmt = (document.getElementById('dateFormat') || {}).value || 'ymd-num';
+      const dateStr = formatDate(year, month, day, sep, fmt);
 
       // Shape border + dividers
       drawShapeBorder(ctx, currentShape, cx, cy, size, borderW);
@@ -2091,9 +2239,8 @@
       const lineY1 = contentTop + sections.top * contentH;
       const lineY2 = contentTop + (sections.top + sections.mid) * contentH;
 
-      const m = month === '' ? '' : String(parseInt(month) || month).padStart(2, '0');
-      const d = day === '' ? '' : String(parseInt(day) || day).padStart(2, '0');
-      const dateStr = `${year}${sep}${m}${sep}${d}`;
+      const fmt = (document.getElementById('dateFormat') || {}).value || 'ymd-num';
+      const dateStr = formatDate(year, month, day, sep, fmt);
 
       const isSquareLike = currentShape.startsWith('square') || currentShape.startsWith('rounded');
       const maxTextW = isSquareLike ? size * 0.78 :
@@ -2336,6 +2483,7 @@
         month: document.getElementById('month').value,
         day: document.getElementById('day').value,
         separator: document.getElementById('separator').value,
+        dateFormat: document.getElementById('dateFormat').value,
         shape: currentShape,
         fontTop: document.getElementById('fontTop').value,
         fontMid: document.getElementById('fontMid').value,
@@ -2350,7 +2498,7 @@
         yOffset: { ...yOffset },
         color: currentColor,
         scale: document.getElementById('scale').value,
-        version: 6
+        version: 7
       };
     }
 
@@ -2373,6 +2521,16 @@
           sep2.appendChild(opt);
         }
       }
+      if (s.dateFormat) {
+        const dfEl = document.getElementById('dateFormat');
+        if (dfEl) {
+          // Make sure the saved value is one of our options; otherwise leave default
+          const exists = Array.from(dfEl.options).some(o => o.value === s.dateFormat);
+          if (exists) dfEl.value = s.dateFormat;
+        }
+      }
+      // Refresh enabled/disabled state of date controls based on (possibly new) format
+      updateDateFieldStates();
       if (s.scale) document.getElementById('scale').value = s.scale;
       if (s.shape) setShape(s.shape);
       if (s.fontTop) document.getElementById('fontTop').value = s.fontTop;
@@ -2452,6 +2610,10 @@
 
     // Restore previous session from localStorage (per-browser, per-device)
     restoreFromLocalStorage();
+
+    // Make sure separator/day enabled state matches the chosen date format
+    // (covers fresh-load case when nothing was restored)
+    updateDateFieldStates();
 
     if (document.fonts && document.fonts.ready) {
       document.fonts.ready.then(render);
