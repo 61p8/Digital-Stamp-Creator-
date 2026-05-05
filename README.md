@@ -20,6 +20,15 @@
 
 ---
 
+
+## โครงสร้างหน้าแอป
+
+- `index.html` = หน้าหลักรวมฟีเจอร์ (Feature Hub)
+- `sign.html` = ฟีเจอร์ Sign Stamp (เดิมจากหน้าแอปหลัก)
+- `approve.html` = ฟีเจอร์ Approve Stamp พร้อมช่องเซ็นแยก 3 ช่อง (Approved / Checked / Writer)
+
+---
+
 ## วิธีใช้
 
 ### แบบที่ 1: เปิดในเครื่อง
