@@ -2618,6 +2618,32 @@
     if (document.fonts && document.fonts.ready) {
       document.fonts.ready.then(render);
     }
+
+    // Approve integration mode: return generated sign image to approve.html
+    (function setupApprovePickerMode(){
+      const params = new URLSearchParams(location.search);
+      if (params.get('mode') !== 'picker') return;
+      const slot = params.get('slot') || 'approved';
+      const bar = document.createElement('div');
+      bar.style.cssText = 'position:fixed;right:14px;bottom:14px;z-index:9999;display:flex;gap:8px';
+      const done = document.createElement('button');
+      done.className = 'btn btn-primary';
+      done.textContent = 'เสร็จ: ส่งไป Approve';
+      done.onclick = () => {
+        render(true);
+        const data = document.getElementById('stamp').toDataURL('image/png');
+        try { localStorage.setItem('approve.sign.' + slot, data); } catch(e) {}
+        location.href = 'approve.html';
+      };
+      const cancel = document.createElement('button');
+      cancel.className = 'btn';
+      cancel.textContent = 'ยกเลิก';
+      cancel.onclick = () => location.href = 'approve.html';
+      bar.appendChild(cancel);
+      bar.appendChild(done);
+      document.body.appendChild(bar);
+    })();
+
     render();
   </script>
 </body>
