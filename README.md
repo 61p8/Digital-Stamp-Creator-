@@ -20,15 +20,6 @@
 
 ---
 
-
-## โครงสร้างหน้าแอป
-
-- `index.html` = หน้าหลักรวมฟีเจอร์ (Feature Hub)
-- `sign.html` = ฟีเจอร์ Sign Stamp (เดิมจากหน้าแอปหลัก)
-- `approve.html` = ฟีเจอร์ Approve Stamp พร้อมช่องเซ็นแยก 3 ช่อง (Approved / Checked / Writer)
-
----
-
 ## วิธีใช้
 
 ### แบบที่ 1: เปิดในเครื่อง
@@ -87,11 +78,4 @@
 
 Internal use — DENSO Production Engineering
 
-
-## Workflow Approve (3 Sign)
-
-1. เข้า `approve.html`
-2. คลิก `ไปทำ Sign` ของช่อง Approved / Checked / Writer
-3. ทำตราใน `sign.html` แล้วคลิก `เสร็จ: ส่งไป Approve`
-4. กลับมาที่ `approve.html` และลากตำแหน่งลายเซ็นได้
 
