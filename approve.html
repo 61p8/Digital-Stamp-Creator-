@@ -16,6 +16,13 @@
     canvas{width:100%;height:auto;background:#fff;border:1px solid #ddd}
     .slot-actions{display:grid;grid-template-columns:1fr 1fr;gap:6px}
     .tiny{font-size:12px;color:#666}
+    .wrap{max-width:1100px;margin:0 auto;padding:20px;display:grid;grid-template-columns:1fr 1fr;gap:18px}
+    .card{background:var(--paper);border:1px solid #ddd;padding:16px;border-radius:8px}
+    label{display:block;font-size:13px;font-weight:700;margin:10px 0 6px}
+    input{width:100%;padding:9px;border:1px solid #ccc;border-radius:6px}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    button{margin-top:12px;padding:10px 12px;border:1px solid #999;border-radius:6px;background:white;cursor:pointer}
+    canvas{width:100%;height:auto;background:#fff;border:1px solid #ddd}
     @media(max-width:900px){.wrap{grid-template-columns:1fr}}
   </style>
 </head>
@@ -85,3 +92,87 @@ function downloadPNG(){ render(); const a=document.createElement('a'); a.downloa
 restoreSigns(); render();
 </script>
 </body></html>
+  <div class="wrap">
+    <section class="card">
+      <h2>Approve Stamp</h2>
+      <label>Header</label><input id="header" value="ABOLISHED" />
+      <label>Reason</label><input id="reason" value="Reason" />
+      <label>Date</label><input id="date" value="Date .......... / .......... / .........." />
+      <div class="row">
+        <div><label>Approved Sign</label><input id="approved" value="Approved" /></div>
+        <div><label>Checked Sign</label><input id="checked" value="Checked" /></div>
+      </div>
+      <label>Writer Sign</label><input id="writer" value="Writer" />
+      <button onclick="downloadPNG()">Download PNG</button>
+      <button onclick="location.href='index.html'">Back Home</button>
+    </section>
+
+    <section class="card">
+      <canvas id="c" width="1000" height="700"></canvas>
+    </section>
+  </div>
+<script>
+  const ids=['header','reason','date','approved','checked','writer'];
+  ids.forEach(id=>document.getElementById(id).addEventListener('input',render));
+
+  function drawSign(ctx,text,x,y,w,h){
+    ctx.save();
+    ctx.strokeStyle='#be6b76';
+    ctx.fillStyle='#be6b76';
+    const r=Math.min(w,h)*0.35;
+    ctx.lineWidth=3;
+    ctx.beginPath();ctx.arc(x+w/2,y+h/2,r,0,Math.PI*2);ctx.stroke();
+    ctx.font=`700 ${Math.floor(h*0.22)}px sans-serif`;
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(text,x+w/2,y+h/2);
+    ctx.restore();
+  }
+
+  function render(){
+    const cv=document.getElementById('c'),ctx=cv.getContext('2d');
+    const W=cv.width,H=cv.height;
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle='#fff';ctx.fillRect(0,0,W,H);
+    ctx.strokeStyle='#be6b76';ctx.fillStyle='#be6b76';
+    ctx.lineWidth=5;
+    const x=80,y=70,w=840,h=540;
+    ctx.strokeRect(x,y,w,h);
+
+    ctx.font='700 78px sans-serif';ctx.textAlign='left';ctx.textBaseline='top';
+    ctx.fillText(document.getElementById('header').value,x+28,y+24);
+
+    ctx.font='600 50px sans-serif';
+    ctx.fillText(document.getElementById('reason').value,x+28,y+150);
+    ctx.beginPath();ctx.moveTo(x+210,y+198);ctx.lineTo(x+w-28,y+198);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(x+28,y+262);ctx.lineTo(x+w-28,y+262);ctx.stroke();
+
+    ctx.font='600 46px sans-serif';
+    ctx.fillText(document.getElementById('date').value,x+28,y+286);
+    ctx.beginPath();ctx.moveTo(x+28,y+342);ctx.lineTo(x+w-28,y+342);ctx.stroke();
+
+    const footerTop=y+342, secW=w/3;
+    ctx.beginPath();ctx.moveTo(x+secW,footerTop);ctx.lineTo(x+secW,y+h);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(x+2*secW,footerTop);ctx.lineTo(x+2*secW,y+h);ctx.stroke();
+
+    const bh=h-(footerTop-y);
+    drawSign(ctx,document.getElementById('approved').value,x+0*secW+18,footerTop+18,secW-36,bh-72);
+    drawSign(ctx,document.getElementById('checked').value,x+1*secW+18,footerTop+18,secW-36,bh-72);
+    drawSign(ctx,document.getElementById('writer').value,x+2*secW+18,footerTop+18,secW-36,bh-72);
+
+    ctx.font='700 42px sans-serif';
+    ctx.fillText('Approved',x+16,y+h-48);
+    ctx.fillText('Checked',x+secW+16,y+h-48);
+    ctx.fillText('Writer',x+2*secW+16,y+h-48);
+  }
+
+  function downloadPNG(){
+    render();
+    const a=document.createElement('a');
+    a.download='approve-stamp.png';
+    a.href=document.getElementById('c').toDataURL('image/png');
+    a.click();
+  }
+  render();
+</script>
+</body>
+</html>
