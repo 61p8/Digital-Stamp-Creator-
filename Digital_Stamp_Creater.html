@@ -1,0 +1,1663 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Digital Stamp Creater</title>
+<style>
+  :root {
+    --bg: #f4efe5;
+    --paper: #fffaf0;
+    --card: #fffdf8;
+    --ink: #201a16;
+    --muted: #8b7c6d;
+    --line: #ded4c2;
+    --line-soft: #eee5d4;
+    --accent: #a83b4b;
+    --accent-dark: #7d2430;
+    --shadow: 0 14px 34px rgba(80, 56, 36, 0.09);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background:
+      radial-gradient(circle at 10% 5%, rgba(168, 59, 75, 0.07), transparent 32%),
+      radial-gradient(circle at 85% 20%, rgba(99, 70, 38, 0.06), transparent 28%),
+      var(--bg);
+    color: var(--ink);
+    font-family: Tahoma, "Sarabun", "Noto Sans Thai", Arial, sans-serif;
+  }
+
+  .app {
+    width: min(1280px, calc(100vw - 32px));
+    margin: 0 auto;
+    padding: 28px 0 56px;
+  }
+
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 18px;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 18px;
+    margin-bottom: 24px;
+  }
+
+  .brand h1 {
+    margin: 0;
+    font-size: clamp(24px, 3vw, 36px);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+
+  .brand p {
+    margin: 7px 0 0;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: flex-end;
+    gap: 14px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .lang-switcher {
+    display: inline-flex;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    overflow: hidden;
+    background: rgba(255, 253, 248, .9);
+    box-shadow: 0 8px 22px rgba(80, 56, 36, 0.05);
+  }
+
+  .lang-btn {
+    border: 0;
+    border-right: 1px solid var(--line);
+    background: transparent;
+    color: var(--ink);
+    cursor: pointer;
+    padding: 9px 12px;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .lang-btn:last-child { border-right: 0; }
+  .lang-btn:hover { background: rgba(168, 59, 75, .08); }
+  .lang-btn.active { background: var(--ink); color: var(--paper); }
+
+  .meta {
+    text-align: right;
+    color: var(--muted);
+    font-size: 11px;
+    line-height: 1.35;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .meta .creator {
+    color: var(--accent);
+    font-size: 10px;
+    text-transform: none;
+    letter-spacing: .04em;
+    margin-top: 2px;
+  }
+
+  main {
+    display: grid;
+    grid-template-columns: minmax(0, 1.12fr) minmax(360px, 0.88fr);
+    gap: 24px;
+    align-items: start;
+  }
+
+  @media (max-width: 940px) {
+    main { grid-template-columns: 1fr; }
+    header { align-items: flex-start; }
+    .preview-panel { position: static !important; }
+  }
+
+  @media (max-width: 620px) {
+    .app { width: min(100% - 18px, 1280px); padding-top: 16px; }
+    header { flex-direction: column; }
+    .header-right { width: 100%; justify-content: space-between; align-items: center; }
+    .meta { text-align: left; }
+    .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr !important; }
+    .actions { grid-template-columns: 1fr !important; }
+  }
+
+  .panel {
+    background: rgba(255, 253, 248, 0.86);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    box-shadow: var(--shadow);
+  }
+
+  .preview-panel {
+    padding: 20px;
+    position: sticky;
+    top: 18px;
+  }
+
+  .controls-panel { padding: 20px; }
+
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    margin-bottom: 14px;
+  }
+
+  .section-title::after {
+    content: "";
+    height: 1px;
+    background: var(--line-soft);
+    flex: 1;
+  }
+
+  .canvas-wrap {
+    width: 100%;
+    aspect-ratio: 1100 / 760;
+    display: grid;
+    place-items: center;
+    background:
+      linear-gradient(rgba(168,59,75,.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(168,59,75,.035) 1px, transparent 1px),
+      var(--paper);
+    background-size: 32px 32px;
+    border: 1px solid var(--line-soft);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+
+  canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    touch-action: none;
+  }
+
+  .hint {
+    margin-top: 12px;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.55;
+    text-align: center;
+  }
+
+  .live-info {
+    margin-top: 12px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+
+  .chip {
+    background: #fbf2e8;
+    border: 1px solid var(--line-soft);
+    border-radius: 999px;
+    padding: 7px 9px;
+    font-size: 11px;
+    color: var(--muted);
+    text-align: center;
+  }
+
+  .chip b {
+    color: var(--accent);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .actions {
+    margin-top: 14px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .group {
+    border-top: 1px solid var(--line-soft);
+    padding-top: 18px;
+    margin-top: 18px;
+  }
+
+  .group:first-of-type {
+    border-top: 0;
+    padding-top: 0;
+    margin-top: 0;
+  }
+
+  .group h2 {
+    margin: 0 0 12px;
+    font-size: 15px;
+    letter-spacing: .01em;
+  }
+
+  .grid-2,
+  .grid-3,
+  .grid-4 {
+    display: grid;
+    gap: 10px;
+    align-items: end;
+  }
+  .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+  .field { margin-bottom: 10px; }
+
+  label {
+    display: block;
+    margin-bottom: 6px;
+    color: #615548;
+    font-size: 12px;
+    font-weight: 900;
+  }
+
+  input[type="text"],
+  input[type="number"],
+  select,
+  textarea {
+    width: 100%;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--paper);
+    color: var(--ink);
+    min-height: 40px;
+    padding: 9px 11px;
+    font: inherit;
+    font-size: 14px;
+    outline: none;
+    transition: border-color .14s, background .14s, box-shadow .14s;
+  }
+
+  textarea {
+    min-height: 80px;
+    resize: vertical;
+    line-height: 1.45;
+  }
+
+  input[type="text"]:focus,
+  input[type="number"]:focus,
+  select:focus,
+  textarea:focus {
+    border-color: var(--accent);
+    background: #fffdf8;
+    box-shadow: 0 0 0 3px rgba(168,59,75,.10);
+  }
+
+  input[type="color"] {
+    width: 100%;
+    height: 42px;
+    border: 1px solid var(--line);
+    background: var(--paper);
+    border-radius: 10px;
+    padding: 4px;
+    cursor: pointer;
+  }
+
+  input[type="range"] {
+    width: 100%;
+    accent-color: var(--accent);
+  }
+
+  .toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    user-select: none;
+    margin-top: 2px;
+  }
+
+  .locked-note {
+    background: rgba(168,59,75,.07);
+    border: 1px dashed rgba(168,59,75,.35);
+    color: #71414a;
+    padding: 10px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    line-height: 1.45;
+  }
+
+  .toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .btn {
+    border: 1px solid var(--line);
+    background: var(--card);
+    color: var(--ink);
+    min-height: 40px;
+    padding: 9px 12px;
+    border-radius: 12px;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 900;
+    cursor: pointer;
+    transition: transform .12s, background .12s, border-color .12s;
+  }
+
+  .btn:hover {
+    transform: translateY(-1px);
+    border-color: #b9aa96;
+    background: #fff7ef;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+
+  .btn-primary:hover {
+    background: var(--accent-dark);
+    border-color: var(--accent-dark);
+  }
+
+  .btn.mini {
+    min-height: 34px;
+    padding: 7px 10px;
+    border-radius: 10px;
+    font-size: 12px;
+  }
+
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: 26px;
+    transform: translateX(-50%) translateY(22px);
+    background: #201a16;
+    color: #fff8ef;
+    padding: 12px 18px;
+    border-radius: 999px;
+    box-shadow: 0 10px 28px rgba(0,0,0,.18);
+    opacity: 0;
+    pointer-events: none;
+    transition: .25s ease;
+    z-index: 10;
+    font-weight: 700;
+  }
+
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .small-muted {
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 700;
+  }
+
+  .position-note {
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.45;
+    margin: -2px 0 10px;
+  }
+</style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="brand">
+        <h1 data-i18n="appTitle">Digital Stamp Creater</h1>
+        <p data-i18n="subtitle">สร้างตรายางดิจิทัลแบบสี่เหลี่ยม พร้อม Reason / Date / Approved / Checked / Writer</p>
+      </div>
+      <div class="header-right">
+        <div class="lang-switcher" role="tablist" aria-label="Language">
+          <button type="button" class="lang-btn" data-lang="th">ไทย</button>
+          <button type="button" class="lang-btn" data-lang="en">EN</button>
+          <button type="button" class="lang-btn" data-lang="ja">日本語</button>
+        </div>
+        <div class="meta">
+          <div>v1.7 · Browser Edition</div>
+          <div class="creator">Created by SITTISAK PE DNTH</div>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="panel preview-panel">
+        <div class="section-title" data-i18n="previewTitle">Preview</div>
+        <div class="canvas-wrap">
+          <canvas id="stampCanvas" width="1100" height="760" aria-label="Digital stamp preview"></canvas>
+        </div>
+        <div class="hint" data-i18n="dragHint">ลากขอบ/มุมกรอบ = ปรับขนาดตรา · ลากเส้นประ Reason/Date = เลื่อนตำแหน่ง · ลากเส้นช่องล่าง = ปรับ Approved / Checked / Writer</div>
+        <div class="live-info">
+          <div class="chip"><span data-i18n="infoW">กว้าง</span> <b id="infoW">-</b></div>
+          <div class="chip"><span data-i18n="infoH">สูง</span> <b id="infoH">-</b></div>
+          <div class="chip"><span data-i18n="infoC1">ช่องซ้าย</span> <b id="infoC1">-</b></div>
+          <div class="chip"><span data-i18n="infoC2">ช่องกลาง</span> <b id="infoC2">-</b></div>
+        </div>
+        <div class="actions">
+          <button class="btn btn-primary" id="downloadBtn" data-i18n="btnSavePng">บันทึก PNG</button>
+          <button class="btn" id="copyBtn" data-i18n="btnCopyPng">คัดลอก PNG</button>
+          <button class="btn" id="downloadSvgBtn" data-i18n="btnSaveSvg">บันทึก SVG</button>
+          <button class="btn" id="copySvgBtn" data-i18n="btnCopySvg">คัดลอก SVG</button>
+          <button class="btn" id="resetLayoutBtn" data-i18n="btnResetLayout">รีเซ็ตกรอบ</button>
+        </div>
+      </section>
+
+      <section class="panel controls-panel">
+        <div class="section-title" data-i18n="settingsTitle">Settings</div>
+
+        <div class="group">
+          <h2 data-i18n="groupFrame">1) กรอบและเส้น</h2>
+          <div class="grid-3">
+            <div class="field">
+              <label for="lineColor" data-i18n="lineColor">สีเส้น</label>
+              <input type="color" id="lineColor" value="#a83b4b" />
+            </div>
+            <div class="field">
+              <label for="lineWidth" data-i18n="lineWidth">ความหนาเส้น</label>
+              <input type="number" id="lineWidth" min="1" max="14" step="1" value="4" />
+            </div>
+            <div class="field">
+              <label for="roughness" data-i18n="roughness">ความนุ่มแบบตรายาง</label>
+              <input type="range" id="roughness" min="0" max="18" step="1" value="4" />
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="field">
+              <label for="frameW" data-i18n="frameW">ความกว้างกรอบ</label>
+              <input type="number" id="frameW" min="360" max="1040" step="10" value="820" />
+            </div>
+            <div class="field">
+              <label for="frameH" data-i18n="frameH">ความสูงกรอบ</label>
+              <input type="number" id="frameH" min="240" max="680" step="10" value="460" />
+            </div>
+          </div>
+          <div class="toolbar">
+            <button class="btn mini" id="applyLineColorBtn" data-i18n="btnApplyColor">ใช้สีเส้นกับข้อความทั้งหมด</button>
+          </div>
+        </div>
+
+        <div class="group">
+          <h2 data-i18n="groupTitle">2) ข้อความหัวตรา</h2>
+          <div class="field">
+            <label for="titleText" data-i18n="titleTextLabel">เปลี่ยนคำได้</label>
+            <input type="text" id="titleText" value="ABOLISHED" maxlength="40" />
+          </div>
+          <div class="grid-3">
+            <div class="field">
+              <label for="titleFont" data-i18n="fontLabel">ฟอนต์</label>
+              <input list="fontList" type="text" id="titleFont" value="Arial" />
+            </div>
+            <div class="field">
+              <label for="titleSize" data-i18n="fontSizeLabel">ขนาดตัวอักษร</label>
+              <input type="number" id="titleSize" min="20" max="170" step="2" value="88" />
+            </div>
+            <div class="field">
+              <label for="titleColor" data-i18n="textColorLabel">สีตัวอักษร</label>
+              <input type="color" id="titleColor" value="#a83b4b" />
+            </div>
+          </div>
+          <label class="toggle"><input type="checkbox" id="titleBold" checked /> <span data-i18n="boldLabel">ตัวหนา</span></label>
+        </div>
+
+        <div class="group">
+          <h2 data-i18n="groupReason">3) Reason</h2>
+          <div class="locked-note" data-i18n="reasonNote">คำว่า Reason ถูกล็อคไว้เหมือนตัวอย่าง แต่พิมพ์เหตุผลด้านหลังเส้นประได้</div>
+          <div class="field" style="margin-top:10px">
+            <label for="reasonText" data-i18n="reasonTextLabel">ข้อความเหตุผล</label>
+            <textarea id="reasonText" data-i18n-placeholder="reasonPlaceholder" placeholder="พิมพ์เหตุผลที่ต้องการให้แสดงบนตรา"></textarea>
+          </div>
+          <div class="grid-3">
+            <div class="field">
+              <label for="reasonFont" data-i18n="reasonFontLabel">ฟอนต์ข้อความเหตุผล</label>
+              <input list="fontList" type="text" id="reasonFont" value="Arial" />
+            </div>
+            <div class="field">
+              <label for="reasonSize" data-i18n="reasonSizeLabel">ขนาดข้อความเหตุผล</label>
+              <input type="number" id="reasonSize" min="12" max="70" step="1" value="28" />
+            </div>
+            <div class="field">
+              <label for="reasonColor" data-i18n="reasonColorLabel">สีข้อความเหตุผล</label>
+              <input type="color" id="reasonColor" value="#a83b4b" />
+            </div>
+          </div>
+          <label class="toggle"><input type="checkbox" id="reasonBold" /> <span data-i18n="boldLabel">ตัวหนา</span></label>
+        </div>
+
+        <div class="group">
+          <h2 data-i18n="groupDate">4) วันที่</h2>
+          <div class="grid-3">
+            <div class="field">
+              <label for="day" data-i18n="dayLabel">วัน</label>
+              <select id="day"></select>
+            </div>
+            <div class="field">
+              <label for="month" data-i18n="monthLabel">เดือน</label>
+              <select id="month"></select>
+            </div>
+            <div class="field">
+              <label for="year" data-i18n="yearLabel">ปี ค.ศ.</label>
+              <input type="number" id="year" min="1900" max="2600" step="1" />
+            </div>
+          </div>
+          <div class="field">
+            <label for="dateFormat" data-i18n="dateFormatLabel">รูปแบบวันที่</label>
+            <select id="dateFormat">
+              <option value="dmy-slash" data-i18n="dateFmtDmySlash">วัน/เดือน/ปี — 07/05/2026</option>
+              <option value="ymd-slash" data-i18n="dateFmtYmdSlash">ปี/เดือน/วัน — 2026/05/07</option>
+              <option value="dmy-dash" data-i18n="dateFmtDmyDash">วัน-เดือน-ปี — 07-05-2026</option>
+              <option value="dmy-dot" data-i18n="dateFmtDmyDot">วัน.เดือน.ปี — 07.05.2026</option>
+              <option value="long" data-i18n="dateFmtLong">วัน เดือน ปี — 7 พฤษภาคม 2026</option>
+              <option value="thai-be-slash" data-i18n="dateFmtThaiBeSlash">พ.ศ. ตัวเลข — 07/05/2569</option>
+              <option value="thai-be-long" data-i18n="dateFmtThaiBeLong">พ.ศ. เต็ม — 7 พฤษภาคม 2569</option>
+              <option value="ja-kanji" data-i18n="dateFmtJaKanji">ญี่ปุ่น — 2026年5月7日</option>
+              <option value="month-year" data-i18n="dateFmtMonthYear">เดือน/ปี — 05/2026</option>
+              <option value="year-only" data-i18n="dateFmtYearOnly">ปีอย่างเดียว — 2026</option>
+              <option value="blank" data-i18n="dateFmtBlank">ไม่ใส่วันที่ / เว้นว่าง</option>
+            </select>
+          </div>
+          <div class="grid-3">
+            <div class="field">
+              <label for="dateFont" data-i18n="dateFontLabel">ฟอนต์วันที่</label>
+              <input list="fontList" type="text" id="dateFont" value="Arial" />
+            </div>
+            <div class="field">
+              <label for="dateSize" data-i18n="dateSizeLabel">ขนาดวันที่</label>
+              <input type="number" id="dateSize" min="12" max="70" step="1" value="30" />
+            </div>
+            <div class="field">
+              <label for="dateColor" data-i18n="dateColorLabel">สีวันที่</label>
+              <input type="color" id="dateColor" value="#a83b4b" />
+            </div>
+          </div>
+          <label class="toggle"><input type="checkbox" id="dateBold" checked /> <span data-i18n="boldLabel">ตัวหนา</span></label>
+        </div>
+
+        <div class="group">
+          <h2 data-i18n="groupInnerLines">5) เส้นขอบด้านใน</h2>
+          <div class="position-note" data-i18n="innerLinesNote">ปรับด้วยสไลเดอร์ หรือใช้เมาส์ลากเส้นใน Preview ได้โดยตรง</div>
+          <div class="grid-2">
+            <div class="field">
+              <label for="reasonLine1"><span data-i18n="reasonLine1Label">เส้น Reason บรรทัด 1</span> <span id="reasonLine1Text" class="small-muted"></span></label>
+              <input type="range" id="reasonLine1" min="28" max="50" step="1" value="40" />
+            </div>
+            <div class="field">
+              <label for="reasonLine2"><span data-i18n="reasonLine2Label">เส้น Reason บรรทัด 2</span> <span id="reasonLine2Text" class="small-muted"></span></label>
+              <input type="range" id="reasonLine2" min="42" max="68" step="1" value="55" />
+            </div>
+            <div class="field">
+              <label for="dateLine"><span data-i18n="dateLineLabel">เส้น Date</span> <span id="dateLineText" class="small-muted"></span></label>
+              <input type="range" id="dateLine" min="58" max="78" step="1" value="70" />
+            </div>
+            <div class="field">
+              <label for="bottomHeight"><span data-i18n="bottomHeightLabel">ความสูงช่องล่าง</span> <span id="bottomHeightText" class="small-muted"></span></label>
+              <input type="range" id="bottomHeight" min="16" max="38" step="1" value="24" />
+            </div>
+          </div>
+        </div>
+
+        <div class="group">
+          <h2 data-i18n="groupBottom">6) ช่อง Approved / Checked / Writer</h2>
+          <div class="locked-note" data-i18n="bottomNote">ชื่อทั้ง 3 ช่องล็อคไว้เหมือนตัวอย่าง แต่ปรับความกว้างช่องได้ด้วยการลากเส้นตั้งในตัวอย่าง</div>
+          <div class="grid-3" style="margin-top:10px">
+            <div class="field">
+              <label for="bottomFont" data-i18n="bottomFontLabel">ฟอนต์ชื่อช่อง</label>
+              <input list="fontList" type="text" id="bottomFont" value="Arial" />
+            </div>
+            <div class="field">
+              <label for="bottomSize" data-i18n="bottomSizeLabel">ขนาดชื่อช่อง</label>
+              <input type="number" id="bottomSize" min="12" max="70" step="1" value="30" />
+            </div>
+            <div class="field">
+              <label for="bottomColor" data-i18n="bottomColorLabel">สีชื่อช่อง</label>
+              <input type="color" id="bottomColor" value="#a83b4b" />
+            </div>
+          </div>
+          <div class="toolbar">
+            <button class="btn mini" id="resetColumnsBtn" data-i18n="btnResetColumns">รีเซ็ตช่องล่างเท่ากัน</button>
+          </div>
+        </div>
+
+        <datalist id="fontList">
+          <option value="Arial"></option>
+          <option value="Arial Black"></option>
+          <option value="Impact"></option>
+          <option value="Tahoma"></option>
+          <option value="Verdana"></option>
+          <option value="Georgia"></option>
+          <option value="Times New Roman"></option>
+          <option value="Courier New"></option>
+          <option value="Sarabun"></option>
+          <option value="Kanit"></option>
+          <option value="Prompt"></option>
+          <option value="Noto Sans Thai"></option>
+          <option value="Noto Serif Thai"></option>
+          <option value="Noto Sans JP"></option>
+          <option value="Noto Serif JP"></option>
+          <option value="Yu Gothic"></option>
+          <option value="Meiryo"></option>
+        </datalist>
+      </section>
+    </main>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+<script>
+(() => {
+  const canvas = document.getElementById('stampCanvas');
+  const ctx = canvas.getContext('2d');
+  const STORAGE_KEY = 'digitalStampCreater.settings.v2';
+  const LANG_KEY = 'digitalStampCreater.lang';
+
+  const MONTHS = {
+    th: {
+      long: ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'],
+      short: ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.']
+    },
+    en: {
+      long: ['January','February','March','April','May','June','July','August','September','October','November','December'],
+      short: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+    },
+    ja: {
+      long: ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'],
+      short: ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月']
+    }
+  };
+
+  const I18N = {
+    th: {
+      htmlLang: 'th',
+      documentTitle: 'Digital Stamp Creater',
+      appTitle: 'Digital Stamp Creater',
+      subtitle: 'สร้างตรายางดิจิทัลแบบสี่เหลี่ยม พร้อม Reason / Date / Approved / Checked / Writer',
+      previewTitle: 'Preview', settingsTitle: 'Settings',
+      dragHint: 'ลากขอบ/มุมกรอบ = ปรับขนาดตรา · ลากเส้นประ Reason/Date = เลื่อนตำแหน่ง · ลากเส้นช่องล่าง = ปรับ Approved / Checked / Writer',
+      infoW: 'กว้าง', infoH: 'สูง', infoC1: 'ช่องซ้าย', infoC2: 'ช่องกลาง',
+      btnSavePng: 'บันทึก PNG', btnCopyPng: 'คัดลอก PNG', btnSaveSvg: 'บันทึก SVG', btnCopySvg: 'คัดลอก SVG', btnResetLayout: 'รีเซ็ตกรอบ',
+      groupFrame: '1) กรอบและเส้น', lineColor: 'สีเส้น', lineWidth: 'ความหนาเส้น', roughness: 'ความนุ่มแบบตรายาง', frameW: 'ความกว้างกรอบ', frameH: 'ความสูงกรอบ', btnApplyColor: 'ใช้สีเส้นกับข้อความทั้งหมด',
+      groupTitle: '2) ข้อความหัวตรา', titleTextLabel: 'เปลี่ยนคำได้', fontLabel: 'ฟอนต์', fontSizeLabel: 'ขนาดตัวอักษร', textColorLabel: 'สีตัวอักษร', boldLabel: 'ตัวหนา',
+      groupReason: '3) Reason', reasonNote: 'คำว่า Reason ถูกล็อคไว้เหมือนตัวอย่าง แต่พิมพ์เหตุผลด้านหลังเส้นประได้', reasonTextLabel: 'ข้อความเหตุผล', reasonPlaceholder: 'พิมพ์เหตุผลที่ต้องการให้แสดงบนตรา', reasonFontLabel: 'ฟอนต์ข้อความเหตุผล', reasonSizeLabel: 'ขนาดข้อความเหตุผล', reasonColorLabel: 'สีข้อความเหตุผล',
+      groupDate: '4) วันที่', dayLabel: 'วัน', monthLabel: 'เดือน', yearLabel: 'ปี ค.ศ.', dateFormatLabel: 'รูปแบบวันที่', dateFontLabel: 'ฟอนต์วันที่', dateSizeLabel: 'ขนาดวันที่', dateColorLabel: 'สีวันที่',
+      dateFmtDmySlash: 'วัน/เดือน/ปี — 07/05/2026', dateFmtYmdSlash: 'ปี/เดือน/วัน — 2026/05/07', dateFmtDmyDash: 'วัน-เดือน-ปี — 07-05-2026', dateFmtDmyDot: 'วัน.เดือน.ปี — 07.05.2026', dateFmtLong: 'วัน เดือน ปี — 7 พฤษภาคม 2026', dateFmtThaiBeSlash: 'พ.ศ. ตัวเลข — 07/05/2569', dateFmtThaiBeLong: 'พ.ศ. เต็ม — 7 พฤษภาคม 2569', dateFmtJaKanji: 'ญี่ปุ่น — 2026年5月7日', dateFmtMonthYear: 'เดือน/ปี — 05/2026', dateFmtYearOnly: 'ปีอย่างเดียว — 2026', dateFmtBlank: 'ไม่ใส่วันที่ / เว้นว่าง',
+      groupInnerLines: '5) เส้นขอบด้านใน', innerLinesNote: 'ปรับด้วยสไลเดอร์ หรือใช้เมาส์ลากเส้นใน Preview ได้โดยตรง', reasonLine1Label: 'เส้น Reason บรรทัด 1', reasonLine2Label: 'เส้น Reason บรรทัด 2', dateLineLabel: 'เส้น Date', bottomHeightLabel: 'ความสูงช่องล่าง',
+      groupBottom: '6) ช่อง Approved / Checked / Writer', bottomNote: 'ชื่อทั้ง 3 ช่องล็อคไว้เหมือนตัวอย่าง แต่ปรับความกว้างช่องได้ด้วยการลากเส้นตั้งในตัวอย่าง', bottomFontLabel: 'ฟอนต์ชื่อช่อง', bottomSizeLabel: 'ขนาดชื่อช่อง', bottomColorLabel: 'สีชื่อช่อง', btnResetColumns: 'รีเซ็ตช่องล่างเท่ากัน',
+      toastApplyColor: 'ใช้สีเส้นกับข้อความทั้งหมดแล้ว', toastResetColumns: 'รีเซ็ตช่องล่างเท่ากันแล้ว', toastResetLayout: 'รีเซ็ตกรอบแล้ว', toastSavedPng: 'บันทึก PNG แล้ว', toastCopiedPng: 'คัดลอกรูปแล้ว วางใน Word / Excel ได้เลย', toastCopyPngFail: 'คัดลอก PNG ไม่ได้ ให้ใช้ปุ่มบันทึก PNG แทน', toastSavedSvg: 'บันทึก SVG แล้ว', toastCopiedSvg: 'คัดลอก SVG แล้ว', toastCopySvgFail: 'คัดลอก SVG ไม่ได้ ให้ใช้ปุ่มบันทึก SVG แทน'
+    },
+    en: {
+      htmlLang: 'en',
+      documentTitle: 'Digital Stamp Creater',
+      appTitle: 'Digital Stamp Creater',
+      subtitle: 'Create a rectangular digital stamp with Reason / Date / Approved / Checked / Writer.',
+      previewTitle: 'Preview', settingsTitle: 'Settings',
+      dragHint: 'Drag frame edges/corners = resize · Drag Reason/Date dotted lines = reposition · Drag bottom dividers = adjust Approved / Checked / Writer',
+      infoW: 'Width', infoH: 'Height', infoC1: 'Left', infoC2: 'Middle',
+      btnSavePng: 'Save PNG', btnCopyPng: 'Copy PNG', btnSaveSvg: 'Save SVG', btnCopySvg: 'Copy SVG', btnResetLayout: 'Reset frame',
+      groupFrame: '1) Frame and lines', lineColor: 'Line color', lineWidth: 'Line width', roughness: 'Rubber-stamp softness', frameW: 'Frame width', frameH: 'Frame height', btnApplyColor: 'Apply line color to all text',
+      groupTitle: '2) Stamp heading', titleTextLabel: 'Editable text', fontLabel: 'Font', fontSizeLabel: 'Font size', textColorLabel: 'Text color', boldLabel: 'Bold',
+      groupReason: '3) Reason', reasonNote: 'The word Reason is locked like the sample, but you can type the reason after the dotted line.', reasonTextLabel: 'Reason text', reasonPlaceholder: 'Type the reason to show on the stamp', reasonFontLabel: 'Reason font', reasonSizeLabel: 'Reason size', reasonColorLabel: 'Reason color',
+      groupDate: '4) Date', dayLabel: 'Day', monthLabel: 'Month', yearLabel: 'Year', dateFormatLabel: 'Date format', dateFontLabel: 'Date font', dateSizeLabel: 'Date size', dateColorLabel: 'Date color',
+      dateFmtDmySlash: 'D/M/Y — 07/05/2026', dateFmtYmdSlash: 'Y/M/D — 2026/05/07', dateFmtDmyDash: 'D-M-Y — 07-05-2026', dateFmtDmyDot: 'D.M.Y — 07.05.2026', dateFmtLong: 'D Month Y — 7 May 2026', dateFmtThaiBeSlash: 'Thai BE numeric — 07/05/2569', dateFmtThaiBeLong: 'Thai BE long — 7 พฤษภาคม 2569', dateFmtJaKanji: 'Japanese — 2026年5月7日', dateFmtMonthYear: 'Month/Year — 05/2026', dateFmtYearOnly: 'Year only — 2026', dateFmtBlank: 'No date / blank',
+      groupInnerLines: '5) Inner lines', innerLinesNote: 'Adjust with sliders, or drag the lines directly in Preview.', reasonLine1Label: 'Reason line 1', reasonLine2Label: 'Reason line 2', dateLineLabel: 'Date line', bottomHeightLabel: 'Bottom-row height',
+      groupBottom: '6) Approved / Checked / Writer boxes', bottomNote: 'The three labels stay locked like the sample, but the box widths can be adjusted by dragging the vertical dividers in the preview.', bottomFontLabel: 'Box-label font', bottomSizeLabel: 'Box-label size', bottomColorLabel: 'Box-label color', btnResetColumns: 'Reset equal boxes',
+      toastApplyColor: 'Applied line color to all text', toastResetColumns: 'Reset the bottom boxes equally', toastResetLayout: 'Frame reset', toastSavedPng: 'PNG saved', toastCopiedPng: 'Image copied — paste into Word / Excel', toastCopyPngFail: 'Could not copy PNG — use Save PNG instead', toastSavedSvg: 'SVG saved', toastCopiedSvg: 'SVG copied', toastCopySvgFail: 'Could not copy SVG — use Save SVG instead'
+    },
+    ja: {
+      htmlLang: 'ja',
+      documentTitle: 'Digital Stamp Creater',
+      appTitle: 'Digital Stamp Creater',
+      subtitle: 'Reason / Date / Approved / Checked / Writer 付きの長方形デジタル印を作成します。',
+      previewTitle: 'プレビュー', settingsTitle: '設定',
+      dragHint: '枠の端/角をドラッグ=サイズ調整 · Reason/Date の点線をドラッグ=位置調整 · 下段の線をドラッグ=Approved / Checked / Writer を調整',
+      infoW: '幅', infoH: '高さ', infoC1: '左枠', infoC2: '中央枠',
+      btnSavePng: 'PNG保存', btnCopyPng: 'PNGコピー', btnSaveSvg: 'SVG保存', btnCopySvg: 'SVGコピー', btnResetLayout: '枠リセット',
+      groupFrame: '1) 枠と線', lineColor: '線の色', lineWidth: '線の太さ', roughness: 'スタンプ風のにじみ', frameW: '枠の幅', frameH: '枠の高さ', btnApplyColor: '線の色を全文字に適用',
+      groupTitle: '2) 上部テキスト', titleTextLabel: '文字を変更', fontLabel: 'フォント', fontSizeLabel: '文字サイズ', textColorLabel: '文字色', boldLabel: '太字',
+      groupReason: '3) Reason', reasonNote: 'Reason の文字はサンプル同様に固定です。点線の後ろに理由を入力できます。', reasonTextLabel: '理由テキスト', reasonPlaceholder: 'スタンプに表示する理由を入力', reasonFontLabel: '理由フォント', reasonSizeLabel: '理由サイズ', reasonColorLabel: '理由色',
+      groupDate: '4) 日付', dayLabel: '日', monthLabel: '月', yearLabel: '年', dateFormatLabel: '日付形式', dateFontLabel: '日付フォント', dateSizeLabel: '日付サイズ', dateColorLabel: '日付色',
+      dateFmtDmySlash: '日/月/年 — 07/05/2026', dateFmtYmdSlash: '年/月/日 — 2026/05/07', dateFmtDmyDash: '日-月-年 — 07-05-2026', dateFmtDmyDot: '日.月.年 — 07.05.2026', dateFmtLong: '日 月 年 — 7 5月 2026', dateFmtThaiBeSlash: 'タイ仏暦 数字 — 07/05/2569', dateFmtThaiBeLong: 'タイ仏暦 長 — 7 พฤษภาคม 2569', dateFmtJaKanji: '日本式 — 2026年5月7日', dateFmtMonthYear: '月/年 — 05/2026', dateFmtYearOnly: '年のみ — 2026', dateFmtBlank: '日付なし / 空白',
+      groupInnerLines: '5) 内側の線', innerLinesNote: 'スライダーで調整、またはプレビュー内の線を直接ドラッグできます。', reasonLine1Label: 'Reason 1行目', reasonLine2Label: 'Reason 2行目', dateLineLabel: 'Date 行', bottomHeightLabel: '下段の高さ',
+      groupBottom: '6) Approved / Checked / Writer 枠', bottomNote: '3つのラベルはサンプル同様に固定です。縦線をドラッグして幅を調整できます。', bottomFontLabel: 'ラベルフォント', bottomSizeLabel: 'ラベルサイズ', bottomColorLabel: 'ラベル色', btnResetColumns: '下段を均等に戻す',
+      toastApplyColor: '線の色を全文字に適用しました', toastResetColumns: '下段を均等にリセットしました', toastResetLayout: '枠をリセットしました', toastSavedPng: 'PNGを保存しました', toastCopiedPng: '画像をコピーしました — Word / Excelに貼り付けできます', toastCopyPngFail: 'PNGをコピーできません — PNG保存をご使用ください', toastSavedSvg: 'SVGを保存しました', toastCopiedSvg: 'SVGをコピーしました', toastCopySvgFail: 'SVGをコピーできません — SVG保存をご使用ください'
+    }
+  };
+
+  function detectInitialLang() {
+    try {
+      const saved = localStorage.getItem(LANG_KEY);
+      if (saved && I18N[saved]) return saved;
+    } catch (_) {}
+    const nav = (navigator.language || 'th').toLowerCase();
+    if (nav.startsWith('ja')) return 'ja';
+    if (nav.startsWith('en')) return 'en';
+    return 'th';
+  }
+
+  let currentLang = detectInitialLang();
+  const today = new Date();
+
+  const state = {
+    lineColor: '#a83b4b',
+    lineWidth: 4,
+    roughness: 4,
+    frame: { x: 140, y: 160, w: 820, h: 460 },
+    reasonLine1: 0.40,
+    reasonLine2: 0.55,
+    dateLine: 0.70,
+    bottomTop: 0.76,
+    col1: 1 / 3,
+    col2: 2 / 3,
+    title: { text: 'ABOLISHED', font: 'Arial', size: 88, color: '#a83b4b', bold: true },
+    reason: { text: '', font: 'Arial', size: 28, color: '#a83b4b', bold: false },
+    date: { day: today.getDate(), month: today.getMonth() + 1, year: today.getFullYear(), format: 'dmy-slash', font: 'Arial', size: 30, color: '#a83b4b', bold: true },
+    bottom: { font: 'Arial', size: 30, color: '#a83b4b' }
+  };
+
+  let drag = null;
+  let saveTimer = null;
+
+  const $ = (id) => document.getElementById(id);
+  const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+
+  function t(key) {
+    return (I18N[currentLang] && I18N[currentLang][key]) || I18N.th[key] || key;
+  }
+
+  function showToast(message) {
+    const el = $('toast');
+    el.textContent = message;
+    el.classList.add('show');
+    clearTimeout(el._timer);
+    el._timer = setTimeout(() => el.classList.remove('show'), 2200);
+  }
+
+  function applyI18n() {
+    const dict = I18N[currentLang] || I18N.th;
+    document.documentElement.lang = dict.htmlLang || currentLang;
+    document.title = dict.documentTitle || 'Digital Stamp Creater';
+    document.querySelectorAll('[data-i18n]').forEach((el) => {
+      const key = el.dataset.i18n;
+      if (dict[key]) el.textContent = dict[key];
+    });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach((el) => {
+      const key = el.dataset.i18nPlaceholder;
+      if (dict[key]) el.placeholder = dict[key];
+    });
+    document.querySelectorAll('.lang-btn').forEach((btn) => {
+      btn.classList.toggle('active', btn.dataset.lang === currentLang);
+    });
+    refreshMonthLabels();
+  }
+
+  function setLang(lang) {
+    if (!I18N[lang]) return;
+    currentLang = lang;
+    try { localStorage.setItem(LANG_KEY, lang); } catch (_) {}
+    applyI18n();
+    render();
+  }
+
+  function fontFamily(name) {
+    const clean = (name || 'Arial').trim() || 'Arial';
+    if (/^(serif|sans-serif|monospace)$/i.test(clean)) return clean;
+    return `"${clean}", Arial, sans-serif`;
+  }
+
+  function setCustomFont(font, size, bold) {
+    ctx.font = `${bold ? 800 : 500} ${size}px ${fontFamily(font)}`;
+  }
+
+  function fitText(text, maxWidth, baseSize, setupFont) {
+    let size = baseSize;
+    setupFont(size);
+    while (text && ctx.measureText(text).width > maxWidth && size > 8) {
+      size *= 0.94;
+      setupFont(size);
+    }
+    return size;
+  }
+
+  function drawFittedText(text, x, y, maxWidth, baseSize, color, setupFont, align = 'center') {
+    if (!text) return;
+    ctx.save();
+    ctx.fillStyle = color;
+    ctx.textAlign = align;
+    ctx.textBaseline = 'middle';
+    fitText(text, maxWidth, baseSize, setupFont);
+    ctx.fillText(text, x, y);
+    ctx.restore();
+  }
+
+  function drawSoftLine(drawFn, exportMode = false) {
+    const jitter = exportMode ? state.roughness : Math.min(state.roughness, 8);
+    ctx.save();
+    ctx.strokeStyle = state.lineColor;
+    ctx.lineWidth = state.lineWidth;
+    ctx.lineJoin = 'miter';
+    ctx.lineCap = 'butt';
+    drawFn(0, 0);
+    if (jitter > 0) {
+      ctx.globalAlpha = 0.20;
+      ctx.lineWidth = Math.max(1, state.lineWidth * 0.65);
+      const passes = Math.min(5, Math.ceil(jitter / 3));
+      for (let i = 0; i < passes; i++) {
+        const dx = (Math.sin(i * 12.989) * 43758.5453 % 1) * jitter * 0.35;
+        const dy = (Math.cos(i * 78.233) * 24634.6345 % 1) * jitter * 0.35;
+        drawFn(dx, dy);
+      }
+    }
+    ctx.restore();
+  }
+
+  function strokeRectSoft(x, y, w, h, exportMode) {
+    drawSoftLine((dx, dy) => ctx.strokeRect(x + dx, y + dy, w, h), exportMode);
+  }
+
+  function lineSoft(x1, y1, x2, y2, exportMode) {
+    drawSoftLine((dx, dy) => {
+      ctx.beginPath();
+      ctx.moveTo(x1 + dx, y1 + dy);
+      ctx.lineTo(x2 + dx, y2 + dy);
+      ctx.stroke();
+    }, exportMode);
+  }
+
+  function dottedLine(x1, y, x2) {
+    ctx.save();
+    ctx.strokeStyle = state.lineColor;
+    ctx.lineWidth = Math.max(2, state.lineWidth * 0.95);
+    ctx.lineCap = 'round';
+    ctx.setLineDash([1, Math.max(7, state.lineWidth * 2.1)]);
+    ctx.beginPath();
+    ctx.moveTo(x1, y);
+    ctx.lineTo(x2, y);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  function wrapTextToLines(text, maxWidths, font, size, bold) {
+    const clean = String(text || '').replace(/\r/g, '').trim();
+    if (!clean) return [];
+    setCustomFont(font, size, bold);
+
+    const result = [];
+    const sourceLines = clean.split('\n').filter(Boolean);
+    let words = [];
+    sourceLines.forEach((line, idx) => {
+      const hasSpaces = /\s/.test(line);
+      const parts = hasSpaces ? line.split(/(\s+)/).filter(p => p !== '') : Array.from(line);
+      words = words.concat(parts);
+      if (idx < sourceLines.length - 1) words.push('\n');
+    });
+
+    let line = '';
+    let lineIndex = 0;
+    for (const token of words) {
+      if (token === '\n') {
+        if (line) result.push(line.trim());
+        line = '';
+        lineIndex = result.length;
+        if (result.length >= maxWidths.length) break;
+        continue;
+      }
+      const maxW = maxWidths[Math.min(lineIndex, maxWidths.length - 1)];
+      const next = line + token;
+      if (!line || ctx.measureText(next).width <= maxW) {
+        line = next;
+      } else {
+        result.push(line.trim());
+        line = token.trimStart();
+        lineIndex = result.length;
+        if (result.length >= maxWidths.length) break;
+      }
+    }
+    if (line && result.length < maxWidths.length) result.push(line.trim());
+    if (result.length === maxWidths.length) {
+      const lastIdx = result.length - 1;
+      let last = result[lastIdx];
+      const maxW = maxWidths[lastIdx];
+      setCustomFont(font, size, bold);
+      while (ctx.measureText(last + '…').width > maxW && last.length > 0) {
+        last = Array.from(last).slice(0, -1).join('');
+      }
+      result[lastIdx] = last + (last && last !== result[lastIdx] ? '…' : '');
+    }
+    return result;
+  }
+
+  const pad2 = (v) => String(v).padStart(2, '0');
+
+  function formattedDate() {
+    const d = parseInt(state.date.day, 10);
+    const m = parseInt(state.date.month, 10);
+    const y = parseInt(state.date.year, 10);
+    const dd = Number.isFinite(d) ? pad2(d) : '';
+    const mm = Number.isFinite(m) ? pad2(m) : '';
+    const yyyy = Number.isFinite(y) ? String(y) : '';
+    const be = Number.isFinite(y) ? String(y + 543) : '';
+    const monthSet = MONTHS[currentLang] || MONTHS.th;
+    const monthLong = (Number.isFinite(m) && m >= 1 && m <= 12) ? monthSet.long[m - 1] : '';
+    const thaiMonthLong = (Number.isFinite(m) && m >= 1 && m <= 12) ? MONTHS.th.long[m - 1] : '';
+
+    switch (state.date.format) {
+      case 'ymd-slash': return `${yyyy}/${mm}/${dd}`;
+      case 'dmy-dash': return `${dd}-${mm}-${yyyy}`;
+      case 'dmy-dot': return `${dd}.${mm}.${yyyy}`;
+      case 'long': return currentLang === 'ja' ? `${d} ${monthLong} ${yyyy}` : `${d} ${monthLong} ${yyyy}`;
+      case 'thai-be-slash': return `${dd}/${mm}/${be}`;
+      case 'thai-be-long': return `${d} ${thaiMonthLong} ${be}`;
+      case 'ja-kanji': return `${yyyy}年${m}月${d}日`;
+      case 'month-year': return `${mm}/${yyyy}`;
+      case 'year-only': return `${yyyy}`;
+      case 'blank': return '';
+      case 'dmy-slash':
+      default: return `${dd}/${mm}/${yyyy}`;
+    }
+  }
+
+  function normaliseLayout() {
+    state.reasonLine1 = clamp(state.reasonLine1, 0.28, 0.50);
+    state.reasonLine2 = clamp(state.reasonLine2, state.reasonLine1 + 0.07, 0.68);
+    state.dateLine = clamp(state.dateLine, state.reasonLine2 + 0.08, 0.80);
+    state.bottomTop = clamp(state.bottomTop, state.dateLine + 0.05, 0.88);
+    state.col1 = clamp(state.col1, 0.12, state.col2 - 0.12);
+    state.col2 = clamp(state.col2, state.col1 + 0.12, 0.88);
+  }
+
+  function getGeometry() {
+    normaliseLayout();
+    const f = state.frame;
+    const x = f.x;
+    const y = f.y;
+    const w = f.w;
+    const h = f.h;
+    const pad = Math.max(24, w * 0.035);
+    const right = x + w;
+    const bottom = y + h;
+    const reasonY1 = y + h * state.reasonLine1;
+    const reasonY2 = y + h * state.reasonLine2;
+    const dateY = y + h * state.dateLine;
+    const bottomTopY = y + h * state.bottomTop;
+    const bottomH = bottom - bottomTopY;
+    const colX1 = x + w * state.col1;
+    const colX2 = x + w * state.col2;
+    const labelFontSize = clamp(h * 0.078, 24, 38);
+    return { f, x, y, w, h, pad, right, bottom, reasonY1, reasonY2, dateY, bottomTopY, bottomH, colX1, colX2, labelFontSize };
+  }
+
+  function drawStamp(exportMode = false) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const g = getGeometry();
+    const { x, y, w, h, pad, right, bottom, reasonY1, reasonY2, dateY, bottomTopY, bottomH, colX1, colX2, labelFontSize } = g;
+
+    ctx.strokeStyle = state.lineColor;
+    ctx.fillStyle = state.lineColor;
+    ctx.lineWidth = state.lineWidth;
+    strokeRectSoft(x, y, w, h, exportMode);
+    lineSoft(x, bottomTopY, right, bottomTopY, exportMode);
+    lineSoft(colX1, bottomTopY, colX1, bottom, exportMode);
+    lineSoft(colX2, bottomTopY, colX2, bottom, exportMode);
+
+    const titleY = y + h * 0.17;
+    drawFittedText(
+      state.title.text,
+      x + w / 2,
+      titleY,
+      w * 0.78,
+      state.title.size,
+      state.title.color,
+      (size) => setCustomFont(state.title.font, size, state.title.bold)
+    );
+
+    ctx.save();
+    ctx.fillStyle = state.lineColor;
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+    setCustomFont(state.reason.font, labelFontSize, true);
+    ctx.fillText('Reason', x + pad, reasonY1);
+    const reasonLabelW = ctx.measureText('Reason').width;
+    ctx.restore();
+
+    const reasonTextStart = x + pad + reasonLabelW + 18;
+    const reasonDotY1 = reasonY1 + labelFontSize * 0.28;
+    const reasonDotY2 = reasonY2 + labelFontSize * 0.28;
+    dottedLine(reasonTextStart, reasonDotY1, right - pad);
+    dottedLine(x + pad, reasonDotY2, right - pad);
+
+    const reasonLines = wrapTextToLines(
+      state.reason.text,
+      [right - pad - reasonTextStart, right - pad - (x + pad)],
+      state.reason.font,
+      state.reason.size,
+      state.reason.bold
+    );
+    ctx.save();
+    ctx.fillStyle = state.reason.color;
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+    setCustomFont(state.reason.font, state.reason.size, state.reason.bold);
+    if (reasonLines[0]) ctx.fillText(reasonLines[0], reasonTextStart, reasonY1);
+    if (reasonLines[1]) ctx.fillText(reasonLines[1], x + pad, reasonY2);
+    ctx.restore();
+
+    ctx.save();
+    ctx.fillStyle = state.lineColor;
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+    setCustomFont(state.date.font, labelFontSize, true);
+    ctx.fillText('Date', x + pad, dateY);
+    const dateLabelW = ctx.measureText('Date').width;
+    ctx.restore();
+
+    const dateStart = x + pad + dateLabelW + 18;
+    const dateDotY = dateY + labelFontSize * 0.28;
+    dottedLine(dateStart, dateDotY, right - pad);
+    const dateString = formattedDate();
+    const dateCenterX = x + w / 2;
+    const safeHalf = Math.max(25, Math.min(dateCenterX - dateStart, right - pad - dateCenterX));
+    const dateMaxW = safeHalf * 2;
+    ctx.save();
+    ctx.fillStyle = state.date.color;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    const fittedDateSize = fitText(dateString, dateMaxW, state.date.size, (size) => setCustomFont(state.date.font, size, state.date.bold));
+    setCustomFont(state.date.font, fittedDateSize, state.date.bold);
+    ctx.fillText(dateString, dateCenterX, dateY);
+    ctx.restore();
+
+    const labels = [
+      { text: 'Approved', cx: x + (colX1 - x) / 2 },
+      { text: 'Checked', cx: colX1 + (colX2 - colX1) / 2 },
+      { text: 'Writer', cx: colX2 + (right - colX2) / 2 }
+    ];
+    const labelY = bottomTopY + bottomH * 0.25;
+    ctx.save();
+    ctx.fillStyle = state.bottom.color;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    labels.forEach((item, index) => {
+      const left = index === 0 ? x : index === 1 ? colX1 : colX2;
+      const rightEdge = index === 0 ? colX1 : index === 1 ? colX2 : right;
+      const maxW = Math.max(20, rightEdge - left - 18);
+      const size = fitText(item.text, maxW, state.bottom.size, (s) => setCustomFont(state.bottom.font, s, true));
+      setCustomFont(state.bottom.font, size, true);
+      ctx.fillText(item.text, item.cx, labelY);
+    });
+    ctx.restore();
+
+    if (!exportMode) drawLiveHandles();
+    updateInfo();
+  }
+
+  function drawLiveHandles() {
+    const { x, y, w, h, right, bottom, reasonY1, reasonY2, dateY, bottomTopY, colX1, colX2 } = getGeometry();
+    const s = 10;
+    const pts = [
+      [x,y], [x+w/2,y], [x+w,y], [x,y+h/2], [x+w,y+h/2], [x,y+h], [x+w/2,y+h], [x+w,y+h]
+    ];
+    ctx.save();
+    ctx.fillStyle = 'rgba(255,255,255,.92)';
+    ctx.strokeStyle = 'rgba(32,26,22,.55)';
+    ctx.lineWidth = 1.5;
+    pts.forEach(([px, py]) => {
+      ctx.beginPath();
+      ctx.rect(px - s / 2, py - s / 2, s, s);
+      ctx.fill();
+      ctx.stroke();
+    });
+
+    ctx.strokeStyle = 'rgba(32,26,22,.30)';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([6, 5]);
+    ctx.beginPath();
+    ctx.moveTo(x, reasonY1);
+    ctx.lineTo(right, reasonY1);
+    ctx.moveTo(x, reasonY2);
+    ctx.lineTo(right, reasonY2);
+    ctx.moveTo(x, dateY);
+    ctx.lineTo(right, dateY);
+    ctx.moveTo(x, bottomTopY);
+    ctx.lineTo(right, bottomTopY);
+    ctx.moveTo(colX1, bottomTopY);
+    ctx.lineTo(colX1, bottom);
+    ctx.moveTo(colX2, bottomTopY);
+    ctx.lineTo(colX2, bottom);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  function updateInfo() {
+    const f = state.frame;
+    $('infoW').textContent = Math.round(f.w) + ' px';
+    $('infoH').textContent = Math.round(f.h) + ' px';
+    $('infoC1').textContent = Math.round(state.col1 * 100) + '%';
+    $('infoC2').textContent = Math.round((state.col2 - state.col1) * 100) + '%';
+    $('bottomHeightText').textContent = `(${Math.round((1 - state.bottomTop) * 100)}%)`;
+    $('reasonLine1Text').textContent = `(${Math.round(state.reasonLine1 * 100)}%)`;
+    $('reasonLine2Text').textContent = `(${Math.round(state.reasonLine2 * 100)}%)`;
+    $('dateLineText').textContent = `(${Math.round(state.dateLine * 100)}%)`;
+    $('reasonLine1').value = Math.round(state.reasonLine1 * 100);
+    $('reasonLine2').value = Math.round(state.reasonLine2 * 100);
+    $('dateLine').value = Math.round(state.dateLine * 100);
+    $('bottomHeight').value = Math.round((1 - state.bottomTop) * 100);
+  }
+
+  function canvasPoint(e) {
+    const rect = canvas.getBoundingClientRect();
+    return {
+      x: (e.clientX - rect.left) * (canvas.width / rect.width),
+      y: (e.clientY - rect.top) * (canvas.height / rect.height)
+    };
+  }
+
+  function hitTest(p) {
+    const { x, y, w, h, right, bottom, reasonY1, reasonY2, dateY, bottomTopY, colX1, colX2 } = getGeometry();
+    const th = 13;
+
+    if (p.x >= x && p.x <= right) {
+      if (Math.abs(p.y - reasonY1) < th) return { type: 'reasonLine1' };
+      if (Math.abs(p.y - reasonY2) < th) return { type: 'reasonLine2' };
+      if (Math.abs(p.y - dateY) < th) return { type: 'dateLine' };
+      if (Math.abs(p.y - bottomTopY) < th) return { type: 'bottomTop' };
+    }
+
+    if (p.x >= x && p.x <= right && p.y >= bottomTopY && p.y <= bottom) {
+      if (Math.abs(p.x - colX1) < th) return { type: 'col1' };
+      if (Math.abs(p.x - colX2) < th) return { type: 'col2' };
+    }
+
+    const handles = [
+      { name: 'nw', x, y },
+      { name: 'n', x: x + w/2, y },
+      { name: 'ne', x: x + w, y },
+      { name: 'w', x, y: y + h/2 },
+      { name: 'e', x: x + w, y: y + h/2 },
+      { name: 'sw', x, y: y + h },
+      { name: 's', x: x + w/2, y: y + h },
+      { name: 'se', x: x + w, y: y + h }
+    ];
+
+    for (const handle of handles) {
+      if (Math.abs(p.x - handle.x) <= th && Math.abs(p.y - handle.y) <= th) return { type: 'resize', handle: handle.name };
+    }
+
+    if (Math.abs(p.x - x) < th && p.y >= y && p.y <= bottom) return { type: 'resize', handle: 'w' };
+    if (Math.abs(p.x - right) < th && p.y >= y && p.y <= bottom) return { type: 'resize', handle: 'e' };
+    if (Math.abs(p.y - y) < th && p.x >= x && p.x <= right) return { type: 'resize', handle: 'n' };
+    if (Math.abs(p.y - bottom) < th && p.x >= x && p.x <= right) return { type: 'resize', handle: 's' };
+
+    return null;
+  }
+
+  function cursorFor(hit) {
+    if (!hit) return 'default';
+    if (hit.type === 'col1' || hit.type === 'col2') return 'ew-resize';
+    if (['reasonLine1','reasonLine2','dateLine','bottomTop'].includes(hit.type)) return 'ns-resize';
+    if (hit.type === 'resize') {
+      const map = { n: 'ns-resize', s: 'ns-resize', e: 'ew-resize', w: 'ew-resize', nw: 'nwse-resize', se: 'nwse-resize', ne: 'nesw-resize', sw: 'nesw-resize' };
+      return map[hit.handle] || 'default';
+    }
+    return 'default';
+  }
+
+  function resizeFrame(handle, dx, dy) {
+    const start = drag.startFrame;
+    let { x, y, w, h } = start;
+    const minW = 360, minH = 240, margin = 24;
+
+    if (handle.includes('e')) w = start.w + dx;
+    if (handle.includes('s')) h = start.h + dy;
+    if (handle.includes('w')) { x = start.x + dx; w = start.w - dx; }
+    if (handle.includes('n')) { y = start.y + dy; h = start.h - dy; }
+
+    if (w < minW) {
+      if (handle.includes('w')) x -= minW - w;
+      w = minW;
+    }
+    if (h < minH) {
+      if (handle.includes('n')) y -= minH - h;
+      h = minH;
+    }
+
+    if (x < margin) { w -= (margin - x); x = margin; }
+    if (y < margin) { h -= (margin - y); y = margin; }
+    if (x + w > canvas.width - margin) w = canvas.width - margin - x;
+    if (y + h > canvas.height - margin) h = canvas.height - margin - y;
+
+    state.frame.x = x;
+    state.frame.y = y;
+    state.frame.w = clamp(w, minW, canvas.width - margin * 2);
+    state.frame.h = clamp(h, minH, canvas.height - margin * 2);
+
+    $('frameW').value = Math.round(state.frame.w);
+    $('frameH').value = Math.round(state.frame.h);
+  }
+
+  canvas.addEventListener('pointerdown', (e) => {
+    const p = canvasPoint(e);
+    const hit = hitTest(p);
+    if (!hit) return;
+    drag = {
+      hit,
+      start: p,
+      startFrame: { ...state.frame },
+      startCol1: state.col1,
+      startCol2: state.col2,
+      startBottomTop: state.bottomTop,
+      startReasonLine1: state.reasonLine1,
+      startReasonLine2: state.reasonLine2,
+      startDateLine: state.dateLine
+    };
+    canvas.setPointerCapture(e.pointerId);
+    canvas.style.cursor = cursorFor(hit);
+    e.preventDefault();
+  });
+
+  canvas.addEventListener('pointermove', (e) => {
+    const p = canvasPoint(e);
+    if (!drag) {
+      canvas.style.cursor = cursorFor(hitTest(p));
+      return;
+    }
+
+    const f = state.frame;
+    const fracY = (p.y - f.y) / f.h;
+    if (drag.hit.type === 'col1') {
+      state.col1 = clamp((p.x - f.x) / f.w, 0.12, state.col2 - 0.12);
+    } else if (drag.hit.type === 'col2') {
+      state.col2 = clamp((p.x - f.x) / f.w, state.col1 + 0.12, 0.88);
+    } else if (drag.hit.type === 'reasonLine1') {
+      state.reasonLine1 = clamp(fracY, 0.28, state.reasonLine2 - 0.07);
+    } else if (drag.hit.type === 'reasonLine2') {
+      state.reasonLine2 = clamp(fracY, state.reasonLine1 + 0.07, state.dateLine - 0.08);
+    } else if (drag.hit.type === 'dateLine') {
+      state.dateLine = clamp(fracY, state.reasonLine2 + 0.08, state.bottomTop - 0.05);
+    } else if (drag.hit.type === 'bottomTop') {
+      state.bottomTop = clamp(fracY, state.dateLine + 0.05, 0.88);
+    } else if (drag.hit.type === 'resize') {
+      resizeFrame(drag.hit.handle, p.x - drag.start.x, p.y - drag.start.y);
+    }
+
+    render();
+  });
+
+  function endDrag(e) {
+    if (!drag) return;
+    try { canvas.releasePointerCapture(e.pointerId); } catch (_) {}
+    drag = null;
+    render();
+  }
+  canvas.addEventListener('pointerup', endDrag);
+  canvas.addEventListener('pointercancel', endDrag);
+  canvas.addEventListener('pointerleave', () => { if (!drag) canvas.style.cursor = 'default'; });
+
+  function populateDateControls() {
+    const dayEl = $('day');
+    dayEl.innerHTML = '';
+    for (let i = 1; i <= 31; i++) {
+      const opt = document.createElement('option');
+      opt.value = i;
+      opt.textContent = i;
+      dayEl.appendChild(opt);
+    }
+    refreshMonthLabels();
+  }
+
+  function refreshMonthLabels() {
+    const monthEl = $('month');
+    if (!monthEl) return;
+    const currentValue = monthEl.value || state.date.month;
+    monthEl.innerHTML = '';
+    const monthSet = MONTHS[currentLang] || MONTHS.th;
+    monthSet.long.forEach((name, idx) => {
+      const opt = document.createElement('option');
+      opt.value = idx + 1;
+      opt.textContent = `${idx + 1} - ${name}`;
+      monthEl.appendChild(opt);
+    });
+    monthEl.value = currentValue;
+  }
+
+  function syncInputsFromState() {
+    normaliseLayout();
+    $('lineColor').value = state.lineColor;
+    $('lineWidth').value = state.lineWidth;
+    $('roughness').value = state.roughness;
+    $('frameW').value = Math.round(state.frame.w);
+    $('frameH').value = Math.round(state.frame.h);
+
+    $('titleText').value = state.title.text;
+    $('titleFont').value = state.title.font;
+    $('titleSize').value = state.title.size;
+    $('titleColor').value = state.title.color;
+    $('titleBold').checked = state.title.bold;
+
+    $('reasonText').value = state.reason.text;
+    $('reasonFont').value = state.reason.font;
+    $('reasonSize').value = state.reason.size;
+    $('reasonColor').value = state.reason.color;
+    $('reasonBold').checked = state.reason.bold;
+
+    $('day').value = state.date.day;
+    $('month').value = state.date.month;
+    $('year').value = state.date.year;
+    $('dateFormat').value = state.date.format;
+    $('dateFont').value = state.date.font;
+    $('dateSize').value = state.date.size;
+    $('dateColor').value = state.date.color;
+    $('dateBold').checked = state.date.bold;
+
+    $('bottomFont').value = state.bottom.font;
+    $('bottomSize').value = state.bottom.size;
+    $('bottomColor').value = state.bottom.color;
+    updateInfo();
+  }
+
+  function bindControls() {
+    document.querySelectorAll('.lang-btn').forEach((btn) => {
+      btn.addEventListener('click', () => setLang(btn.dataset.lang));
+    });
+
+    const simpleBindings = [
+      ['lineColor', v => state.lineColor = v],
+      ['lineWidth', v => state.lineWidth = clamp(parseFloat(v) || 1, 1, 14)],
+      ['roughness', v => state.roughness = clamp(parseFloat(v) || 0, 0, 18)],
+      ['titleText', v => state.title.text = v],
+      ['titleFont', v => state.title.font = v],
+      ['titleSize', v => state.title.size = clamp(parseFloat(v) || 20, 20, 170)],
+      ['titleColor', v => state.title.color = v],
+      ['reasonText', v => state.reason.text = v],
+      ['reasonFont', v => state.reason.font = v],
+      ['reasonSize', v => state.reason.size = clamp(parseFloat(v) || 12, 12, 70)],
+      ['reasonColor', v => state.reason.color = v],
+      ['day', v => state.date.day = parseInt(v, 10)],
+      ['month', v => state.date.month = parseInt(v, 10)],
+      ['year', v => state.date.year = parseInt(v, 10) || new Date().getFullYear()],
+      ['dateFormat', v => state.date.format = v],
+      ['dateFont', v => state.date.font = v],
+      ['dateSize', v => state.date.size = clamp(parseFloat(v) || 12, 12, 70)],
+      ['dateColor', v => state.date.color = v],
+      ['bottomFont', v => state.bottom.font = v],
+      ['bottomSize', v => state.bottom.size = clamp(parseFloat(v) || 12, 12, 70)],
+      ['bottomColor', v => state.bottom.color = v]
+    ];
+
+    simpleBindings.forEach(([id, setter]) => {
+      const el = $(id);
+      const eventName = (el.tagName === 'SELECT' || el.type === 'checkbox') ? 'change' : 'input';
+      el.addEventListener(eventName, () => { setter(el.value); render(); });
+    });
+
+    $('titleBold').addEventListener('change', (e) => { state.title.bold = e.target.checked; render(); });
+    $('reasonBold').addEventListener('change', (e) => { state.reason.bold = e.target.checked; render(); });
+    $('dateBold').addEventListener('change', (e) => { state.date.bold = e.target.checked; render(); });
+
+    $('frameW').addEventListener('input', () => {
+      const oldCenter = state.frame.x + state.frame.w / 2;
+      state.frame.w = clamp(parseFloat($('frameW').value) || state.frame.w, 360, 1040);
+      state.frame.x = clamp(oldCenter - state.frame.w / 2, 24, canvas.width - state.frame.w - 24);
+      render();
+    });
+    $('frameH').addEventListener('input', () => {
+      const oldCenter = state.frame.y + state.frame.h / 2;
+      state.frame.h = clamp(parseFloat($('frameH').value) || state.frame.h, 240, 680);
+      state.frame.y = clamp(oldCenter - state.frame.h / 2, 24, canvas.height - state.frame.h - 24);
+      render();
+    });
+
+    $('reasonLine1').addEventListener('input', () => {
+      state.reasonLine1 = clamp((parseFloat($('reasonLine1').value) || 40) / 100, 0.28, state.reasonLine2 - 0.07);
+      render();
+    });
+    $('reasonLine2').addEventListener('input', () => {
+      state.reasonLine2 = clamp((parseFloat($('reasonLine2').value) || 55) / 100, state.reasonLine1 + 0.07, state.dateLine - 0.08);
+      render();
+    });
+    $('dateLine').addEventListener('input', () => {
+      state.dateLine = clamp((parseFloat($('dateLine').value) || 70) / 100, state.reasonLine2 + 0.08, state.bottomTop - 0.05);
+      render();
+    });
+    $('bottomHeight').addEventListener('input', () => {
+      state.bottomTop = clamp(1 - (parseFloat($('bottomHeight').value) || 24) / 100, state.dateLine + 0.05, 0.88);
+      render();
+    });
+
+    $('applyLineColorBtn').addEventListener('click', () => {
+      state.title.color = state.lineColor;
+      state.reason.color = state.lineColor;
+      state.date.color = state.lineColor;
+      state.bottom.color = state.lineColor;
+      syncInputsFromState();
+      render();
+      showToast(t('toastApplyColor'));
+    });
+
+    $('resetColumnsBtn').addEventListener('click', () => {
+      state.col1 = 1 / 3;
+      state.col2 = 2 / 3;
+      render();
+      showToast(t('toastResetColumns'));
+    });
+
+    $('resetLayoutBtn').addEventListener('click', () => {
+      Object.assign(state.frame, { x: 140, y: 160, w: 820, h: 460 });
+      state.reasonLine1 = 0.40;
+      state.reasonLine2 = 0.55;
+      state.dateLine = 0.70;
+      state.bottomTop = 0.76;
+      state.col1 = 1 / 3;
+      state.col2 = 2 / 3;
+      syncInputsFromState();
+      render();
+      showToast(t('toastResetLayout'));
+    });
+
+    $('downloadBtn').addEventListener('click', downloadPNG);
+    $('copyBtn').addEventListener('click', copyPNG);
+    $('downloadSvgBtn').addEventListener('click', downloadSVG);
+    $('copySvgBtn').addEventListener('click', copySVG);
+  }
+
+  function render() {
+    drawStamp(false);
+    autoSave();
+  }
+
+  function autoSave() {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(() => {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (_) {}
+    }, 250);
+  }
+
+  function restore() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+      const saved = JSON.parse(raw);
+      if (!saved || !saved.frame) return;
+      Object.assign(state, saved);
+      state.frame = Object.assign({ x: 140, y: 160, w: 820, h: 460 }, saved.frame || {});
+      state.title = Object.assign({ text: 'ABOLISHED', font: 'Arial', size: 88, color: '#a83b4b', bold: true }, saved.title || {});
+      state.reason = Object.assign({ text: '', font: 'Arial', size: 28, color: '#a83b4b', bold: false }, saved.reason || {});
+      state.date = Object.assign({ day: today.getDate(), month: today.getMonth() + 1, year: today.getFullYear(), format: 'dmy-slash', font: 'Arial', size: 30, color: '#a83b4b', bold: true }, saved.date || {});
+      state.bottom = Object.assign({ font: 'Arial', size: 30, color: '#a83b4b' }, saved.bottom || {});
+    } catch (_) {}
+  }
+
+  function filenameStem() {
+    const raw = (state.title.text || 'digital-stamp').trim();
+    return raw.replace(/[^a-zA-Z0-9\u0E00-\u0E7F\u3040-\u30FF\u4E00-\u9FFF_-]+/g, '_') || 'digital-stamp';
+  }
+
+  function downloadPNG() {
+    drawStamp(true);
+    canvas.toBlob((blob) => {
+      const link = document.createElement('a');
+      link.download = `${filenameStem()}_${Date.now()}.png`;
+      link.href = URL.createObjectURL(blob);
+      link.click();
+      URL.revokeObjectURL(link.href);
+      drawStamp(false);
+      showToast(t('toastSavedPng'));
+    }, 'image/png');
+  }
+
+  async function copyPNG() {
+    drawStamp(true);
+    canvas.toBlob(async (blob) => {
+      try {
+        await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+        showToast(t('toastCopiedPng'));
+      } catch (err) {
+        showToast(t('toastCopyPngFail'));
+      }
+      drawStamp(false);
+    }, 'image/png');
+  }
+
+  function escapeXml(s) {
+    return String(s || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&apos;');
+  }
+
+  function svgText(text, x, y, opts) {
+    if (!text) return '';
+    const weight = opts.bold ? 800 : 500;
+    const anchor = opts.anchor || 'middle';
+    return `<text x="${x}" y="${y}" fill="${opts.fill}" text-anchor="${anchor}" dominant-baseline="central" font-family="${escapeXml(fontFamily(opts.font))}" font-size="${opts.size}" font-weight="${weight}">${escapeXml(text)}</text>`;
+  }
+
+  function buildSVG() {
+    normaliseLayout();
+    const W = canvas.width;
+    const H = canvas.height;
+    const g = getGeometry();
+    const { x, y, w, h, pad, right, bottom, reasonY1, reasonY2, dateY, bottomTopY, bottomH, colX1, colX2, labelFontSize } = g;
+    const stroke = state.lineColor;
+    const lineWidth = state.lineWidth;
+    const dotWidth = Math.max(2, state.lineWidth * 0.95);
+    const dotGap = Math.max(7, state.lineWidth * 2.1);
+
+    const parts = [];
+    parts.push('<?xml version="1.0" encoding="UTF-8" standalone="no"?>');
+    parts.push(`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">`);
+    parts.push(`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="none" stroke="${stroke}" stroke-width="${lineWidth}"/>`);
+    parts.push(`<line x1="${x}" y1="${bottomTopY}" x2="${right}" y2="${bottomTopY}" stroke="${stroke}" stroke-width="${lineWidth}"/>`);
+    parts.push(`<line x1="${colX1}" y1="${bottomTopY}" x2="${colX1}" y2="${bottom}" stroke="${stroke}" stroke-width="${lineWidth}"/>`);
+    parts.push(`<line x1="${colX2}" y1="${bottomTopY}" x2="${colX2}" y2="${bottom}" stroke="${stroke}" stroke-width="${lineWidth}"/>`);
+
+    const titleY = y + h * 0.17;
+    const titleSize = fitText(state.title.text, w * 0.78, state.title.size, (size) => setCustomFont(state.title.font, size, state.title.bold));
+    parts.push(svgText(state.title.text, x + w / 2, titleY, { fill: state.title.color, font: state.title.font, size: titleSize, bold: state.title.bold }));
+
+    setCustomFont(state.reason.font, labelFontSize, true);
+    const reasonLabelW = ctx.measureText('Reason').width;
+    parts.push(svgText('Reason', x + pad, reasonY1, { fill: stroke, font: state.reason.font, size: labelFontSize, bold: true, anchor: 'start' }));
+    const reasonTextStart = x + pad + reasonLabelW + 18;
+    const reasonDotY1 = reasonY1 + labelFontSize * 0.28;
+    const reasonDotY2 = reasonY2 + labelFontSize * 0.28;
+    parts.push(`<line x1="${reasonTextStart}" y1="${reasonDotY1}" x2="${right - pad}" y2="${reasonDotY1}" stroke="${stroke}" stroke-width="${dotWidth}" stroke-linecap="round" stroke-dasharray="1 ${dotGap}"/>`);
+    parts.push(`<line x1="${x + pad}" y1="${reasonDotY2}" x2="${right - pad}" y2="${reasonDotY2}" stroke="${stroke}" stroke-width="${dotWidth}" stroke-linecap="round" stroke-dasharray="1 ${dotGap}"/>`);
+
+    const reasonLines = wrapTextToLines(
+      state.reason.text,
+      [right - pad - reasonTextStart, right - pad - (x + pad)],
+      state.reason.font,
+      state.reason.size,
+      state.reason.bold
+    );
+    if (reasonLines[0]) parts.push(svgText(reasonLines[0], reasonTextStart, reasonY1, { fill: state.reason.color, font: state.reason.font, size: state.reason.size, bold: state.reason.bold, anchor: 'start' }));
+    if (reasonLines[1]) parts.push(svgText(reasonLines[1], x + pad, reasonY2, { fill: state.reason.color, font: state.reason.font, size: state.reason.size, bold: state.reason.bold, anchor: 'start' }));
+
+    setCustomFont(state.date.font, labelFontSize, true);
+    const dateLabelW = ctx.measureText('Date').width;
+    parts.push(svgText('Date', x + pad, dateY, { fill: stroke, font: state.date.font, size: labelFontSize, bold: true, anchor: 'start' }));
+    const dateStart = x + pad + dateLabelW + 18;
+    const dateDotY = dateY + labelFontSize * 0.28;
+    parts.push(`<line x1="${dateStart}" y1="${dateDotY}" x2="${right - pad}" y2="${dateDotY}" stroke="${stroke}" stroke-width="${dotWidth}" stroke-linecap="round" stroke-dasharray="1 ${dotGap}"/>`);
+
+    const dateString = formattedDate();
+    const dateCenterX = x + w / 2;
+    const safeHalf = Math.max(25, Math.min(dateCenterX - dateStart, right - pad - dateCenterX));
+    const dateMaxW = safeHalf * 2;
+    const dateSize = fitText(dateString, dateMaxW, state.date.size, (size) => setCustomFont(state.date.font, size, state.date.bold));
+    parts.push(svgText(dateString, dateCenterX, dateY, { fill: state.date.color, font: state.date.font, size: dateSize, bold: state.date.bold }));
+
+    const labels = [
+      { text: 'Approved', cx: x + (colX1 - x) / 2, left: x, right: colX1 },
+      { text: 'Checked', cx: colX1 + (colX2 - colX1) / 2, left: colX1, right: colX2 },
+      { text: 'Writer', cx: colX2 + (right - colX2) / 2, left: colX2, right }
+    ];
+    const labelY = bottomTopY + bottomH * 0.25;
+    labels.forEach((item) => {
+      const maxW = Math.max(20, item.right - item.left - 18);
+      const size = fitText(item.text, maxW, state.bottom.size, (s) => setCustomFont(state.bottom.font, s, true));
+      parts.push(svgText(item.text, item.cx, labelY, { fill: state.bottom.color, font: state.bottom.font, size, bold: true }));
+    });
+
+    parts.push('</svg>');
+    return parts.join('\n');
+  }
+
+  function downloadSVG() {
+    const svg = buildSVG();
+    const blob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
+    const link = document.createElement('a');
+    link.download = `${filenameStem()}_${Date.now()}.svg`;
+    link.href = URL.createObjectURL(blob);
+    link.click();
+    URL.revokeObjectURL(link.href);
+    showToast(t('toastSavedSvg'));
+  }
+
+  async function copySVG() {
+    const svg = buildSVG();
+    try {
+      if (navigator.clipboard && window.ClipboardItem) {
+        await navigator.clipboard.write([
+          new ClipboardItem({
+            'image/svg+xml': new Blob([svg], { type: 'image/svg+xml' }),
+            'text/plain': new Blob([svg], { type: 'text/plain' })
+          })
+        ]);
+      } else {
+        await navigator.clipboard.writeText(svg);
+      }
+      showToast(t('toastCopiedSvg'));
+    } catch (err) {
+      try {
+        await navigator.clipboard.writeText(svg);
+        showToast(t('toastCopiedSvg'));
+      } catch (_) {
+        showToast(t('toastCopySvgFail'));
+      }
+    }
+  }
+
+  populateDateControls();
+  restore();
+  applyI18n();
+  syncInputsFromState();
+  bindControls();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => drawStamp(false));
+  drawStamp(false);
+})();
+</script>
+</body>
+</html>
