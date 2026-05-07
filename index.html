@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stamp Creator Suite · เครื่องมือสร้างตราประทับ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Thai:wght@400;600;700&family=Noto+Serif+JP:wght@400;700&family=Sarabun:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:        #f2ece0;
+    --paper:     #faf5ea;
+    --card:      #fffdf6;
+    --ink:       #1c1712;
+    --ink-2:     #4a4238;
+    --ink-3:     #9a8f82;
+    --line:      #ddd5c0;
+    --red:       #b4383a;
+    --red-dark:  #8b2a2c;
+    --red-soft:  rgba(180,56,58,.08);
+    --shadow:    0 20px 48px rgba(60,40,20,.10);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Sarabun', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  /* paper grain + radial glow */
+  body::before {
+    content: '';
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background:
+      radial-gradient(ellipse 70% 60% at 20% -10%, rgba(180,56,58,.06), transparent),
+      radial-gradient(ellipse 50% 50% at 85% 110%, rgba(139,100,50,.05), transparent);
+  }
+
+  /* ── LAYOUT ── */
+  .wrap {
+    position: relative; z-index: 1;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 72px 28px 96px;
+  }
+
+  /* ── HEADER ── */
+  header {
+    text-align: center;
+    margin-bottom: 64px;
+  }
+
+  .stamp-emblem {
+    width: 72px; height: 72px;
+    border: 2.5px solid var(--red);
+    border-radius: 50%;
+    display: grid; place-items: center;
+    margin: 0 auto 24px;
+    font-family: 'Noto Serif JP', serif;
+    font-weight: 700; font-size: 28px;
+    color: var(--red);
+    transform: rotate(-6deg);
+    animation: emblemIn .6s cubic-bezier(.22,1,.36,1) both;
+    box-shadow: inset 0 0 0 4px rgba(180,56,58,.08);
+  }
+
+  .site-title {
+    font-family: 'Noto Serif Thai', serif;
+    font-weight: 700;
+    font-size: clamp(26px, 4vw, 38px);
+    letter-spacing: -.02em;
+    line-height: 1.2;
+    color: var(--ink);
+    animation: fadeUp .5s .1s both;
+  }
+
+  .site-sub {
+    margin-top: 10px;
+    font-size: 14px;
+    color: var(--ink-3);
+    letter-spacing: .04em;
+    animation: fadeUp .5s .2s both;
+  }
+
+  .divider {
+    width: 48px; height: 2px;
+    background: var(--red);
+    margin: 28px auto;
+    opacity: .5;
+    animation: fadeUp .5s .25s both;
+  }
+
+  /* ── CARDS ── */
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 28px;
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 36px 32px 32px;
+    text-decoration: none;
+    color: inherit;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    transition: transform .25s cubic-bezier(.22,1,.36,1),
+                box-shadow .25s ease,
+                border-color .25s ease;
+    animation: cardIn .5s cubic-bezier(.22,1,.36,1) both;
+  }
+
+  .card:nth-child(1) { animation-delay: .3s; }
+  .card:nth-child(2) { animation-delay: .42s; }
+
+  .card::before {
+    content: '';
+    position: absolute; inset: 0; z-index: 0;
+    background: radial-gradient(circle at 90% 0%, rgba(180,56,58,.05), transparent 60%);
+    transition: opacity .3s;
+    opacity: 0;
+  }
+
+  .card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 28px 60px rgba(60,40,20,.14);
+    border-color: rgba(180,56,58,.3);
+  }
+
+  .card:hover::before { opacity: 1; }
+
+  .card-body { position: relative; z-index: 1; }
+
+  /* stamp icon area */
+  .card-icon {
+    width: 52px; height: 52px;
+    border: 2px solid var(--red);
+    display: grid; place-items: center;
+    margin-bottom: 24px;
+    color: var(--red);
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .card:nth-child(1) .card-icon { border-radius: 50%; }
+  .card:nth-child(2) .card-icon { border-radius: 6px; }
+
+  .card-icon svg { width: 24px; height: 24px; stroke: currentColor; fill: none; stroke-width: 1.8; }
+
+  .card-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 8px;
+    opacity: .8;
+  }
+
+  .card-title {
+    font-family: 'Noto Serif Thai', serif;
+    font-weight: 700;
+    font-size: 22px;
+    line-height: 1.25;
+    margin-bottom: 10px;
+    color: var(--ink);
+  }
+
+  .card-desc {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--ink-2);
+    margin-bottom: 28px;
+  }
+
+  /* feature pills */
+  .pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-bottom: 28px;
+  }
+
+  .pill {
+    font-size: 11.5px;
+    padding: 4px 10px;
+    background: var(--red-soft);
+    color: var(--red-dark);
+    border-radius: 20px;
+    border: 1px solid rgba(180,56,58,.15);
+    font-weight: 500;
+  }
+
+  /* open button */
+  .card-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--red);
+    letter-spacing: .01em;
+    transition: gap .2s;
+  }
+
+  .card:hover .card-btn { gap: 13px; }
+
+  .card-btn svg {
+    width: 16px; height: 16px;
+    stroke: currentColor; fill: none; stroke-width: 2;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    text-align: center;
+    margin-top: 72px;
+    font-size: 12.5px;
+    color: var(--ink-3);
+    animation: fadeUp .5s .6s both;
+  }
+
+  footer strong { color: var(--ink-2); }
+
+  /* ── ANIMATIONS ── */
+  @keyframes emblemIn {
+    from { opacity: 0; transform: rotate(-16deg) scale(.7); }
+    to   { opacity: 1; transform: rotate(-6deg) scale(1); }
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 500px) {
+    .wrap { padding: 48px 18px 72px; }
+    .card { padding: 28px 22px 26px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HEADER -->
+  <header>
+    <div class="stamp-emblem">印</div>
+    <h1 class="site-title">เครื่องมือสร้างตราประทับ</h1>
+    <p class="site-sub">Digital Stamp Creator Suite · 電子印鑑</p>
+    <div class="divider"></div>
+    <p style="font-size:14px;color:var(--ink-2);animation:fadeUp .5s .3s both;max-width:440px;margin:0 auto;line-height:1.7;">
+      เปิดผ่านเบราว์เซอร์ ไม่ต้องติดตั้ง · ข้อมูลเก็บในเครื่องคุณเท่านั้น
+    </p>
+  </header>
+
+  <!-- CARDS -->
+  <div class="cards">
+
+    <!-- App 1 -->
+    <a class="card" href="Sign_Stamp_Creater.html">
+      <div class="card-body">
+        <div class="card-icon">
+          <!-- circle stamp icon -->
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><line x1="12" y1="3" x2="12" y2="7"/><line x1="12" y1="17" x2="12" y2="21"/><line x1="3" y1="12" x2="7" y2="12"/><line x1="17" y1="12" x2="21" y2="12"/></svg>
+        </div>
+        <div class="card-label">App 1</div>
+        <h2 class="card-title">ตราประทับรูปร่างต่างๆ</h2>
+        <p class="card-desc">สร้างตราประทับดิจิทัลได้ 8 รูปร่าง พร้อมตั้งค่าข้อความ 3 บรรทัด เลือกฟอนต์และสีได้อิสระ</p>
+        <div class="pills">
+          <span class="pill">8 รูปร่าง</span>
+          <span class="pill">3 บรรทัด</span>
+          <span class="pill">โหลดฟอนต์จากเครื่อง</span>
+          <span class="pill">บันทึก PNG</span>
+          <span class="pill">Auto-save</span>
+        </div>
+        <span class="card-btn">
+          เปิดแอป
+          <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </span>
+      </div>
+    </a>
+
+    <!-- App 2 -->
+    <a class="card" href="Other_Stamp_Creater.html">
+      <div class="card-body">
+        <div class="card-icon">
+          <!-- rectangle stamp icon -->
+          <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="3" y1="15" x2="21" y2="15"/></svg>
+        </div>
+        <div class="card-label">App 2</div>
+        <h2 class="card-title">ตรายางสี่เหลี่ยม</h2>
+        <p class="card-desc">ตรายางแบบสี่เหลี่ยมสไตล์องค์กร พร้อมช่อง Reason / Date / Approved / Checked / Writer ครบครัน</p>
+        <div class="pills">
+          <span class="pill">Reason / Date</span>
+          <span class="pill">Approved</span>
+          <span class="pill">Checked / Writer</span>
+          <span class="pill">ปรับขนาดได้</span>
+          <span class="pill">Auto-save</span>
+        </div>
+        <span class="card-btn">
+          เปิดแอป
+          <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </span>
+      </div>
+    </a>
+
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <strong>Created by SITTISAK PE DNTH</strong> · v1.7 · Browser Edition<br>
+    <span style="margin-top:6px;display:inline-block;">Internal use — DENSO Production Engineering</span>
+  </footer>
+
+</div>
+</body>
+</html>
