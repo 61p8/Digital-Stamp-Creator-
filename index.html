@@ -188,45 +188,44 @@
     overflow: hidden;
   }
 
-  /* App 1 preview: circle + rect stamps */
+  /* App 1 preview: circle stamp with 3 dividers */
   .preview-signature {
-    display: flex;
-    gap: 14px;
-    align-items: center;
-    transform: rotate(-4deg);
+    transform: rotate(-3deg);
     transition: transform .3s cubic-bezier(.22,1,.36,1);
   }
 
-  .card:hover .preview-signature { transform: rotate(-4deg) scale(1.05); }
+  .card:hover .preview-signature { transform: rotate(-3deg) scale(1.06); }
 
-  .mini-stamp {
-    border: 2px solid var(--red);
+  .mini-stamp-circle {
+    width: 118px;
+    height: 118px;
+    border: 2.6px solid var(--red);
+    border-radius: 50%;
     color: var(--red);
-    display: grid;
-    place-items: center;
-    font-family: 'Noto Serif Thai', serif;
-    font-weight: 700;
-    line-height: 1.1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 9px 6px;
+    font-family: 'Noto Serif Thai', 'Noto Serif JP', serif;
     text-align: center;
   }
 
-  .mini-stamp.circle {
-    width: 76px; height: 76px;
-    border-radius: 50%;
-    font-size: 11px;
-    padding: 6px;
+  .mini-stamp-circle .row {
+    flex: 1;
+    display: grid;
+    place-items: center;
+    line-height: 1;
   }
 
-  .mini-stamp.rect {
-    width: 90px; height: 56px;
-    border-radius: 4px;
-    font-size: 11px;
-    padding: 4px;
-  }
+  .mini-stamp-circle .row.top { font-weight: 700; font-size: 16px; letter-spacing: .01em; }
+  .mini-stamp-circle .row.mid { font-weight: 500; font-size: 12px; font-family: 'Sarabun', sans-serif; }
+  .mini-stamp-circle .row.bot { font-weight: 700; font-size: 13px; letter-spacing: -.01em; }
 
-  .mini-stamp .l1 { font-size: 9px; opacity: .8; }
-  .mini-stamp .l2 { font-size: 13px; letter-spacing: -.01em; }
-  .mini-stamp .l3 { font-size: 8px; opacity: .7; }
+  .mini-stamp-circle .sep {
+    height: 1.8px;
+    background: var(--red);
+    margin: 0 -6px;
+  }
 
   /* App 2 preview: document stamp */
   .preview-document {
@@ -476,19 +475,12 @@
     <a class="card" href="Sign_Stamp_Creater.html">
       <div class="card-preview">
         <div class="preview-signature" aria-hidden="true">
-          <div class="mini-stamp circle">
-            <div>
-              <div class="l1">บริษัท</div>
-              <div class="l2">นาย ก</div>
-              <div class="l3">ผู้จัดการ</div>
-            </div>
-          </div>
-          <div class="mini-stamp rect">
-            <div>
-              <div class="l1">DEPT.</div>
-              <div class="l2">SITTISAK</div>
-              <div class="l3">ENGINEER</div>
-            </div>
+          <div class="mini-stamp-circle">
+            <div class="row top">Name</div>
+            <div class="sep"></div>
+            <div class="row mid">2026/04/25</div>
+            <div class="sep"></div>
+            <div class="row bot">Company</div>
           </div>
         </div>
       </div>
