@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Digital Stamp Creator · เครื่องมือสร้างตราประทับ · 電子印鑑</title>
+<title>Signature Stamp · ตราชื่อ-ลายเซ็น · 電子印鑑</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Thai:wght@400;500;600;700&family=Sarabun:wght@300;400;500;600&family=Noto+Serif+JP:wght@400;500;700&family=Prompt:wght@400;500;600&family=Kanit:wght@400;500;600&display=swap" rel="stylesheet">
@@ -894,8 +894,8 @@
       <div class="brand">
         <div class="brand-mark">印</div>
         <div>
-          <h1 data-i18n="appName">เครื่องมือสร้างตราประทับ</h1>
-          <div class="subtitle">Digital Stamp Creator · 電子印鑑</div>
+          <h1 data-i18n="appName">ตราชื่อ-ลายเซ็น</h1>
+          <div class="subtitle">Signature Stamp · 電子印鑑</div>
         </div>
       </div>
       <div class="header-right">
@@ -927,9 +927,9 @@
         </div>
         <div class="preview-actions">
           <button class="btn btn-primary" onclick="downloadPNG()" data-i18n="btnSavePng">บันทึก PNG</button>
-          <button class="btn" onclick="copyPNG()" data-i18n="btnCopyPng">คัดลอก PNG</button>
+          <button class="btn" onclick="copyPNG()" data-i18n="btnCopyPng">คัดลอก PNG (Excel)</button>
           <button class="btn" onclick="downloadSVG()" data-i18n="btnSaveSvg">บันทึก SVG</button>
-          <button class="btn" onclick="copySVG()" data-i18n="btnCopySvg">คัดลอก SVG</button>
+          <button class="btn" onclick="copySVG()" data-i18n="btnCopySvg">คัดลอก SVG (PowerPoint)</button>
           <button class="btn btn-ghost btn-print" onclick="printStamp()" data-i18n="btnPrint">พิมพ์</button>
         </div>
       </section>
@@ -1174,8 +1174,8 @@
     const I18N = {
       th: {
         htmlLang: 'th',
-        title: 'เครื่องมือสร้างตราประทับ · Digital Stamp Creator',
-        appName: 'เครื่องมือสร้างตราประทับ',
+        title: 'ตราชื่อ-ลายเซ็น · Signature Stamp',
+        appName: 'ตราชื่อ-ลายเซ็น',
         edition: 'v1.7 · Browser Edition',
         sectionPreview: 'ตัวอย่าง · Preview',
         sectionSettings: 'ตั้งค่า · Settings',
@@ -1183,9 +1183,9 @@
         secTop: 'บน', secMid: 'กลาง', secBot: 'ล่าง',
         resetSecTitle: 'รีเซ็ตเป็น 39 / 22 / 39',
         btnSavePng: 'บันทึก PNG',
-        btnCopyPng: 'คัดลอก PNG',
+        btnCopyPng: 'คัดลอก PNG (Excel)',
         btnSaveSvg: 'บันทึก SVG',
-        btnCopySvg: 'คัดลอก SVG',
+        btnCopySvg: 'คัดลอก SVG (PowerPoint)',
         btnPrint: 'พิมพ์',
         fldHeader: 'ข้อความด้านบน', fldHeaderHint: 'Header',
         fldDate: 'วันที่', fldDateHint: 'ปี / เดือน / วัน',
@@ -1256,8 +1256,8 @@
       },
       en: {
         htmlLang: 'en',
-        title: 'Digital Stamp Creator',
-        appName: 'Digital Stamp Creator',
+        title: 'Signature Stamp',
+        appName: 'Signature Stamp',
         edition: 'v1.7 · Browser Edition',
         sectionPreview: 'Preview',
         sectionSettings: 'Settings',
@@ -1265,9 +1265,9 @@
         secTop: 'Top', secMid: 'Mid', secBot: 'Bot',
         resetSecTitle: 'Reset to 39 / 22 / 39',
         btnSavePng: 'Save PNG',
-        btnCopyPng: 'Copy PNG',
+        btnCopyPng: 'Copy PNG (Excel)',
         btnSaveSvg: 'Save SVG',
-        btnCopySvg: 'Copy SVG',
+        btnCopySvg: 'Copy SVG (PowerPoint)',
         btnPrint: 'Print',
         fldHeader: 'Top text', fldHeaderHint: 'Header',
         fldDate: 'Date', fldDateHint: 'Year / Month / Day',
@@ -1338,8 +1338,8 @@
       },
       ja: {
         htmlLang: 'ja',
-        title: '電子印鑑メーカー · Digital Stamp Creator',
-        appName: '電子印鑑メーカー',
+        title: '電子印鑑 · Signature Stamp',
+        appName: '電子印鑑',
         edition: 'v1.7 · Browser Edition',
         sectionPreview: 'プレビュー',
         sectionSettings: '設定',
@@ -1347,9 +1347,9 @@
         secTop: '上', secMid: '中', secBot: '下',
         resetSecTitle: '39 / 22 / 39 にリセット',
         btnSavePng: 'PNG保存',
-        btnCopyPng: 'PNGコピー',
+        btnCopyPng: 'PNGコピー (Excel)',
         btnSaveSvg: 'SVG保存',
-        btnCopySvg: 'SVGコピー',
+        btnCopySvg: 'SVGコピー (PowerPoint)',
         btnPrint: '印刷',
         fldHeader: '上段テキスト', fldHeaderHint: 'Header',
         fldDate: '日付', fldDateHint: '年 / 月 / 日',

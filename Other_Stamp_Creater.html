@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Digital Stamp Creater</title>
+<title>Document Stamp · ตรารับรองเอกสาร</title>
 <style>
   :root {
     --bg: #f4efe5;
@@ -134,36 +134,47 @@
   }
 
   .panel {
-    background: rgba(255, 253, 248, 0.86);
+    background: linear-gradient(180deg, rgba(255, 253, 248, 0.95), rgba(255, 250, 240, 0.85));
     border: 1px solid var(--line);
     border-radius: 18px;
     box-shadow: var(--shadow);
+    backdrop-filter: blur(2px);
   }
 
   .preview-panel {
-    padding: 20px;
+    padding: 22px;
     position: sticky;
     top: 18px;
   }
 
-  .controls-panel { padding: 20px; }
+  .controls-panel { padding: 22px; }
 
   .section-title {
     display: flex;
     align-items: center;
     gap: 10px;
     color: var(--muted);
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 900;
     text-transform: uppercase;
-    letter-spacing: .12em;
+    letter-spacing: .14em;
     margin-bottom: 14px;
+  }
+
+  .section-title::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 3px rgba(168, 59, 75, .12);
+    flex-shrink: 0;
   }
 
   .section-title::after {
     content: "";
     height: 1px;
-    background: var(--line-soft);
+    background: linear-gradient(to right, var(--line-soft), transparent);
     flex: 1;
   }
 
@@ -180,6 +191,7 @@
     border: 1px solid var(--line-soft);
     border-radius: 14px;
     overflow: hidden;
+    box-shadow: inset 0 1px 2px rgba(80, 56, 36, 0.04);
   }
 
   canvas {
@@ -205,43 +217,207 @@
   }
 
   .chip {
-    background: #fbf2e8;
+    background: linear-gradient(180deg, #fbf2e8, #f6ead8);
     border: 1px solid var(--line-soft);
-    border-radius: 999px;
-    padding: 7px 9px;
-    font-size: 11px;
+    border-radius: 10px;
+    padding: 8px 6px;
+    font-size: 10px;
     color: var(--muted);
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    font-weight: 800;
   }
 
   .chip b {
     color: var(--accent);
     font-variant-numeric: tabular-nums;
+    font-size: 13px;
+    letter-spacing: 0;
+    text-transform: none;
   }
 
   .actions {
     margin-top: 14px;
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    display: flex;
+    flex-direction: column;
     gap: 8px;
   }
 
+  .actions .btn-primary {
+    width: 100%;
+    min-height: 48px;
+    font-size: 14px;
+    letter-spacing: .02em;
+    box-shadow: 0 6px 18px rgba(168, 59, 75, 0.22);
+  }
+
+  .actions .btn-primary:hover {
+    box-shadow: 0 10px 24px rgba(168, 59, 75, 0.30);
+  }
+
+  .action-row {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .btn-ghost {
+    background: transparent;
+    border-color: transparent;
+    color: var(--muted);
+    font-weight: 700;
+  }
+
+  .btn-ghost:hover {
+    background: rgba(168, 59, 75, .06);
+    border-color: var(--line-soft);
+    color: var(--ink);
+  }
+
+  .reason-stepper {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--paper);
+    overflow: hidden;
+    margin-left: auto;
+  }
+
+  .reason-stepper button {
+    border: 0;
+    background: transparent;
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+    font-weight: 900;
+    color: var(--accent);
+    cursor: pointer;
+    transition: background .12s;
+  }
+
+  .reason-stepper button:hover {
+    background: rgba(168, 59, 75, .10);
+  }
+
+  .reason-stepper button:disabled {
+    color: var(--muted);
+    cursor: not-allowed;
+    opacity: .55;
+  }
+
+  .reason-stepper button:disabled:hover { background: transparent; }
+
+  .reason-stepper .count {
+    min-width: 36px;
+    text-align: center;
+    font-weight: 900;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+    border-left: 1px solid var(--line-soft);
+    border-right: 1px solid var(--line-soft);
+    padding: 0 6px;
+    line-height: 32px;
+  }
+
+  .reason-stepper-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+    padding: 8px 10px 8px 12px;
+    border: 1px solid var(--line-soft);
+    border-radius: 12px;
+    background: rgba(168, 59, 75, .04);
+  }
+
+  .reason-stepper-row .label {
+    font-size: 12px;
+    font-weight: 900;
+    color: #615548;
+  }
+
   .group {
-    border-top: 1px solid var(--line-soft);
-    padding-top: 18px;
-    margin-top: 18px;
+    border: 1px solid var(--line-soft);
+    background: rgba(255, 253, 248, 0.55);
+    border-radius: 14px;
+    margin-top: 10px;
+    overflow: hidden;
+    transition: border-color .15s, background .15s, box-shadow .15s;
   }
 
-  .group:first-of-type {
-    border-top: 0;
-    padding-top: 0;
-    margin-top: 0;
+  .group:first-of-type { margin-top: 0; }
+
+  .group[open] {
+    background: var(--card);
+    border-color: var(--line);
+    box-shadow: 0 4px 14px rgba(80, 56, 36, 0.04);
   }
 
-  .group h2 {
-    margin: 0 0 12px;
-    font-size: 15px;
-    letter-spacing: .01em;
+  .group > summary {
+    list-style: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--ink);
+    user-select: none;
+    transition: background .14s;
+  }
+
+  .group > summary::-webkit-details-marker { display: none; }
+  .group > summary:hover { background: rgba(168, 59, 75, 0.04); }
+
+  .group > summary .step-num {
+    display: inline-grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 900;
+    flex-shrink: 0;
+    box-shadow: 0 2px 6px rgba(168, 59, 75, .25);
+  }
+
+  .group[open] > summary .step-num {
+    background: var(--accent-dark);
+  }
+
+  .group > summary .step-title {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .group > summary::after {
+    content: "";
+    width: 9px;
+    height: 9px;
+    border-right: 2px solid var(--muted);
+    border-bottom: 2px solid var(--muted);
+    transform: rotate(45deg);
+    transition: transform .2s ease;
+    margin-right: 4px;
+    flex-shrink: 0;
+  }
+
+  .group[open] > summary::after {
+    transform: rotate(-135deg);
+  }
+
+  .group-body {
+    padding: 4px 14px 14px;
+    border-top: 1px dashed var(--line-soft);
+    margin-top: -1px;
   }
 
   .grid-2,
@@ -321,13 +497,14 @@
   }
 
   .locked-note {
-    background: rgba(168,59,75,.07);
-    border: 1px dashed rgba(168,59,75,.35);
+    background: rgba(168,59,75,.06);
+    border: 1px solid rgba(168,59,75,.20);
+    border-left: 3px solid var(--accent);
     color: #71414a;
     padding: 10px 12px;
-    border-radius: 12px;
+    border-radius: 10px;
     font-size: 12px;
-    line-height: 1.45;
+    line-height: 1.5;
   }
 
   .toolbar {
@@ -415,8 +592,8 @@
   <div class="app">
     <header>
       <div class="brand">
-        <h1 data-i18n="appTitle">Digital Stamp Creater</h1>
-        <p data-i18n="subtitle">สร้างตรายางดิจิทัลแบบสี่เหลี่ยม พร้อม Reason / Date / Approved / Checked / Writer</p>
+        <h1 data-i18n="appTitle">ตรารับรองเอกสาร</h1>
+        <p data-i18n="subtitle">ตรายางดิจิทัลสำหรับรับรอง/อนุมัติเอกสาร พร้อมช่อง Reason / Date / Approved / Checked / Writer</p>
       </div>
       <div class="header-right">
         <div class="lang-switcher" role="tablist" aria-label="Language">
@@ -446,96 +623,113 @@
         </div>
         <div class="actions">
           <button class="btn btn-primary" id="downloadBtn" data-i18n="btnSavePng">บันทึก PNG</button>
-          <button class="btn" id="copyBtn" data-i18n="btnCopyPng">คัดลอก PNG</button>
-          <button class="btn" id="downloadSvgBtn" data-i18n="btnSaveSvg">บันทึก SVG</button>
-          <button class="btn" id="copySvgBtn" data-i18n="btnCopySvg">คัดลอก SVG</button>
-          <button class="btn" id="resetLayoutBtn" data-i18n="btnResetLayout">รีเซ็ตกรอบ</button>
+          <div class="action-row">
+            <button class="btn" id="copyBtn" data-i18n="btnCopyPng">คัดลอก PNG (Excel)</button>
+            <button class="btn" id="downloadSvgBtn" data-i18n="btnSaveSvg">บันทึก SVG</button>
+            <button class="btn" id="copySvgBtn" data-i18n="btnCopySvg">คัดลอก SVG (PowerPoint)</button>
+          </div>
+          <button class="btn btn-ghost" id="resetLayoutBtn" data-i18n="btnResetLayout">รีเซ็ตกรอบ</button>
         </div>
       </section>
 
       <section class="panel controls-panel">
         <div class="section-title" data-i18n="settingsTitle">Settings</div>
 
-        <div class="group">
-          <h2 data-i18n="groupFrame">1) กรอบและเส้น</h2>
-          <div class="grid-3">
-            <div class="field">
-              <label for="lineColor" data-i18n="lineColor">สีเส้น</label>
-              <input type="color" id="lineColor" value="#a83b4b" />
+        <details class="group" open>
+          <summary><span class="step-num">1</span><span class="step-title" data-i18n="groupFrame">กรอบและเส้น</span></summary>
+          <div class="group-body">
+            <div class="grid-3">
+              <div class="field">
+                <label for="lineColor" data-i18n="lineColor">สีเส้น</label>
+                <input type="color" id="lineColor" value="#a83b4b" />
+              </div>
+              <div class="field">
+                <label for="lineWidth" data-i18n="lineWidth">ความหนาเส้น</label>
+                <input type="number" id="lineWidth" min="1" max="14" step="1" value="4" />
+              </div>
+              <div class="field">
+                <label for="roughness" data-i18n="roughness">ความนุ่มแบบตรายาง</label>
+                <input type="range" id="roughness" min="0" max="18" step="1" value="4" />
+              </div>
             </div>
-            <div class="field">
-              <label for="lineWidth" data-i18n="lineWidth">ความหนาเส้น</label>
-              <input type="number" id="lineWidth" min="1" max="14" step="1" value="4" />
+            <div class="grid-2">
+              <div class="field">
+                <label for="frameW" data-i18n="frameW">ความกว้างกรอบ</label>
+                <input type="number" id="frameW" min="360" max="1040" step="10" value="820" />
+              </div>
+              <div class="field">
+                <label for="frameH" data-i18n="frameH">ความสูงกรอบ</label>
+                <input type="number" id="frameH" min="240" max="680" step="10" value="460" />
+              </div>
             </div>
-            <div class="field">
-              <label for="roughness" data-i18n="roughness">ความนุ่มแบบตรายาง</label>
-              <input type="range" id="roughness" min="0" max="18" step="1" value="4" />
+            <div class="toolbar">
+              <button class="btn mini" id="applyLineColorBtn" data-i18n="btnApplyColor">ใช้สีเส้นกับข้อความทั้งหมด</button>
             </div>
           </div>
-          <div class="grid-2">
-            <div class="field">
-              <label for="frameW" data-i18n="frameW">ความกว้างกรอบ</label>
-              <input type="number" id="frameW" min="360" max="1040" step="10" value="820" />
-            </div>
-            <div class="field">
-              <label for="frameH" data-i18n="frameH">ความสูงกรอบ</label>
-              <input type="number" id="frameH" min="240" max="680" step="10" value="460" />
-            </div>
-          </div>
-          <div class="toolbar">
-            <button class="btn mini" id="applyLineColorBtn" data-i18n="btnApplyColor">ใช้สีเส้นกับข้อความทั้งหมด</button>
-          </div>
-        </div>
+        </details>
 
-        <div class="group">
-          <h2 data-i18n="groupTitle">2) ข้อความหัวตรา</h2>
-          <div class="field">
-            <label for="titleText" data-i18n="titleTextLabel">เปลี่ยนคำได้</label>
-            <input type="text" id="titleText" value="ABOLISHED" maxlength="40" />
+        <details class="group">
+          <summary><span class="step-num">2</span><span class="step-title" data-i18n="groupTitle">ข้อความหัวตรา</span></summary>
+          <div class="group-body">
+            <div class="field">
+              <label for="titleText" data-i18n="titleTextLabel">เปลี่ยนคำได้</label>
+              <input type="text" id="titleText" value="ABOLISHED" maxlength="40" />
+            </div>
+            <div class="grid-3">
+              <div class="field">
+                <label for="titleFont" data-i18n="fontLabel">ฟอนต์</label>
+                <input list="fontList" type="text" id="titleFont" value="Arial" />
+              </div>
+              <div class="field">
+                <label for="titleSize" data-i18n="fontSizeLabel">ขนาดตัวอักษร</label>
+                <input type="number" id="titleSize" min="20" max="170" step="2" value="88" />
+              </div>
+              <div class="field">
+                <label for="titleColor" data-i18n="textColorLabel">สีตัวอักษร</label>
+                <input type="color" id="titleColor" value="#a83b4b" />
+              </div>
+            </div>
+            <label class="toggle"><input type="checkbox" id="titleBold" checked /> <span data-i18n="boldLabel">ตัวหนา</span></label>
           </div>
-          <div class="grid-3">
-            <div class="field">
-              <label for="titleFont" data-i18n="fontLabel">ฟอนต์</label>
-              <input list="fontList" type="text" id="titleFont" value="Arial" />
-            </div>
-            <div class="field">
-              <label for="titleSize" data-i18n="fontSizeLabel">ขนาดตัวอักษร</label>
-              <input type="number" id="titleSize" min="20" max="170" step="2" value="88" />
-            </div>
-            <div class="field">
-              <label for="titleColor" data-i18n="textColorLabel">สีตัวอักษร</label>
-              <input type="color" id="titleColor" value="#a83b4b" />
-            </div>
-          </div>
-          <label class="toggle"><input type="checkbox" id="titleBold" checked /> <span data-i18n="boldLabel">ตัวหนา</span></label>
-        </div>
+        </details>
 
-        <div class="group">
-          <h2 data-i18n="groupReason">3) Reason</h2>
-          <div class="locked-note" data-i18n="reasonNote">คำว่า Reason ถูกล็อคไว้เหมือนตัวอย่าง แต่พิมพ์เหตุผลด้านหลังเส้นประได้</div>
-          <div class="field" style="margin-top:10px">
-            <label for="reasonText" data-i18n="reasonTextLabel">ข้อความเหตุผล</label>
-            <textarea id="reasonText" data-i18n-placeholder="reasonPlaceholder" placeholder="พิมพ์เหตุผลที่ต้องการให้แสดงบนตรา"></textarea>
+        <details class="group" open>
+          <summary><span class="step-num">3</span><span class="step-title" data-i18n="groupReason">Reason</span></summary>
+          <div class="group-body">
+            <div class="locked-note" data-i18n="reasonNote">คำว่า Reason ถูกล็อคไว้เหมือนตัวอย่าง แต่พิมพ์เหตุผลด้านหลังเส้นประได้</div>
+            <div class="field" style="margin-top:10px">
+              <label for="reasonText" data-i18n="reasonTextLabel">ข้อความเหตุผล</label>
+              <textarea id="reasonText" data-i18n-placeholder="reasonPlaceholder" placeholder="พิมพ์เหตุผลที่ต้องการให้แสดงบนตรา"></textarea>
+            </div>
+            <div class="reason-stepper-row">
+              <span class="label" data-i18n="reasonLineCountLabel">จำนวนบรรทัด</span>
+              <div class="reason-stepper">
+                <button type="button" id="removeReasonLineBtn" data-i18n-title="btnRemoveReasonLine" aria-label="Remove line">−</button>
+                <span class="count" id="reasonLineCount">2</span>
+                <button type="button" id="addReasonLineBtn" data-i18n-title="btnAddReasonLine" aria-label="Add line">+</button>
+              </div>
+            </div>
+            <div class="grid-3">
+              <div class="field">
+                <label for="reasonFont" data-i18n="reasonFontLabel">ฟอนต์ข้อความเหตุผล</label>
+                <input list="fontList" type="text" id="reasonFont" value="Arial" />
+              </div>
+              <div class="field">
+                <label for="reasonSize" data-i18n="reasonSizeLabel">ขนาดข้อความเหตุผล</label>
+                <input type="number" id="reasonSize" min="12" max="70" step="1" value="28" />
+              </div>
+              <div class="field">
+                <label for="reasonColor" data-i18n="reasonColorLabel">สีข้อความเหตุผล</label>
+                <input type="color" id="reasonColor" value="#a83b4b" />
+              </div>
+            </div>
+            <label class="toggle"><input type="checkbox" id="reasonBold" /> <span data-i18n="boldLabel">ตัวหนา</span></label>
           </div>
-          <div class="grid-3">
-            <div class="field">
-              <label for="reasonFont" data-i18n="reasonFontLabel">ฟอนต์ข้อความเหตุผล</label>
-              <input list="fontList" type="text" id="reasonFont" value="Arial" />
-            </div>
-            <div class="field">
-              <label for="reasonSize" data-i18n="reasonSizeLabel">ขนาดข้อความเหตุผล</label>
-              <input type="number" id="reasonSize" min="12" max="70" step="1" value="28" />
-            </div>
-            <div class="field">
-              <label for="reasonColor" data-i18n="reasonColorLabel">สีข้อความเหตุผล</label>
-              <input type="color" id="reasonColor" value="#a83b4b" />
-            </div>
-          </div>
-          <label class="toggle"><input type="checkbox" id="reasonBold" /> <span data-i18n="boldLabel">ตัวหนา</span></label>
-        </div>
+        </details>
 
-        <div class="group">
-          <h2 data-i18n="groupDate">4) วันที่</h2>
+        <details class="group">
+          <summary><span class="step-num">4</span><span class="step-title" data-i18n="groupDate">วันที่</span></summary>
+          <div class="group-body">
           <div class="grid-3">
             <div class="field">
               <label for="day" data-i18n="dayLabel">วัน</label>
@@ -581,52 +775,50 @@
             </div>
           </div>
           <label class="toggle"><input type="checkbox" id="dateBold" checked /> <span data-i18n="boldLabel">ตัวหนา</span></label>
-        </div>
+          </div>
+        </details>
 
-        <div class="group">
-          <h2 data-i18n="groupInnerLines">5) เส้นขอบด้านใน</h2>
-          <div class="position-note" data-i18n="innerLinesNote">ปรับด้วยสไลเดอร์ หรือใช้เมาส์ลากเส้นใน Preview ได้โดยตรง</div>
-          <div class="grid-2">
-            <div class="field">
-              <label for="reasonLine1"><span data-i18n="reasonLine1Label">เส้น Reason บรรทัด 1</span> <span id="reasonLine1Text" class="small-muted"></span></label>
-              <input type="range" id="reasonLine1" min="28" max="50" step="1" value="40" />
-            </div>
-            <div class="field">
-              <label for="reasonLine2"><span data-i18n="reasonLine2Label">เส้น Reason บรรทัด 2</span> <span id="reasonLine2Text" class="small-muted"></span></label>
-              <input type="range" id="reasonLine2" min="42" max="68" step="1" value="55" />
-            </div>
-            <div class="field">
-              <label for="dateLine"><span data-i18n="dateLineLabel">เส้น Date</span> <span id="dateLineText" class="small-muted"></span></label>
-              <input type="range" id="dateLine" min="58" max="78" step="1" value="70" />
-            </div>
-            <div class="field">
-              <label for="bottomHeight"><span data-i18n="bottomHeightLabel">ความสูงช่องล่าง</span> <span id="bottomHeightText" class="small-muted"></span></label>
-              <input type="range" id="bottomHeight" min="16" max="38" step="1" value="24" />
+        <details class="group">
+          <summary><span class="step-num">5</span><span class="step-title" data-i18n="groupInnerLines">เส้นขอบด้านใน</span></summary>
+          <div class="group-body">
+            <div class="position-note" data-i18n="innerLinesNote">ปรับด้วยสไลเดอร์ หรือใช้เมาส์ลากเส้นใน Preview ได้โดยตรง</div>
+            <div class="grid-2" id="reasonLinesContainer"></div>
+            <div class="grid-2">
+              <div class="field">
+                <label for="dateLine"><span data-i18n="dateLineLabel">เส้น Date</span> <span id="dateLineText" class="small-muted"></span></label>
+                <input type="range" id="dateLine" min="58" max="78" step="1" value="70" />
+              </div>
+              <div class="field">
+                <label for="bottomHeight"><span data-i18n="bottomHeightLabel">ความสูงช่องล่าง</span> <span id="bottomHeightText" class="small-muted"></span></label>
+                <input type="range" id="bottomHeight" min="16" max="38" step="1" value="24" />
+              </div>
             </div>
           </div>
-        </div>
+        </details>
 
-        <div class="group">
-          <h2 data-i18n="groupBottom">6) ช่อง Approved / Checked / Writer</h2>
-          <div class="locked-note" data-i18n="bottomNote">ชื่อทั้ง 3 ช่องล็อคไว้เหมือนตัวอย่าง แต่ปรับความกว้างช่องได้ด้วยการลากเส้นตั้งในตัวอย่าง</div>
-          <div class="grid-3" style="margin-top:10px">
-            <div class="field">
-              <label for="bottomFont" data-i18n="bottomFontLabel">ฟอนต์ชื่อช่อง</label>
-              <input list="fontList" type="text" id="bottomFont" value="Arial" />
+        <details class="group">
+          <summary><span class="step-num">6</span><span class="step-title" data-i18n="groupBottom">Approved / Checked / Writer</span></summary>
+          <div class="group-body">
+            <div class="locked-note" data-i18n="bottomNote">ชื่อทั้ง 3 ช่องล็อคไว้เหมือนตัวอย่าง แต่ปรับความกว้างช่องได้ด้วยการลากเส้นตั้งในตัวอย่าง</div>
+            <div class="grid-3" style="margin-top:10px">
+              <div class="field">
+                <label for="bottomFont" data-i18n="bottomFontLabel">ฟอนต์ชื่อช่อง</label>
+                <input list="fontList" type="text" id="bottomFont" value="Arial" />
+              </div>
+              <div class="field">
+                <label for="bottomSize" data-i18n="bottomSizeLabel">ขนาดชื่อช่อง</label>
+                <input type="number" id="bottomSize" min="12" max="70" step="1" value="30" />
+              </div>
+              <div class="field">
+                <label for="bottomColor" data-i18n="bottomColorLabel">สีชื่อช่อง</label>
+                <input type="color" id="bottomColor" value="#a83b4b" />
+              </div>
             </div>
-            <div class="field">
-              <label for="bottomSize" data-i18n="bottomSizeLabel">ขนาดชื่อช่อง</label>
-              <input type="number" id="bottomSize" min="12" max="70" step="1" value="30" />
-            </div>
-            <div class="field">
-              <label for="bottomColor" data-i18n="bottomColorLabel">สีชื่อช่อง</label>
-              <input type="color" id="bottomColor" value="#a83b4b" />
+            <div class="toolbar">
+              <button class="btn mini" id="resetColumnsBtn" data-i18n="btnResetColumns">รีเซ็ตช่องล่างเท่ากัน</button>
             </div>
           </div>
-          <div class="toolbar">
-            <button class="btn mini" id="resetColumnsBtn" data-i18n="btnResetColumns">รีเซ็ตช่องล่างเท่ากัน</button>
-          </div>
-        </div>
+        </details>
 
         <datalist id="fontList">
           <option value="Arial"></option>
@@ -678,56 +870,56 @@
   const I18N = {
     th: {
       htmlLang: 'th',
-      documentTitle: 'Digital Stamp Creater',
-      appTitle: 'Digital Stamp Creater',
-      subtitle: 'สร้างตรายางดิจิทัลแบบสี่เหลี่ยม พร้อม Reason / Date / Approved / Checked / Writer',
+      documentTitle: 'ตรารับรองเอกสาร · Document Stamp',
+      appTitle: 'ตรารับรองเอกสาร',
+      subtitle: 'ตรายางดิจิทัลสำหรับรับรอง/อนุมัติเอกสาร พร้อมช่อง Reason / Date / Approved / Checked / Writer',
       previewTitle: 'Preview', settingsTitle: 'Settings',
       dragHint: 'ลากขอบ/มุมกรอบ = ปรับขนาดตรา · ลากเส้นประ Reason/Date = เลื่อนตำแหน่ง · ลากเส้นช่องล่าง = ปรับ Approved / Checked / Writer',
       infoW: 'กว้าง', infoH: 'สูง', infoC1: 'ช่องซ้าย', infoC2: 'ช่องกลาง',
-      btnSavePng: 'บันทึก PNG', btnCopyPng: 'คัดลอก PNG', btnSaveSvg: 'บันทึก SVG', btnCopySvg: 'คัดลอก SVG', btnResetLayout: 'รีเซ็ตกรอบ',
-      groupFrame: '1) กรอบและเส้น', lineColor: 'สีเส้น', lineWidth: 'ความหนาเส้น', roughness: 'ความนุ่มแบบตรายาง', frameW: 'ความกว้างกรอบ', frameH: 'ความสูงกรอบ', btnApplyColor: 'ใช้สีเส้นกับข้อความทั้งหมด',
-      groupTitle: '2) ข้อความหัวตรา', titleTextLabel: 'เปลี่ยนคำได้', fontLabel: 'ฟอนต์', fontSizeLabel: 'ขนาดตัวอักษร', textColorLabel: 'สีตัวอักษร', boldLabel: 'ตัวหนา',
-      groupReason: '3) Reason', reasonNote: 'คำว่า Reason ถูกล็อคไว้เหมือนตัวอย่าง แต่พิมพ์เหตุผลด้านหลังเส้นประได้', reasonTextLabel: 'ข้อความเหตุผล', reasonPlaceholder: 'พิมพ์เหตุผลที่ต้องการให้แสดงบนตรา', reasonFontLabel: 'ฟอนต์ข้อความเหตุผล', reasonSizeLabel: 'ขนาดข้อความเหตุผล', reasonColorLabel: 'สีข้อความเหตุผล',
-      groupDate: '4) วันที่', dayLabel: 'วัน', monthLabel: 'เดือน', yearLabel: 'ปี ค.ศ.', dateFormatLabel: 'รูปแบบวันที่', dateFontLabel: 'ฟอนต์วันที่', dateSizeLabel: 'ขนาดวันที่', dateColorLabel: 'สีวันที่',
+      btnSavePng: 'บันทึก PNG', btnCopyPng: 'คัดลอก PNG (Excel)', btnSaveSvg: 'บันทึก SVG', btnCopySvg: 'คัดลอก SVG (PowerPoint)', btnResetLayout: 'รีเซ็ตกรอบ',
+      groupFrame: 'กรอบและเส้น', lineColor: 'สีเส้น', lineWidth: 'ความหนาเส้น', roughness: 'ความนุ่มแบบตรายาง', frameW: 'ความกว้างกรอบ', frameH: 'ความสูงกรอบ', btnApplyColor: 'ใช้สีเส้นกับข้อความทั้งหมด',
+      groupTitle: 'ข้อความหัวตรา', titleTextLabel: 'เปลี่ยนคำได้', fontLabel: 'ฟอนต์', fontSizeLabel: 'ขนาดตัวอักษร', textColorLabel: 'สีตัวอักษร', boldLabel: 'ตัวหนา',
+      groupReason: 'Reason', reasonNote: 'คำว่า Reason ถูกล็อคไว้เหมือนตัวอย่าง แต่พิมพ์เหตุผลด้านหลังเส้นประได้', reasonTextLabel: 'ข้อความเหตุผล', reasonPlaceholder: 'พิมพ์เหตุผลที่ต้องการให้แสดงบนตรา', reasonFontLabel: 'ฟอนต์ข้อความเหตุผล', reasonSizeLabel: 'ขนาดข้อความเหตุผล', reasonColorLabel: 'สีข้อความเหตุผล', reasonLineCountLabel: 'จำนวนบรรทัด', btnAddReasonLine: '+ เพิ่มบรรทัด', btnRemoveReasonLine: '− ลบบรรทัด', toastAddReasonLineFail: 'พื้นที่ไม่พอสำหรับบรรทัดเพิ่มเติม',
+      groupDate: 'วันที่', dayLabel: 'วัน', monthLabel: 'เดือน', yearLabel: 'ปี ค.ศ.', dateFormatLabel: 'รูปแบบวันที่', dateFontLabel: 'ฟอนต์วันที่', dateSizeLabel: 'ขนาดวันที่', dateColorLabel: 'สีวันที่',
       dateFmtDmySlash: 'วัน/เดือน/ปี — 07/05/2026', dateFmtYmdSlash: 'ปี/เดือน/วัน — 2026/05/07', dateFmtDmyDash: 'วัน-เดือน-ปี — 07-05-2026', dateFmtDmyDot: 'วัน.เดือน.ปี — 07.05.2026', dateFmtLong: 'วัน เดือน ปี — 7 พฤษภาคม 2026', dateFmtThaiBeSlash: 'พ.ศ. ตัวเลข — 07/05/2569', dateFmtThaiBeLong: 'พ.ศ. เต็ม — 7 พฤษภาคม 2569', dateFmtJaKanji: 'ญี่ปุ่น — 2026年5月7日', dateFmtMonthYear: 'เดือน/ปี — 05/2026', dateFmtYearOnly: 'ปีอย่างเดียว — 2026', dateFmtBlank: 'ไม่ใส่วันที่ / เว้นว่าง',
-      groupInnerLines: '5) เส้นขอบด้านใน', innerLinesNote: 'ปรับด้วยสไลเดอร์ หรือใช้เมาส์ลากเส้นใน Preview ได้โดยตรง', reasonLine1Label: 'เส้น Reason บรรทัด 1', reasonLine2Label: 'เส้น Reason บรรทัด 2', dateLineLabel: 'เส้น Date', bottomHeightLabel: 'ความสูงช่องล่าง',
-      groupBottom: '6) ช่อง Approved / Checked / Writer', bottomNote: 'ชื่อทั้ง 3 ช่องล็อคไว้เหมือนตัวอย่าง แต่ปรับความกว้างช่องได้ด้วยการลากเส้นตั้งในตัวอย่าง', bottomFontLabel: 'ฟอนต์ชื่อช่อง', bottomSizeLabel: 'ขนาดชื่อช่อง', bottomColorLabel: 'สีชื่อช่อง', btnResetColumns: 'รีเซ็ตช่องล่างเท่ากัน',
+      groupInnerLines: 'เส้นขอบด้านใน', innerLinesNote: 'ปรับด้วยสไลเดอร์ หรือใช้เมาส์ลากเส้นใน Preview ได้โดยตรง', reasonLineLabel: 'เส้น Reason บรรทัด', dateLineLabel: 'เส้น Date', bottomHeightLabel: 'ความสูงช่องล่าง',
+      groupBottom: 'Approved / Checked / Writer', bottomNote: 'ชื่อทั้ง 3 ช่องล็อคไว้เหมือนตัวอย่าง แต่ปรับความกว้างช่องได้ด้วยการลากเส้นตั้งในตัวอย่าง', bottomFontLabel: 'ฟอนต์ชื่อช่อง', bottomSizeLabel: 'ขนาดชื่อช่อง', bottomColorLabel: 'สีชื่อช่อง', btnResetColumns: 'รีเซ็ตช่องล่างเท่ากัน',
       toastApplyColor: 'ใช้สีเส้นกับข้อความทั้งหมดแล้ว', toastResetColumns: 'รีเซ็ตช่องล่างเท่ากันแล้ว', toastResetLayout: 'รีเซ็ตกรอบแล้ว', toastSavedPng: 'บันทึก PNG แล้ว', toastCopiedPng: 'คัดลอกรูปแล้ว วางใน Word / Excel ได้เลย', toastCopyPngFail: 'คัดลอก PNG ไม่ได้ ให้ใช้ปุ่มบันทึก PNG แทน', toastSavedSvg: 'บันทึก SVG แล้ว', toastCopiedSvg: 'คัดลอก SVG แล้ว', toastCopySvgFail: 'คัดลอก SVG ไม่ได้ ให้ใช้ปุ่มบันทึก SVG แทน'
     },
     en: {
       htmlLang: 'en',
-      documentTitle: 'Digital Stamp Creater',
-      appTitle: 'Digital Stamp Creater',
-      subtitle: 'Create a rectangular digital stamp with Reason / Date / Approved / Checked / Writer.',
+      documentTitle: 'Document Stamp',
+      appTitle: 'Document Stamp',
+      subtitle: 'Digital approval stamp for documents — with Reason / Date / Approved / Checked / Writer.',
       previewTitle: 'Preview', settingsTitle: 'Settings',
       dragHint: 'Drag frame edges/corners = resize · Drag Reason/Date dotted lines = reposition · Drag bottom dividers = adjust Approved / Checked / Writer',
       infoW: 'Width', infoH: 'Height', infoC1: 'Left', infoC2: 'Middle',
-      btnSavePng: 'Save PNG', btnCopyPng: 'Copy PNG', btnSaveSvg: 'Save SVG', btnCopySvg: 'Copy SVG', btnResetLayout: 'Reset frame',
-      groupFrame: '1) Frame and lines', lineColor: 'Line color', lineWidth: 'Line width', roughness: 'Rubber-stamp softness', frameW: 'Frame width', frameH: 'Frame height', btnApplyColor: 'Apply line color to all text',
-      groupTitle: '2) Stamp heading', titleTextLabel: 'Editable text', fontLabel: 'Font', fontSizeLabel: 'Font size', textColorLabel: 'Text color', boldLabel: 'Bold',
-      groupReason: '3) Reason', reasonNote: 'The word Reason is locked like the sample, but you can type the reason after the dotted line.', reasonTextLabel: 'Reason text', reasonPlaceholder: 'Type the reason to show on the stamp', reasonFontLabel: 'Reason font', reasonSizeLabel: 'Reason size', reasonColorLabel: 'Reason color',
-      groupDate: '4) Date', dayLabel: 'Day', monthLabel: 'Month', yearLabel: 'Year', dateFormatLabel: 'Date format', dateFontLabel: 'Date font', dateSizeLabel: 'Date size', dateColorLabel: 'Date color',
+      btnSavePng: 'Save PNG', btnCopyPng: 'Copy PNG (Excel)', btnSaveSvg: 'Save SVG', btnCopySvg: 'Copy SVG (PowerPoint)', btnResetLayout: 'Reset frame',
+      groupFrame: 'Frame & lines', lineColor: 'Line color', lineWidth: 'Line width', roughness: 'Rubber-stamp softness', frameW: 'Frame width', frameH: 'Frame height', btnApplyColor: 'Apply line color to all text',
+      groupTitle: 'Stamp heading', titleTextLabel: 'Editable text', fontLabel: 'Font', fontSizeLabel: 'Font size', textColorLabel: 'Text color', boldLabel: 'Bold',
+      groupReason: 'Reason', reasonNote: 'The word Reason is locked like the sample, but you can type the reason after the dotted line.', reasonTextLabel: 'Reason text', reasonPlaceholder: 'Type the reason to show on the stamp', reasonFontLabel: 'Reason font', reasonSizeLabel: 'Reason size', reasonColorLabel: 'Reason color', reasonLineCountLabel: 'Line count', btnAddReasonLine: '+ Add line', btnRemoveReasonLine: '− Remove line', toastAddReasonLineFail: 'Not enough space for another line',
+      groupDate: 'Date', dayLabel: 'Day', monthLabel: 'Month', yearLabel: 'Year', dateFormatLabel: 'Date format', dateFontLabel: 'Date font', dateSizeLabel: 'Date size', dateColorLabel: 'Date color',
       dateFmtDmySlash: 'D/M/Y — 07/05/2026', dateFmtYmdSlash: 'Y/M/D — 2026/05/07', dateFmtDmyDash: 'D-M-Y — 07-05-2026', dateFmtDmyDot: 'D.M.Y — 07.05.2026', dateFmtLong: 'D Month Y — 7 May 2026', dateFmtThaiBeSlash: 'Thai BE numeric — 07/05/2569', dateFmtThaiBeLong: 'Thai BE long — 7 พฤษภาคม 2569', dateFmtJaKanji: 'Japanese — 2026年5月7日', dateFmtMonthYear: 'Month/Year — 05/2026', dateFmtYearOnly: 'Year only — 2026', dateFmtBlank: 'No date / blank',
-      groupInnerLines: '5) Inner lines', innerLinesNote: 'Adjust with sliders, or drag the lines directly in Preview.', reasonLine1Label: 'Reason line 1', reasonLine2Label: 'Reason line 2', dateLineLabel: 'Date line', bottomHeightLabel: 'Bottom-row height',
-      groupBottom: '6) Approved / Checked / Writer boxes', bottomNote: 'The three labels stay locked like the sample, but the box widths can be adjusted by dragging the vertical dividers in the preview.', bottomFontLabel: 'Box-label font', bottomSizeLabel: 'Box-label size', bottomColorLabel: 'Box-label color', btnResetColumns: 'Reset equal boxes',
+      groupInnerLines: 'Inner lines', innerLinesNote: 'Adjust with sliders, or drag the lines directly in Preview.', reasonLineLabel: 'Reason line', dateLineLabel: 'Date line', bottomHeightLabel: 'Bottom-row height',
+      groupBottom: 'Approved / Checked / Writer', bottomNote: 'The three labels stay locked like the sample, but the box widths can be adjusted by dragging the vertical dividers in the preview.', bottomFontLabel: 'Box-label font', bottomSizeLabel: 'Box-label size', bottomColorLabel: 'Box-label color', btnResetColumns: 'Reset equal boxes',
       toastApplyColor: 'Applied line color to all text', toastResetColumns: 'Reset the bottom boxes equally', toastResetLayout: 'Frame reset', toastSavedPng: 'PNG saved', toastCopiedPng: 'Image copied — paste into Word / Excel', toastCopyPngFail: 'Could not copy PNG — use Save PNG instead', toastSavedSvg: 'SVG saved', toastCopiedSvg: 'SVG copied', toastCopySvgFail: 'Could not copy SVG — use Save SVG instead'
     },
     ja: {
       htmlLang: 'ja',
-      documentTitle: 'Digital Stamp Creater',
-      appTitle: 'Digital Stamp Creater',
-      subtitle: 'Reason / Date / Approved / Checked / Writer 付きの長方形デジタル印を作成します。',
+      documentTitle: '文書承認スタンプ · Document Stamp',
+      appTitle: '文書承認スタンプ',
+      subtitle: '文書承認用のデジタルスタンプ · Reason / Date / Approved / Checked / Writer 付き',
       previewTitle: 'プレビュー', settingsTitle: '設定',
       dragHint: '枠の端/角をドラッグ=サイズ調整 · Reason/Date の点線をドラッグ=位置調整 · 下段の線をドラッグ=Approved / Checked / Writer を調整',
       infoW: '幅', infoH: '高さ', infoC1: '左枠', infoC2: '中央枠',
-      btnSavePng: 'PNG保存', btnCopyPng: 'PNGコピー', btnSaveSvg: 'SVG保存', btnCopySvg: 'SVGコピー', btnResetLayout: '枠リセット',
-      groupFrame: '1) 枠と線', lineColor: '線の色', lineWidth: '線の太さ', roughness: 'スタンプ風のにじみ', frameW: '枠の幅', frameH: '枠の高さ', btnApplyColor: '線の色を全文字に適用',
-      groupTitle: '2) 上部テキスト', titleTextLabel: '文字を変更', fontLabel: 'フォント', fontSizeLabel: '文字サイズ', textColorLabel: '文字色', boldLabel: '太字',
-      groupReason: '3) Reason', reasonNote: 'Reason の文字はサンプル同様に固定です。点線の後ろに理由を入力できます。', reasonTextLabel: '理由テキスト', reasonPlaceholder: 'スタンプに表示する理由を入力', reasonFontLabel: '理由フォント', reasonSizeLabel: '理由サイズ', reasonColorLabel: '理由色',
-      groupDate: '4) 日付', dayLabel: '日', monthLabel: '月', yearLabel: '年', dateFormatLabel: '日付形式', dateFontLabel: '日付フォント', dateSizeLabel: '日付サイズ', dateColorLabel: '日付色',
+      btnSavePng: 'PNG保存', btnCopyPng: 'PNGコピー (Excel)', btnSaveSvg: 'SVG保存', btnCopySvg: 'SVGコピー (PowerPoint)', btnResetLayout: '枠リセット',
+      groupFrame: '枠と線', lineColor: '線の色', lineWidth: '線の太さ', roughness: 'スタンプ風のにじみ', frameW: '枠の幅', frameH: '枠の高さ', btnApplyColor: '線の色を全文字に適用',
+      groupTitle: '上部テキスト', titleTextLabel: '文字を変更', fontLabel: 'フォント', fontSizeLabel: '文字サイズ', textColorLabel: '文字色', boldLabel: '太字',
+      groupReason: 'Reason', reasonNote: 'Reason の文字はサンプル同様に固定です。点線の後ろに理由を入力できます。', reasonTextLabel: '理由テキスト', reasonPlaceholder: 'スタンプに表示する理由を入力', reasonFontLabel: '理由フォント', reasonSizeLabel: '理由サイズ', reasonColorLabel: '理由色', reasonLineCountLabel: '行数', btnAddReasonLine: '+ 行を追加', btnRemoveReasonLine: '− 行を削除', toastAddReasonLineFail: '追加する余白が足りません',
+      groupDate: '日付', dayLabel: '日', monthLabel: '月', yearLabel: '年', dateFormatLabel: '日付形式', dateFontLabel: '日付フォント', dateSizeLabel: '日付サイズ', dateColorLabel: '日付色',
       dateFmtDmySlash: '日/月/年 — 07/05/2026', dateFmtYmdSlash: '年/月/日 — 2026/05/07', dateFmtDmyDash: '日-月-年 — 07-05-2026', dateFmtDmyDot: '日.月.年 — 07.05.2026', dateFmtLong: '日 月 年 — 7 5月 2026', dateFmtThaiBeSlash: 'タイ仏暦 数字 — 07/05/2569', dateFmtThaiBeLong: 'タイ仏暦 長 — 7 พฤษภาคม 2569', dateFmtJaKanji: '日本式 — 2026年5月7日', dateFmtMonthYear: '月/年 — 05/2026', dateFmtYearOnly: '年のみ — 2026', dateFmtBlank: '日付なし / 空白',
-      groupInnerLines: '5) 内側の線', innerLinesNote: 'スライダーで調整、またはプレビュー内の線を直接ドラッグできます。', reasonLine1Label: 'Reason 1行目', reasonLine2Label: 'Reason 2行目', dateLineLabel: 'Date 行', bottomHeightLabel: '下段の高さ',
-      groupBottom: '6) Approved / Checked / Writer 枠', bottomNote: '3つのラベルはサンプル同様に固定です。縦線をドラッグして幅を調整できます。', bottomFontLabel: 'ラベルフォント', bottomSizeLabel: 'ラベルサイズ', bottomColorLabel: 'ラベル色', btnResetColumns: '下段を均等に戻す',
+      groupInnerLines: '内側の線', innerLinesNote: 'スライダーで調整、またはプレビュー内の線を直接ドラッグできます。', reasonLineLabel: 'Reason 行', dateLineLabel: 'Date 行', bottomHeightLabel: '下段の高さ',
+      groupBottom: 'Approved / Checked / Writer', bottomNote: '3つのラベルはサンプル同様に固定です。縦線をドラッグして幅を調整できます。', bottomFontLabel: 'ラベルフォント', bottomSizeLabel: 'ラベルサイズ', bottomColorLabel: 'ラベル色', btnResetColumns: '下段を均等に戻す',
       toastApplyColor: '線の色を全文字に適用しました', toastResetColumns: '下段を均等にリセットしました', toastResetLayout: '枠をリセットしました', toastSavedPng: 'PNGを保存しました', toastCopiedPng: '画像をコピーしました — Word / Excelに貼り付けできます', toastCopyPngFail: 'PNGをコピーできません — PNG保存をご使用ください', toastSavedSvg: 'SVGを保存しました', toastCopiedSvg: 'SVGをコピーしました', toastCopySvgFail: 'SVGをコピーできません — SVG保存をご使用ください'
     }
   };
@@ -751,8 +943,7 @@
     lineWidth: 4,
     roughness: 4,
     frame: { x: 140, y: 160, w: 820, h: 460 },
-    reasonLine1: 0.40,
-    reasonLine2: 0.55,
+    reasonLines: [0.40, 0.55],
     dateLine: 0.70,
     bottomTop: 0.76,
     col1: 1 / 3,
@@ -792,6 +983,10 @@
     document.querySelectorAll('[data-i18n-placeholder]').forEach((el) => {
       const key = el.dataset.i18nPlaceholder;
       if (dict[key]) el.placeholder = dict[key];
+    });
+    document.querySelectorAll('[data-i18n-title]').forEach((el) => {
+      const key = el.dataset.i18nTitle;
+      if (dict[key]) el.title = dict[key];
     });
     document.querySelectorAll('.lang-btn').forEach((btn) => {
       btn.classList.toggle('active', btn.dataset.lang === currentLang);
@@ -965,11 +1160,26 @@
     }
   }
 
+  const REASON_GAP = 0.07;
+  const REASON_FIRST_MIN = 0.28;
+  const REASON_TO_DATE_GAP = 0.08;
+  const DATE_TO_BOTTOM_GAP = 0.05;
+
   function normaliseLayout() {
-    state.reasonLine1 = clamp(state.reasonLine1, 0.28, 0.50);
-    state.reasonLine2 = clamp(state.reasonLine2, state.reasonLine1 + 0.07, 0.68);
-    state.dateLine = clamp(state.dateLine, state.reasonLine2 + 0.08, 0.80);
-    state.bottomTop = clamp(state.bottomTop, state.dateLine + 0.05, 0.88);
+    if (!Array.isArray(state.reasonLines) || state.reasonLines.length < 1) {
+      state.reasonLines = [0.40, 0.55];
+    }
+    state.reasonLines = state.reasonLines.map(v => Number(v)).filter(v => Number.isFinite(v));
+    if (state.reasonLines.length < 1) state.reasonLines = [0.40, 0.55];
+    state.reasonLines.sort((a, b) => a - b);
+    const reasonMax = 0.80 - REASON_TO_DATE_GAP;
+    state.reasonLines[0] = clamp(state.reasonLines[0], REASON_FIRST_MIN, reasonMax);
+    for (let i = 1; i < state.reasonLines.length; i++) {
+      state.reasonLines[i] = clamp(state.reasonLines[i], state.reasonLines[i - 1] + REASON_GAP, reasonMax);
+    }
+    const lastReason = state.reasonLines[state.reasonLines.length - 1];
+    state.dateLine = clamp(state.dateLine, lastReason + REASON_TO_DATE_GAP, 0.80);
+    state.bottomTop = clamp(state.bottomTop, state.dateLine + DATE_TO_BOTTOM_GAP, 0.88);
     state.col1 = clamp(state.col1, 0.12, state.col2 - 0.12);
     state.col2 = clamp(state.col2, state.col1 + 0.12, 0.88);
   }
@@ -984,22 +1194,21 @@
     const pad = Math.max(24, w * 0.035);
     const right = x + w;
     const bottom = y + h;
-    const reasonY1 = y + h * state.reasonLine1;
-    const reasonY2 = y + h * state.reasonLine2;
+    const reasonYs = state.reasonLines.map(frac => y + h * frac);
     const dateY = y + h * state.dateLine;
     const bottomTopY = y + h * state.bottomTop;
     const bottomH = bottom - bottomTopY;
     const colX1 = x + w * state.col1;
     const colX2 = x + w * state.col2;
     const labelFontSize = clamp(h * 0.078, 24, 38);
-    return { f, x, y, w, h, pad, right, bottom, reasonY1, reasonY2, dateY, bottomTopY, bottomH, colX1, colX2, labelFontSize };
+    return { f, x, y, w, h, pad, right, bottom, reasonYs, dateY, bottomTopY, bottomH, colX1, colX2, labelFontSize };
   }
 
   function drawStamp(exportMode = false) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     const g = getGeometry();
-    const { x, y, w, h, pad, right, bottom, reasonY1, reasonY2, dateY, bottomTopY, bottomH, colX1, colX2, labelFontSize } = g;
+    const { x, y, w, h, pad, right, bottom, reasonYs, dateY, bottomTopY, bottomH, colX1, colX2, labelFontSize } = g;
 
     ctx.strokeStyle = state.lineColor;
     ctx.fillStyle = state.lineColor;
@@ -1025,19 +1234,21 @@
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
     setCustomFont(state.reason.font, labelFontSize, true);
-    ctx.fillText('Reason', x + pad, reasonY1);
+    ctx.fillText('Reason', x + pad, reasonYs[0]);
     const reasonLabelW = ctx.measureText('Reason').width;
     ctx.restore();
 
     const reasonTextStart = x + pad + reasonLabelW + 18;
-    const reasonDotY1 = reasonY1 + labelFontSize * 0.28;
-    const reasonDotY2 = reasonY2 + labelFontSize * 0.28;
-    dottedLine(reasonTextStart, reasonDotY1, right - pad);
-    dottedLine(x + pad, reasonDotY2, right - pad);
+    reasonYs.forEach((ry, i) => {
+      const dotY = ry + labelFontSize * 0.28;
+      const startX = i === 0 ? reasonTextStart : x + pad;
+      dottedLine(startX, dotY, right - pad);
+    });
 
+    const maxWidths = reasonYs.map((_, i) => i === 0 ? right - pad - reasonTextStart : right - pad - (x + pad));
     const reasonLines = wrapTextToLines(
       state.reason.text,
-      [right - pad - reasonTextStart, right - pad - (x + pad)],
+      maxWidths,
       state.reason.font,
       state.reason.size,
       state.reason.bold
@@ -1047,8 +1258,11 @@
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
     setCustomFont(state.reason.font, state.reason.size, state.reason.bold);
-    if (reasonLines[0]) ctx.fillText(reasonLines[0], reasonTextStart, reasonY1);
-    if (reasonLines[1]) ctx.fillText(reasonLines[1], x + pad, reasonY2);
+    reasonLines.forEach((text, i) => {
+      if (!text) return;
+      const startX = i === 0 ? reasonTextStart : x + pad;
+      ctx.fillText(text, startX, reasonYs[i]);
+    });
     ctx.restore();
 
     ctx.save();
@@ -1101,7 +1315,7 @@
   }
 
   function drawLiveHandles() {
-    const { x, y, w, h, right, bottom, reasonY1, reasonY2, dateY, bottomTopY, colX1, colX2 } = getGeometry();
+    const { x, y, w, h, right, bottom, reasonYs, dateY, bottomTopY, colX1, colX2 } = getGeometry();
     const s = 10;
     const pts = [
       [x,y], [x+w/2,y], [x+w,y], [x,y+h/2], [x+w,y+h/2], [x,y+h], [x+w/2,y+h], [x+w,y+h]
@@ -1121,10 +1335,10 @@
     ctx.lineWidth = 1.5;
     ctx.setLineDash([6, 5]);
     ctx.beginPath();
-    ctx.moveTo(x, reasonY1);
-    ctx.lineTo(right, reasonY1);
-    ctx.moveTo(x, reasonY2);
-    ctx.lineTo(right, reasonY2);
+    reasonYs.forEach((ry) => {
+      ctx.moveTo(x, ry);
+      ctx.lineTo(right, ry);
+    });
     ctx.moveTo(x, dateY);
     ctx.lineTo(right, dateY);
     ctx.moveTo(x, bottomTopY);
@@ -1137,6 +1351,38 @@
     ctx.restore();
   }
 
+  function rebuildReasonLineControls() {
+    const container = $('reasonLinesContainer');
+    if (!container) return;
+    const desired = state.reasonLines.length;
+    const baseLabel = t('reasonLineLabel');
+    while (container.children.length > desired) container.removeChild(container.lastChild);
+    while (container.children.length < desired) {
+      const idx = container.children.length;
+      const field = document.createElement('div');
+      field.className = 'field';
+      field.innerHTML =
+        `<label for="reasonLine${idx}"><span class="reasonLineLabelText"></span> ` +
+        `<span id="reasonLine${idx}Text" class="small-muted"></span></label>` +
+        `<input type="range" id="reasonLine${idx}" min="20" max="80" step="1" />`;
+      container.appendChild(field);
+      const input = field.querySelector('input');
+      input.addEventListener('input', () => {
+        const val = (parseFloat(input.value) || 40) / 100;
+        const prev = idx > 0 ? state.reasonLines[idx - 1] + REASON_GAP : REASON_FIRST_MIN;
+        const next = idx < state.reasonLines.length - 1
+          ? state.reasonLines[idx + 1] - REASON_GAP
+          : state.dateLine - REASON_TO_DATE_GAP;
+        state.reasonLines[idx] = clamp(val, prev, next);
+        render();
+      });
+    }
+    Array.from(container.children).forEach((field, i) => {
+      const labelSpan = field.querySelector('.reasonLineLabelText');
+      if (labelSpan) labelSpan.textContent = `${baseLabel} ${i + 1}`;
+    });
+  }
+
   function updateInfo() {
     const f = state.frame;
     $('infoW').textContent = Math.round(f.w) + ' px';
@@ -1144,11 +1390,18 @@
     $('infoC1').textContent = Math.round(state.col1 * 100) + '%';
     $('infoC2').textContent = Math.round((state.col2 - state.col1) * 100) + '%';
     $('bottomHeightText').textContent = `(${Math.round((1 - state.bottomTop) * 100)}%)`;
-    $('reasonLine1Text').textContent = `(${Math.round(state.reasonLine1 * 100)}%)`;
-    $('reasonLine2Text').textContent = `(${Math.round(state.reasonLine2 * 100)}%)`;
+    rebuildReasonLineControls();
+    state.reasonLines.forEach((frac, i) => {
+      const txt = $(`reasonLine${i}Text`);
+      const inp = $(`reasonLine${i}`);
+      if (txt) txt.textContent = `(${Math.round(frac * 100)}%)`;
+      if (inp) inp.value = Math.round(frac * 100);
+    });
+    const countEl = $('reasonLineCount');
+    if (countEl) countEl.textContent = String(state.reasonLines.length);
+    const removeBtn = $('removeReasonLineBtn');
+    if (removeBtn) removeBtn.disabled = state.reasonLines.length <= 1;
     $('dateLineText').textContent = `(${Math.round(state.dateLine * 100)}%)`;
-    $('reasonLine1').value = Math.round(state.reasonLine1 * 100);
-    $('reasonLine2').value = Math.round(state.reasonLine2 * 100);
     $('dateLine').value = Math.round(state.dateLine * 100);
     $('bottomHeight').value = Math.round((1 - state.bottomTop) * 100);
   }
@@ -1162,12 +1415,13 @@
   }
 
   function hitTest(p) {
-    const { x, y, w, h, right, bottom, reasonY1, reasonY2, dateY, bottomTopY, colX1, colX2 } = getGeometry();
+    const { x, y, w, h, right, bottom, reasonYs, dateY, bottomTopY, colX1, colX2 } = getGeometry();
     const th = 13;
 
     if (p.x >= x && p.x <= right) {
-      if (Math.abs(p.y - reasonY1) < th) return { type: 'reasonLine1' };
-      if (Math.abs(p.y - reasonY2) < th) return { type: 'reasonLine2' };
+      for (let i = 0; i < reasonYs.length; i++) {
+        if (Math.abs(p.y - reasonYs[i]) < th) return { type: 'reasonLine', index: i };
+      }
       if (Math.abs(p.y - dateY) < th) return { type: 'dateLine' };
       if (Math.abs(p.y - bottomTopY) < th) return { type: 'bottomTop' };
     }
@@ -1203,7 +1457,7 @@
   function cursorFor(hit) {
     if (!hit) return 'default';
     if (hit.type === 'col1' || hit.type === 'col2') return 'ew-resize';
-    if (['reasonLine1','reasonLine2','dateLine','bottomTop'].includes(hit.type)) return 'ns-resize';
+    if (['reasonLine','dateLine','bottomTop'].includes(hit.type)) return 'ns-resize';
     if (hit.type === 'resize') {
       const map = { n: 'ns-resize', s: 'ns-resize', e: 'ew-resize', w: 'ew-resize', nw: 'nwse-resize', se: 'nwse-resize', ne: 'nesw-resize', sw: 'nesw-resize' };
       return map[hit.handle] || 'default';
@@ -1255,8 +1509,7 @@
       startCol1: state.col1,
       startCol2: state.col2,
       startBottomTop: state.bottomTop,
-      startReasonLine1: state.reasonLine1,
-      startReasonLine2: state.reasonLine2,
+      startReasonLines: state.reasonLines.slice(),
       startDateLine: state.dateLine
     };
     canvas.setPointerCapture(e.pointerId);
@@ -1277,12 +1530,16 @@
       state.col1 = clamp((p.x - f.x) / f.w, 0.12, state.col2 - 0.12);
     } else if (drag.hit.type === 'col2') {
       state.col2 = clamp((p.x - f.x) / f.w, state.col1 + 0.12, 0.88);
-    } else if (drag.hit.type === 'reasonLine1') {
-      state.reasonLine1 = clamp(fracY, 0.28, state.reasonLine2 - 0.07);
-    } else if (drag.hit.type === 'reasonLine2') {
-      state.reasonLine2 = clamp(fracY, state.reasonLine1 + 0.07, state.dateLine - 0.08);
+    } else if (drag.hit.type === 'reasonLine') {
+      const i = drag.hit.index;
+      const prev = i > 0 ? state.reasonLines[i - 1] + REASON_GAP : REASON_FIRST_MIN;
+      const next = i < state.reasonLines.length - 1
+        ? state.reasonLines[i + 1] - REASON_GAP
+        : state.dateLine - REASON_TO_DATE_GAP;
+      state.reasonLines[i] = clamp(fracY, prev, next);
     } else if (drag.hit.type === 'dateLine') {
-      state.dateLine = clamp(fracY, state.reasonLine2 + 0.08, state.bottomTop - 0.05);
+      const lastReason = state.reasonLines[state.reasonLines.length - 1];
+      state.dateLine = clamp(fracY, lastReason + REASON_TO_DATE_GAP, state.bottomTop - DATE_TO_BOTTOM_GAP);
     } else if (drag.hit.type === 'bottomTop') {
       state.bottomTop = clamp(fracY, state.dateLine + 0.05, 0.88);
     } else if (drag.hit.type === 'resize') {
@@ -1416,20 +1673,38 @@
       render();
     });
 
-    $('reasonLine1').addEventListener('input', () => {
-      state.reasonLine1 = clamp((parseFloat($('reasonLine1').value) || 40) / 100, 0.28, state.reasonLine2 - 0.07);
-      render();
-    });
-    $('reasonLine2').addEventListener('input', () => {
-      state.reasonLine2 = clamp((parseFloat($('reasonLine2').value) || 55) / 100, state.reasonLine1 + 0.07, state.dateLine - 0.08);
-      render();
-    });
     $('dateLine').addEventListener('input', () => {
-      state.dateLine = clamp((parseFloat($('dateLine').value) || 70) / 100, state.reasonLine2 + 0.08, state.bottomTop - 0.05);
+      const lastReason = state.reasonLines[state.reasonLines.length - 1];
+      state.dateLine = clamp((parseFloat($('dateLine').value) || 70) / 100, lastReason + REASON_TO_DATE_GAP, state.bottomTop - DATE_TO_BOTTOM_GAP);
       render();
     });
     $('bottomHeight').addEventListener('input', () => {
-      state.bottomTop = clamp(1 - (parseFloat($('bottomHeight').value) || 24) / 100, state.dateLine + 0.05, 0.88);
+      state.bottomTop = clamp(1 - (parseFloat($('bottomHeight').value) || 24) / 100, state.dateLine + DATE_TO_BOTTOM_GAP, 0.88);
+      render();
+    });
+
+    $('addReasonLineBtn').addEventListener('click', () => {
+      const lastReason = state.reasonLines[state.reasonLines.length - 1];
+      let target = lastReason + 0.10;
+      if (target > state.dateLine - REASON_TO_DATE_GAP) {
+        const shift = target + REASON_TO_DATE_GAP - state.dateLine;
+        state.dateLine = clamp(state.dateLine + shift, 0, 0.80);
+        state.bottomTop = clamp(Math.max(state.bottomTop + shift, state.dateLine + DATE_TO_BOTTOM_GAP), 0, 0.88);
+      }
+      const maxAllowed = state.dateLine - REASON_TO_DATE_GAP;
+      if (maxAllowed - lastReason < REASON_GAP) {
+        showToast(t('toastAddReasonLineFail'));
+        return;
+      }
+      target = Math.min(target, maxAllowed);
+      state.reasonLines.push(target);
+      syncInputsFromState();
+      render();
+    });
+    $('removeReasonLineBtn').addEventListener('click', () => {
+      if (state.reasonLines.length <= 1) return;
+      state.reasonLines.pop();
+      syncInputsFromState();
       render();
     });
 
@@ -1452,8 +1727,7 @@
 
     $('resetLayoutBtn').addEventListener('click', () => {
       Object.assign(state.frame, { x: 140, y: 160, w: 820, h: 460 });
-      state.reasonLine1 = 0.40;
-      state.reasonLine2 = 0.55;
+      state.reasonLines = [0.40, 0.55];
       state.dateLine = 0.70;
       state.bottomTop = 0.76;
       state.col1 = 1 / 3;
@@ -1488,6 +1762,13 @@
       const saved = JSON.parse(raw);
       if (!saved || !saved.frame) return;
       Object.assign(state, saved);
+      if (!Array.isArray(state.reasonLines)) {
+        const l1 = Number(saved.reasonLine1);
+        const l2 = Number(saved.reasonLine2);
+        state.reasonLines = [Number.isFinite(l1) ? l1 : 0.40, Number.isFinite(l2) ? l2 : 0.55];
+      }
+      delete state.reasonLine1;
+      delete state.reasonLine2;
       state.frame = Object.assign({ x: 140, y: 160, w: 820, h: 460 }, saved.frame || {});
       state.title = Object.assign({ text: 'ABOLISHED', font: 'Arial', size: 88, color: '#a83b4b', bold: true }, saved.title || {});
       state.reason = Object.assign({ text: '', font: 'Arial', size: 28, color: '#a83b4b', bold: false }, saved.reason || {});
@@ -1548,7 +1829,7 @@
     const W = canvas.width;
     const H = canvas.height;
     const g = getGeometry();
-    const { x, y, w, h, pad, right, bottom, reasonY1, reasonY2, dateY, bottomTopY, bottomH, colX1, colX2, labelFontSize } = g;
+    const { x, y, w, h, pad, right, bottom, reasonYs, dateY, bottomTopY, bottomH, colX1, colX2, labelFontSize } = g;
     const stroke = state.lineColor;
     const lineWidth = state.lineWidth;
     const dotWidth = Math.max(2, state.lineWidth * 0.95);
@@ -1568,22 +1849,27 @@
 
     setCustomFont(state.reason.font, labelFontSize, true);
     const reasonLabelW = ctx.measureText('Reason').width;
-    parts.push(svgText('Reason', x + pad, reasonY1, { fill: stroke, font: state.reason.font, size: labelFontSize, bold: true, anchor: 'start' }));
+    parts.push(svgText('Reason', x + pad, reasonYs[0], { fill: stroke, font: state.reason.font, size: labelFontSize, bold: true, anchor: 'start' }));
     const reasonTextStart = x + pad + reasonLabelW + 18;
-    const reasonDotY1 = reasonY1 + labelFontSize * 0.28;
-    const reasonDotY2 = reasonY2 + labelFontSize * 0.28;
-    parts.push(`<line x1="${reasonTextStart}" y1="${reasonDotY1}" x2="${right - pad}" y2="${reasonDotY1}" stroke="${stroke}" stroke-width="${dotWidth}" stroke-linecap="round" stroke-dasharray="1 ${dotGap}"/>`);
-    parts.push(`<line x1="${x + pad}" y1="${reasonDotY2}" x2="${right - pad}" y2="${reasonDotY2}" stroke="${stroke}" stroke-width="${dotWidth}" stroke-linecap="round" stroke-dasharray="1 ${dotGap}"/>`);
+    reasonYs.forEach((ry, i) => {
+      const dotY = ry + labelFontSize * 0.28;
+      const startX = i === 0 ? reasonTextStart : x + pad;
+      parts.push(`<line x1="${startX}" y1="${dotY}" x2="${right - pad}" y2="${dotY}" stroke="${stroke}" stroke-width="${dotWidth}" stroke-linecap="round" stroke-dasharray="1 ${dotGap}"/>`);
+    });
 
+    const maxWidths = reasonYs.map((_, i) => i === 0 ? right - pad - reasonTextStart : right - pad - (x + pad));
     const reasonLines = wrapTextToLines(
       state.reason.text,
-      [right - pad - reasonTextStart, right - pad - (x + pad)],
+      maxWidths,
       state.reason.font,
       state.reason.size,
       state.reason.bold
     );
-    if (reasonLines[0]) parts.push(svgText(reasonLines[0], reasonTextStart, reasonY1, { fill: state.reason.color, font: state.reason.font, size: state.reason.size, bold: state.reason.bold, anchor: 'start' }));
-    if (reasonLines[1]) parts.push(svgText(reasonLines[1], x + pad, reasonY2, { fill: state.reason.color, font: state.reason.font, size: state.reason.size, bold: state.reason.bold, anchor: 'start' }));
+    reasonLines.forEach((text, i) => {
+      if (!text) return;
+      const startX = i === 0 ? reasonTextStart : x + pad;
+      parts.push(svgText(text, startX, reasonYs[i], { fill: state.reason.color, font: state.reason.font, size: state.reason.size, bold: state.reason.bold, anchor: 'start' }));
+    });
 
     setCustomFont(state.date.font, labelFontSize, true);
     const dateLabelW = ctx.measureText('Date').width;

@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Stamp Creator Suite · เครื่องมือสร้างตราประทับ</title>
+<title>Stamp Creator Suite · เครื่องมือสร้างตราประทับดิจิทัล</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Thai:wght@400;600;700&family=Noto+Serif+JP:wght@400;700&family=Sarabun:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Thai:wght@400;600;700&family=Noto+Serif+JP:wght@400;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
     --bg:        #f2ece0;
@@ -16,10 +16,12 @@
     --ink-2:     #4a4238;
     --ink-3:     #9a8f82;
     --line:      #ddd5c0;
+    --line-soft: #ece4cf;
     --red:       #b4383a;
     --red-dark:  #8b2a2c;
     --red-soft:  rgba(180,56,58,.08);
     --shadow:    0 20px 48px rgba(60,40,20,.10);
+    --shadow-hover: 0 30px 64px rgba(60,40,20,.16);
   }
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -35,7 +37,6 @@
     overflow-x: hidden;
   }
 
-  /* paper grain + radial glow */
   body::before {
     content: '';
     position: fixed; inset: 0; pointer-events: none; z-index: 0;
@@ -44,72 +45,101 @@
       radial-gradient(ellipse 50% 50% at 85% 110%, rgba(139,100,50,.05), transparent);
   }
 
-  /* ── LAYOUT ── */
   .wrap {
     position: relative; z-index: 1;
-    max-width: 860px;
+    max-width: 980px;
     margin: 0 auto;
-    padding: 72px 28px 96px;
+    padding: 72px 28px 64px;
   }
 
   /* ── HEADER ── */
   header {
     text-align: center;
-    margin-bottom: 64px;
+    margin-bottom: 56px;
   }
 
   .stamp-emblem {
-    width: 72px; height: 72px;
+    width: 76px; height: 76px;
     border: 2.5px solid var(--red);
     border-radius: 50%;
     display: grid; place-items: center;
-    margin: 0 auto 24px;
+    margin: 0 auto 22px;
     font-family: 'Noto Serif JP', serif;
-    font-weight: 700; font-size: 28px;
+    font-weight: 700; font-size: 30px;
     color: var(--red);
     transform: rotate(-6deg);
     animation: emblemIn .6s cubic-bezier(.22,1,.36,1) both;
-    box-shadow: inset 0 0 0 4px rgba(180,56,58,.08);
+    box-shadow: inset 0 0 0 4px rgba(180,56,58,.08), 0 4px 12px rgba(180,56,58,.12);
   }
 
   .site-title {
     font-family: 'Noto Serif Thai', serif;
     font-weight: 700;
-    font-size: clamp(26px, 4vw, 38px);
+    font-size: clamp(28px, 4.2vw, 42px);
     letter-spacing: -.02em;
-    line-height: 1.2;
+    line-height: 1.15;
     color: var(--ink);
     animation: fadeUp .5s .1s both;
   }
 
   .site-sub {
-    margin-top: 10px;
+    margin-top: 12px;
     font-size: 14px;
     color: var(--ink-3);
-    letter-spacing: .04em;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    font-weight: 600;
     animation: fadeUp .5s .2s both;
   }
 
   .divider {
     width: 48px; height: 2px;
     background: var(--red);
-    margin: 28px auto;
+    margin: 26px auto 22px;
     opacity: .5;
     animation: fadeUp .5s .25s both;
+  }
+
+  .lede {
+    font-size: 15px;
+    color: var(--ink-2);
+    max-width: 520px;
+    margin: 0 auto;
+    line-height: 1.7;
+    animation: fadeUp .5s .3s both;
+  }
+
+  .pick-hint {
+    margin: 36px auto 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--ink-3);
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    font-weight: 700;
+    animation: fadeUp .5s .35s both;
+  }
+
+  .pick-hint::before, .pick-hint::after {
+    content: '';
+    width: 28px; height: 1px;
+    background: var(--line);
   }
 
   /* ── CARDS ── */
   .cards {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 28px;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 24px;
   }
 
   .card {
     background: var(--card);
     border: 1px solid var(--line);
-    border-radius: 16px;
-    padding: 36px 32px 32px;
+    border-radius: 18px;
+    padding: 0;
     text-decoration: none;
     color: inherit;
     position: relative;
@@ -118,54 +148,161 @@
     transition: transform .25s cubic-bezier(.22,1,.36,1),
                 box-shadow .25s ease,
                 border-color .25s ease;
-    animation: cardIn .5s cubic-bezier(.22,1,.36,1) both;
+    animation: cardIn .55s cubic-bezier(.22,1,.36,1) both;
+    display: flex;
+    flex-direction: column;
   }
 
-  .card:nth-child(1) { animation-delay: .3s; }
-  .card:nth-child(2) { animation-delay: .42s; }
+  .card:nth-child(1) { animation-delay: .35s; }
+  .card:nth-child(2) { animation-delay: .47s; }
 
   .card::before {
     content: '';
     position: absolute; inset: 0; z-index: 0;
-    background: radial-gradient(circle at 90% 0%, rgba(180,56,58,.05), transparent 60%);
+    background: radial-gradient(circle at 95% 0%, rgba(180,56,58,.07), transparent 55%);
     transition: opacity .3s;
     opacity: 0;
+    pointer-events: none;
   }
 
   .card:hover {
     transform: translateY(-6px);
-    box-shadow: 0 28px 60px rgba(60,40,20,.14);
-    border-color: rgba(180,56,58,.3);
+    box-shadow: var(--shadow-hover);
+    border-color: rgba(180,56,58,.35);
   }
 
   .card:hover::before { opacity: 1; }
 
-  .card-body { position: relative; z-index: 1; }
-
-  /* stamp icon area */
-  .card-icon {
-    width: 52px; height: 52px;
-    border: 2px solid var(--red);
-    display: grid; place-items: center;
-    margin-bottom: 24px;
-    color: var(--red);
+  /* visual preview at top of card */
+  .card-preview {
     position: relative;
-    flex-shrink: 0;
+    height: 140px;
+    background:
+      linear-gradient(rgba(180,56,58,.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(180,56,58,.04) 1px, transparent 1px),
+      var(--paper);
+    background-size: 22px 22px;
+    border-bottom: 1px solid var(--line-soft);
+    display: grid;
+    place-items: center;
+    overflow: hidden;
   }
 
-  .card:nth-child(1) .card-icon { border-radius: 50%; }
-  .card:nth-child(2) .card-icon { border-radius: 6px; }
+  /* App 1 preview: circle stamp with 3 dividers */
+  .preview-signature {
+    transform: rotate(-3deg);
+    transition: transform .3s cubic-bezier(.22,1,.36,1);
+  }
 
-  .card-icon svg { width: 24px; height: 24px; stroke: currentColor; fill: none; stroke-width: 1.8; }
+  .card:hover .preview-signature { transform: rotate(-3deg) scale(1.06); }
+
+  .mini-stamp-circle {
+    width: 118px;
+    height: 118px;
+    border: 2.6px solid var(--red);
+    border-radius: 50%;
+    color: var(--red);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 9px 6px;
+    font-family: 'Noto Serif Thai', 'Noto Serif JP', serif;
+    text-align: center;
+  }
+
+  .mini-stamp-circle .row {
+    flex: 1;
+    display: grid;
+    place-items: center;
+    line-height: 1;
+  }
+
+  .mini-stamp-circle .row.top { font-weight: 700; font-size: 16px; letter-spacing: .01em; }
+  .mini-stamp-circle .row.mid { font-weight: 500; font-size: 12px; font-family: 'Sarabun', sans-serif; }
+  .mini-stamp-circle .row.bot { font-weight: 700; font-size: 13px; letter-spacing: -.01em; }
+
+  .mini-stamp-circle .sep {
+    height: 1.8px;
+    background: var(--red);
+    margin: 0 -6px;
+  }
+
+  /* App 2 preview: document stamp */
+  .preview-document {
+    width: 220px;
+    border: 2px solid var(--red);
+    border-radius: 3px;
+    padding: 8px 10px;
+    background: rgba(255,253,246,.6);
+    transform: rotate(-3deg);
+    transition: transform .3s cubic-bezier(.22,1,.36,1);
+    color: var(--red);
+  }
+
+  .card:hover .preview-document { transform: rotate(-3deg) scale(1.05); }
+
+  .preview-document .doc-title {
+    font-family: 'Noto Serif Thai', serif;
+    font-weight: 700;
+    font-size: 18px;
+    text-align: center;
+    letter-spacing: .04em;
+    margin-bottom: 4px;
+  }
+
+  .preview-document .doc-line {
+    font-size: 8px;
+    border-bottom: 1px dotted var(--red);
+    padding: 1px 0;
+    margin-bottom: 3px;
+    opacity: .8;
+  }
+
+  .preview-document .doc-boxes {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border-top: 1.5px solid var(--red);
+    margin-top: 4px;
+    font-size: 7px;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+  }
+
+  .preview-document .doc-boxes span {
+    padding: 4px 2px;
+    border-right: 1px solid var(--red);
+  }
+
+  .preview-document .doc-boxes span:last-child { border-right: 0; }
+
+  .card-body {
+    padding: 26px 26px 28px;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
 
   .card-label {
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: .12em;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .16em;
     text-transform: uppercase;
     color: var(--red);
     margin-bottom: 8px;
-    opacity: .8;
+    opacity: .85;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card-label::before {
+    content: '';
+    width: 18px; height: 1.5px;
+    background: var(--red);
+    opacity: .5;
   }
 
   .card-title {
@@ -173,48 +310,82 @@
     font-weight: 700;
     font-size: 22px;
     line-height: 1.25;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
     color: var(--ink);
   }
 
+  .card-title-en {
+    font-size: 13px;
+    color: var(--ink-3);
+    font-weight: 500;
+    margin-bottom: 14px;
+    letter-spacing: .02em;
+  }
+
   .card-desc {
-    font-size: 14px;
-    line-height: 1.7;
+    font-size: 13.5px;
+    line-height: 1.65;
     color: var(--ink-2);
-    margin-bottom: 28px;
+    margin-bottom: 18px;
+  }
+
+  .usecase {
+    background: var(--red-soft);
+    border-left: 3px solid var(--red);
+    padding: 9px 12px;
+    border-radius: 6px;
+    margin-bottom: 18px;
+    font-size: 12px;
+    color: var(--ink-2);
+    line-height: 1.55;
+  }
+
+  .usecase strong {
+    color: var(--red-dark);
+    font-weight: 700;
+    display: block;
+    margin-bottom: 2px;
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: .1em;
   }
 
   /* feature pills */
   .pills {
     display: flex;
     flex-wrap: wrap;
-    gap: 7px;
-    margin-bottom: 28px;
+    gap: 6px;
+    margin-bottom: 22px;
   }
 
   .pill {
     font-size: 11.5px;
     padding: 4px 10px;
-    background: var(--red-soft);
+    background: rgba(180,56,58,.06);
     color: var(--red-dark);
     border-radius: 20px;
-    border: 1px solid rgba(180,56,58,.15);
+    border: 1px solid rgba(180,56,58,.18);
     font-weight: 500;
   }
 
   /* open button */
   .card-btn {
+    margin-top: auto;
     display: inline-flex;
     align-items: center;
     gap: 8px;
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 700;
     color: var(--red);
     letter-spacing: .01em;
-    transition: gap .2s;
+    padding-top: 6px;
+    transition: gap .2s, color .2s;
   }
 
-  .card:hover .card-btn { gap: 13px; }
+  .card:hover .card-btn {
+    gap: 13px;
+    color: var(--red-dark);
+  }
 
   .card-btn svg {
     width: 16px; height: 16px;
@@ -224,13 +395,34 @@
   /* ── FOOTER ── */
   footer {
     text-align: center;
-    margin-top: 72px;
+    margin-top: 64px;
+    padding-top: 32px;
+    border-top: 1px solid var(--line);
     font-size: 12.5px;
     color: var(--ink-3);
     animation: fadeUp .5s .6s both;
   }
 
-  footer strong { color: var(--ink-2); }
+  footer .footer-row {
+    margin: 4px 0;
+  }
+
+  footer strong {
+    color: var(--ink-2);
+    font-weight: 700;
+  }
+
+  footer .badge {
+    display: inline-block;
+    padding: 2px 9px;
+    background: var(--red-soft);
+    color: var(--red-dark);
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: .04em;
+    margin: 0 4px;
+  }
 
   /* ── ANIMATIONS ── */
   @keyframes emblemIn {
@@ -242,14 +434,21 @@
     to   { opacity: 1; transform: translateY(0); }
   }
   @keyframes cardIn {
-    from { opacity: 0; transform: translateY(24px); }
+    from { opacity: 0; transform: translateY(28px); }
     to   { opacity: 1; transform: translateY(0); }
   }
 
   /* ── RESPONSIVE ── */
+  @media (max-width: 720px) {
+    .cards { grid-template-columns: 1fr; }
+  }
+
   @media (max-width: 500px) {
-    .wrap { padding: 48px 18px 72px; }
-    .card { padding: 28px 22px 26px; }
+    .wrap { padding: 48px 18px 48px; }
+    .card-body { padding: 22px 20px 24px; }
+    .card-preview { height: 120px; }
+    .site-title { font-size: 26px; }
+    .lede { font-size: 14px; }
   }
 </style>
 </head>
@@ -259,33 +458,49 @@
   <!-- HEADER -->
   <header>
     <div class="stamp-emblem">印</div>
-    <h1 class="site-title">เครื่องมือสร้างตราประทับ</h1>
+    <h1 class="site-title">เครื่องมือสร้างตราประทับดิจิทัล</h1>
     <p class="site-sub">Digital Stamp Creator Suite · 電子印鑑</p>
     <div class="divider"></div>
-    <p style="font-size:14px;color:var(--ink-2);animation:fadeUp .5s .3s both;max-width:440px;margin:0 auto;line-height:1.7;">
-      เปิดผ่านเบราว์เซอร์ ไม่ต้องติดตั้ง · ข้อมูลเก็บในเครื่องคุณเท่านั้น
+    <p class="lede">
+      สร้างตราประทับและตรารับรองเอกสารผ่านเบราว์เซอร์ ไม่ต้องติดตั้ง<br>
+      ข้อมูลทั้งหมดเก็บในเครื่องคุณเท่านั้น ไม่ส่งออกที่ไหน
     </p>
+    <div class="pick-hint">เลือกแอปที่ต้องการ</div>
   </header>
 
   <!-- CARDS -->
   <div class="cards">
 
-    <!-- App 1 -->
+    <!-- App 1: Signature Stamp -->
     <a class="card" href="Sign_Stamp_Creater.html">
-      <div class="card-body">
-        <div class="card-icon">
-          <!-- circle stamp icon -->
-          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><line x1="12" y1="3" x2="12" y2="7"/><line x1="12" y1="17" x2="12" y2="21"/><line x1="3" y1="12" x2="7" y2="12"/><line x1="17" y1="12" x2="21" y2="12"/></svg>
+      <div class="card-preview">
+        <div class="preview-signature" aria-hidden="true">
+          <div class="mini-stamp-circle">
+            <div class="row top">Name</div>
+            <div class="sep"></div>
+            <div class="row mid">2026/04/25</div>
+            <div class="sep"></div>
+            <div class="row bot">Company</div>
+          </div>
         </div>
+      </div>
+      <div class="card-body">
         <div class="card-label">App 1</div>
-        <h2 class="card-title">ตราประทับรูปร่างต่างๆ</h2>
-        <p class="card-desc">สร้างตราประทับดิจิทัลได้ 8 รูปร่าง พร้อมตั้งค่าข้อความ 3 บรรทัด เลือกฟอนต์และสีได้อิสระ</p>
+        <h2 class="card-title">ตราชื่อ-ลายเซ็น</h2>
+        <div class="card-title-en">Signature Stamp</div>
+        <p class="card-desc">
+          สร้างตราชื่อ ตราลายเซ็น หรือตราตำแหน่ง พร้อมข้อความ 3 บรรทัด เลือกได้ทั้งฟอนต์ ขนาด สี และรูปร่างกรอบ
+        </p>
+        <div class="usecase">
+          <strong>เหมาะกับ</strong>
+          ตรารับรองเอกสาร ตราชื่อพนักงาน ตราหน่วยงาน หรือตราสำหรับเซ็นรับ
+        </div>
         <div class="pills">
           <span class="pill">8 รูปร่าง</span>
           <span class="pill">3 บรรทัด</span>
-          <span class="pill">โหลดฟอนต์จากเครื่อง</span>
-          <span class="pill">บันทึก PNG</span>
-          <span class="pill">Auto-save</span>
+          <span class="pill">โหลดฟอนต์เครื่อง</span>
+          <span class="pill">B / I / U</span>
+          <span class="pill">บันทึก PNG / SVG</span>
         </div>
         <span class="card-btn">
           เปิดแอป
@@ -294,22 +509,37 @@
       </div>
     </a>
 
-    <!-- App 2 -->
+    <!-- App 2: Document Stamp -->
     <a class="card" href="Other_Stamp_Creater.html">
-      <div class="card-body">
-        <div class="card-icon">
-          <!-- rectangle stamp icon -->
-          <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="3" y1="15" x2="21" y2="15"/></svg>
+      <div class="card-preview">
+        <div class="preview-document" aria-hidden="true">
+          <div class="doc-title">ABOLISHED</div>
+          <div class="doc-line">Reason ········································</div>
+          <div class="doc-line">Date ··········································</div>
+          <div class="doc-boxes">
+            <span>Approved</span>
+            <span>Checked</span>
+            <span>Writer</span>
+          </div>
         </div>
+      </div>
+      <div class="card-body">
         <div class="card-label">App 2</div>
-        <h2 class="card-title">ตรายางสี่เหลี่ยม</h2>
-        <p class="card-desc">ตรายางแบบสี่เหลี่ยมสไตล์องค์กร พร้อมช่อง Reason / Date / Approved / Checked / Writer ครบครัน</p>
+        <h2 class="card-title">ตรารับรองเอกสาร</h2>
+        <div class="card-title-en">Document Stamp</div>
+        <p class="card-desc">
+          ตรายางสี่เหลี่ยมสำหรับรับรอง/อนุมัติเอกสาร พร้อมช่อง Reason หลายบรรทัด · Date · Approved / Checked / Writer
+        </p>
+        <div class="usecase">
+          <strong>เหมาะกับ</strong>
+          เอกสาร PCR · ใบอนุมัติ · ใบยกเลิก · ใบรับรอง · เอกสารควบคุมเอกสาร (DCC)
+        </div>
         <div class="pills">
-          <span class="pill">Reason / Date</span>
-          <span class="pill">Approved</span>
-          <span class="pill">Checked / Writer</span>
+          <span class="pill">Reason หลายบรรทัด</span>
+          <span class="pill">Date / Approved</span>
           <span class="pill">ปรับขนาดได้</span>
-          <span class="pill">Auto-save</span>
+          <span class="pill">3 ภาษา</span>
+          <span class="pill">บันทึก PNG / SVG</span>
         </div>
         <span class="card-btn">
           เปิดแอป
@@ -322,8 +552,13 @@
 
   <!-- FOOTER -->
   <footer>
-    <strong>Created by SITTISAK PE DNTH</strong> · v1.7 · Browser Edition<br>
-    <span style="margin-top:6px;display:inline-block;">Internal use — DENSO Production Engineering</span>
+    <div class="footer-row"><strong>Created by SITTISAK PE DNTH</strong></div>
+    <div class="footer-row">
+      <span class="badge">v1.8</span>
+      <span class="badge">Browser Edition</span>
+      <span class="badge">Auto-save</span>
+    </div>
+    <div class="footer-row" style="margin-top:10px;">Internal use — DENSO Production Engineering</div>
   </footer>
 
 </div>
